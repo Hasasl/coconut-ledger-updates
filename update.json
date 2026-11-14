@@ -1,0 +1,16 @@
+{
+  "app": "com.estateledger.coconut",
+  "page": {
+    "version": "1.4.1",
+    "file": "index.html",
+    "sha256": "8700e49f1034abb55c86cff3223fdc50dfef640d5f383fd2308e3badb1202944",
+    "minShell": 6
+  },
+  "apk": {
+    "versionCode": 6,
+    "versionName": "1.4.0",
+    "file": "CoconutLedger.apk",
+    "sha256": "578a4f3fe2c7cee91428fde991eb89080e974c3db60f0a7ce93e0e47e959b107"
+  },
+  "created": "2026-11-14T23:32:02"
+}
