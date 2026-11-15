@@ -188,7 +188,7 @@ html[lang="si"] .seg.lang::before{transform:translateX(calc(100% + 2px))}
 .mhead:first-child{margin-top:0}
 .mhead h2{font-size:20px} .msum{font-size:13px;color:var(--ink-2)} .msum b{color:var(--ink)}
 .rows{display:flex;flex-direction:column;gap:10px}
-.hrow{display:flex;flex-direction:column;gap:12px;animation:rise .4s both}
+.hrow{display:flex;flex-direction:column;gap:12px;animation:rise .4s both;content-visibility:auto;contain-intrinsic-size:auto 360px}
 .hrow .when{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .hrow .when b{font-family:var(--display);font-size:17px}
 .hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px 14px}
@@ -216,27 +216,17 @@ tr:last-child td{border-bottom:0}
 .empty{text-align:center;padding:28px 12px;color:var(--ink-2)}
 .empty svg{width:56px;height:56px;color:var(--accent);margin-bottom:8px}
 .view{animation:rise .35s cubic-bezier(.2,.8,.2,1) both}
-.view.dir-fwd{animation:vInR .34s cubic-bezier(.2,.8,.2,1) both} .view.dir-back{animation:vInL .34s cubic-bezier(.2,.8,.2,1) both}
-.view.quiet,.view.quiet .stag>*,.view.quiet .pricehero,.view.quiet .hrow{animation:none}
-/* view transitions: tab changes slide, theme changes reveal in a circle */
-html.nav-vt #view{view-transition-name:page}
-html.nav-vt::view-transition-old(root),html.nav-vt::view-transition-new(root){animation:none}
-html.nav-vt::view-transition-group(page){animation:none}
-html.nav-vt::view-transition-old(page){animation:vOutL .15s cubic-bezier(.4,0,1,1) both}
-html.nav-vt::view-transition-new(page){animation:vInR .32s cubic-bezier(.2,.8,.2,1) .07s both}
-/* the tab bar and + button stay on top and steady while the page slides */
-html.nav-vt .rail{view-transition-name:rail} html.nav-vt .fab{view-transition-name:fab}
-html.nav-vt::view-transition-group(rail),html.nav-vt::view-transition-group(fab),html.nav-vt::view-transition-new(rail),html.nav-vt::view-transition-new(fab){animation:none}
-html.nav-vt::view-transition-old(rail),html.nav-vt::view-transition-old(fab){display:none}
-html.nav-vt.dir-back::view-transition-old(page){animation-name:vOutR}
-html.nav-vt.dir-back::view-transition-new(page){animation-name:vInL}
+/* After the first screen, pages only slide and fade as one layer, and nothing inside them animates.
+   That keeps tab changes light on budget phones. */
+.view.calm{animation:none}
+.view.calm.dir-fwd{animation:vInR .24s cubic-bezier(.2,.8,.2,1) both}
+.view.calm.dir-back{animation:vInL .24s cubic-bezier(.2,.8,.2,1) both}
+.view.calm.dir-fade{animation:vFadeIn .2s ease-out both}
+.view.calm *,.view.calm *::before,.view.calm *::after{animation:none!important}
+.view.calm .pricehero::after{animation:glow 4s ease-in-out 1s infinite!important}
+.view.calm .ln,.view.calm .sp{stroke-dasharray:none!important;stroke-dashoffset:0!important}
+.view.calm .prog{transition:none!important}
 html.theme-vt::view-transition-old(root),html.theme-vt::view-transition-new(root){animation:none;mix-blend-mode:normal}
-html.theme-vt::view-transition-new(root){z-index:2}
-html.theme-vt::view-transition-group(theme-ring),html.theme-vt::view-transition-new(theme-ring){animation:none}
-html.theme-vt::view-transition-group(theme-ring){z-index:3}
-.theme-ring{position:fixed;border-radius:50%;pointer-events:none;z-index:200;view-transition-name:theme-ring;border:2px solid var(--accent);box-shadow:0 0 28px 6px color-mix(in srgb,var(--accent) 55%,transparent),inset 0 0 28px 6px color-mix(in srgb,var(--accent) 40%,transparent)}
-html.lang-vt::view-transition-old(root){animation:.18s ease-in both vFade}
-html.lang-vt::view-transition-new(root){animation:.26s ease-out .06s both vFadeIn}
 html.theming,html.theming *{transition:background-color .45s ease,color .45s ease,border-color .45s ease,fill .45s ease,stroke .45s ease!important}
 .stag>*{animation:rise .45s cubic-bezier(.2,.8,.2,1) both}
 .stag>*:nth-child(2){animation-delay:.05s}.stag>*:nth-child(3){animation-delay:.1s}.stag>*:nth-child(4){animation-delay:.15s}.stag>*:nth-child(5){animation-delay:.2s}.stag>*:nth-child(6){animation-delay:.25s}
@@ -315,11 +305,9 @@ label.fld select{border:1px solid var(--line);background:var(--bg);border-radius
 }
 @page{size:A4;margin:12mm}
 
-@keyframes vInR{from{opacity:0;transform:translateX(36px)}to{opacity:1;transform:none}}
-@keyframes vInL{from{opacity:0;transform:translateX(-36px)}to{opacity:1;transform:none}}
-@keyframes vOutL{to{opacity:0;transform:translateX(-28px)}}
-@keyframes vOutR{to{opacity:0;transform:translateX(28px)}}
-@keyframes vFade{to{opacity:0}} @keyframes vFadeIn{from{opacity:0}}
+@keyframes vInR{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}
+@keyframes vInL{from{opacity:0;transform:translateX(-22px)}to{opacity:1;transform:none}}
+@keyframes vFadeIn{from{opacity:0}}
 @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 @keyframes fadeband{from{opacity:0}to{opacity:.14}}
@@ -474,8 +462,8 @@ trans_rate:"Transport cart charge per harvested coconut",rej_in:"Rejected coconu
 version:"Version {0}",btn_pdf:"PDF report",rep_title:"Harvest report",rep_made:"Made on {0}",rep_save:"Save as PDF / Print",rep_close:"Close",rep_hint:"Choose Save as PDF in the print screen. If nothing opens here, use the Android app or the offline file.",rep_all:"All harvests",rep_latest:"Latest price",rep_fc_note:"Estimates from past records, not certain.",
 rep_month:"Monthly report",rep_details:"Harvest details",rep_coco:"Coconuts",rep_money:"Income and deduction breakdown",rep_item:"Item",rep_note:"Details",rep_amount:"Amount ({0})",rep_pct:"% of income",rep_totded:"Total deductions",rep_cmp:"Compared with {0}",
 rep_mtotal:"Month total",rep_harv_on:"Harvest on {0}",rep_dedm:"Deductions by month",btn_mpdf:"PDF",rep_pick:"Monthly PDF report",th_total:"Total",per_harv_x:"{0} harvested × {1}",rep_open:"Open",rep_sum:"Summary",
-upd_h:"App updates",upd_hint:"Updates come from your update link. A screen update downloads by itself and is used the next time you open the app. A new Android app version asks you to tap Install.",upd_link:"Update link",upd_save:"Save link",upd_check:"Check for updates",upd_cur:"This app: version {0} (Android app {1})",
-upd_none:"No update link. Paste one above, or leave it empty and tap Save link to use the built-in one.",upd_checking:"Checking…",upd_ok:"Up to date. Last checked {0}.",upd_ready:"Version {0} is downloaded. It will be used the next time you open the app.",upd_restart:"Use it now",
+upd_h:"App updates",upd_hint:"Updates come from your update link. A screen update downloads by itself and switches on after you leave the app and come back. A new Android app version asks you to tap Install.",upd_link:"Update link",upd_save:"Save link",upd_check:"Check for updates",upd_cur:"This app: version {0} (Android app {1})",
+upd_none:"No update link. Paste one above, or leave it empty and tap Save link to use the built-in one.",upd_checking:"Checking…",upd_ok:"Up to date. Last checked {0}.",upd_ready:"Version {0} is downloaded. It switches on by itself after you leave the app and come back.",upd_restart:"Use it now",
 upd_apk:"Android app version {0} is available.",upd_install:"Install",upd_dl:"Downloading…",upd_opened:"The installer is open. Tap Install. If Android asks, allow Coconut Ledger to install apps.",
 upd_err_net:"Could not reach the update link. Check the internet connection and the link.",upd_err_sig:"This update is not signed with your key, so it was not used.",upd_err_file:"The downloaded file did not match, so it was not used. Try again later.",upd_err_bad:"The link does not point to a valid update.json file.",
 upd_applied:"Updated to version {0}",upd_banner:"Android app version {0} is ready to install.",upd_saved:"Link saved",upd_badlink:"The link must start with https://"
@@ -526,8 +514,8 @@ trans_rate:"කැඩූ පොල් ගෙඩියකට ප්‍රවා�
 version:"සංස්කරණය {0}",btn_pdf:"PDF වාර්තාව",rep_title:"අස්වනු වාර්තාව",rep_made:"සකස් කළේ {0}",rep_save:"PDF ලෙස සුරකින්න / මුද්‍රණය",rep_close:"වසන්න",rep_hint:"මුද්‍රණ තිරයේ Save as PDF තෝරන්න. මෙහි කිසිවක් විවෘත නොවුණොත් Android යෙදුම හෝ offline ගොනුව භාවිත කරන්න.",rep_all:"සියලු අස්වනු",rep_latest:"අවසන් මිල",rep_fc_note:"පරණ දත්ත අනුව අනුමාන පමණි.",
 rep_month:"මාසික වාර්තාව",rep_details:"අස්වැන්නේ විස්තර",rep_coco:"පොල් ගණන්",rep_money:"ආදායම සහ අඩු කිරීම් විස්තරය",rep_item:"අයිතමය",rep_note:"විස්තර",rep_amount:"මුදල ({0})",rep_pct:"ආදායමෙන් %",rep_totded:"මුළු අඩු කිරීම්",rep_cmp:"{0} සමඟ සසඳා",
 rep_mtotal:"මාසයේ එකතුව",rep_harv_on:"{0} දින අස්වැන්න",rep_dedm:"මාසයෙන් මාසය අඩු කිරීම්",btn_mpdf:"PDF",rep_pick:"මාසික PDF වාර්තාව",th_total:"එකතුව",per_harv_x:"කැඩූ {0} × {1}",rep_open:"විවෘත කරන්න",rep_sum:"සාරාංශය",
-upd_h:"යෙදුම් යාවත්කාලීන",upd_hint:"යාවත්කාලීන ලැබෙන්නේ ඔබේ යාවත්කාලීන සබැඳියෙනි. තිරයේ යාවත්කාලීනයක් ඉබේම බාගත වී, ඊළඟ වතාවේ යෙදුම විවෘත කරන විට භාවිත වේ. නව Android යෙදුම් සංස්කරණයකදී Install ඔබන්න කියා අසයි.",upd_link:"යාවත්කාලීන සබැඳිය",upd_save:"සබැඳිය සුරකින්න",upd_check:"යාවත්කාලීන පරීක්ෂා කරන්න",upd_cur:"මෙම යෙදුම: සංස්කරණය {0} (Android යෙදුම {1})",
-upd_none:"යාවත්කාලීන සබැඳියක් නැත. ඉහත එකක් අලවන්න, නැත්නම් හිස්ව තබා සබැඳිය සුරකින්න ඔබා යෙදුමේ ඇතුළත් සබැඳිය භාවිත කරන්න.",upd_checking:"පරීක්ෂා කරමින්…",upd_ok:"අලුත්ම සංස්කරණයයි. අවසන් වරට පරීක්ෂා කළේ {0}.",upd_ready:"සංස්කරණය {0} බාගත විය. ඊළඟ වතාවේ යෙදුම විවෘත කරන විට භාවිත වේ.",upd_restart:"දැන් භාවිත කරන්න",
+upd_h:"යෙදුම් යාවත්කාලීන",upd_hint:"යාවත්කාලීන ලැබෙන්නේ ඔබේ යාවත්කාලීන සබැඳියෙනි. තිරයේ යාවත්කාලීනයක් ඉබේම බාගත වී, ඔබ යෙදුමෙන් ඉවත් වී නැවත පැමිණි පසු ක්‍රියාත්මක වේ. නව Android යෙදුම් සංස්කරණයකදී Install ඔබන්න කියා අසයි.",upd_link:"යාවත්කාලීන සබැඳිය",upd_save:"සබැඳිය සුරකින්න",upd_check:"යාවත්කාලීන පරීක්ෂා කරන්න",upd_cur:"මෙම යෙදුම: සංස්කරණය {0} (Android යෙදුම {1})",
+upd_none:"යාවත්කාලීන සබැඳියක් නැත. ඉහත එකක් අලවන්න, නැත්නම් හිස්ව තබා සබැඳිය සුරකින්න ඔබා යෙදුමේ ඇතුළත් සබැඳිය භාවිත කරන්න.",upd_checking:"පරීක්ෂා කරමින්…",upd_ok:"අලුත්ම සංස්කරණයයි. අවසන් වරට පරීක්ෂා කළේ {0}.",upd_ready:"සංස්කරණය {0} බාගත විය. ඔබ යෙදුමෙන් ඉවත් වී නැවත පැමිණි පසු එය ඉබේම ක්‍රියාත්මක වේ.",upd_restart:"දැන් භාවිත කරන්න",
 upd_apk:"Android යෙදුම් සංස්කරණය {0} ලබා ගත හැක.",upd_install:"ස්ථාපනය කරන්න",upd_dl:"බාගත කරමින්…",upd_opened:"ස්ථාපන තිරය විවෘතයි. Install ඔබන්න. Android අසන්නේ නම් Coconut Ledger යෙදුමට යෙදුම් ස්ථාපනයට අවසර දෙන්න.",
 upd_err_net:"යාවත්කාලීන සබැඳියට සම්බන්ධ විය නොහැකි විය. අන්තර්ජාලය සහ සබැඳිය පරීක්ෂා කරන්න.",upd_err_sig:"මෙම යාවත්කාලීනය ඔබේ යතුරෙන් අත්සන් කර නැති නිසා භාවිත කළේ නැත.",upd_err_file:"බාගත කළ ගොනුව නොගැළපුණු නිසා භාවිත කළේ නැත. පසුව නැවත උත්සාහ කරන්න.",upd_err_bad:"සබැඳිය වලංගු update.json ගොනුවකට යොමු නොවේ.",
 upd_applied:"සංස්කරණය {0} දක්වා යාවත්කාලීන විය",upd_banner:"Android යෙදුම් සංස්කරණය {0} ස්ථාපනයට සූදානම්.",upd_saved:"සබැඳිය සුරැකුණා",upd_badlink:"සබැඳිය https:// වලින් පටන් ගත යුතුයි."
@@ -538,7 +526,7 @@ const LS={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k
 let lang=LS.get("coconut-ledger-lang")==="si"?"si":"en";
 const t=(k,...a)=>{let s=L[lang][k];if(s==null)s=L.en[k];if(s==null)return k;a.forEach((v,i)=>{s=s.split("{"+i+"}").join(v)});return s};
 
-const VER="1.5.1";
+const VER="1.6.0";
 const MIN_SHELL=6; /* the oldest Android app (version code) this page works with */
 const CATS=["harvest","cart","transport","church","personal","fertilizer","power","other"];
 const KEY="coconut-ledger-v1", ME="coconut-ledger-me", $=s=>document.querySelector(s), view=$("#view");
@@ -605,9 +593,10 @@ function pushCloud(){
 }
 
 /* ---------- helpers ---------- */
-const N=v=>Math.round(v).toLocaleString("en-US");
+const NF0=new Intl.NumberFormat("en-US",{maximumFractionDigits:0}),NF2=new Intl.NumberFormat("en-US",{maximumFractionDigits:2});
+const N=v=>NF0.format(Math.round(v));
 const money=v=>(v<0?"−":"")+state.cur+" "+N(Math.abs(v));
-const price=v=>state.cur+" "+(Math.round(v*100)/100).toLocaleString("en-US",{maximumFractionDigits:2});
+const price=v=>state.cur+" "+NF2.format(Math.round(v*100)/100);
 const short=v=>{const a=Math.abs(v);return a>=1e6?(v/1e6).toFixed(1)+"M":a>=1e4?Math.round(v/1e3)+"k":a>=1e3?(v/1e3).toFixed(1)+"k":String(Math.round(v))};
 const pd=s=>{const[a,b,c]=s.split("-").map(Number);return Date.UTC(a,b-1,c)};
 const DAY=864e5;
@@ -666,7 +655,8 @@ function forecast(hs){
 /* ---------- charts ---------- */
 function niceStep(raw){const p=Math.pow(10,Math.floor(Math.log10(raw||1))),m=raw/p;return (m<=1?1:m<=2?2:m<=2.5?2.5:m<=5?5:10)*p}
 const tips=new Map();
-function frame(el,h,w){const W=w||Math.max(280,el.clientWidth||600);return {W,H:h||220,L:42,R:10,T:12,B:26}}
+const widthOf=new Map();
+function frame(el,h,w){const W=w||Math.max(280,widthOf.get(el)||el.clientWidth||600);return {W,H:h||220,L:42,R:10,T:12,B:26}}
 function xLabels(f,labels,cx){const every=Math.ceil(labels.length*(lang==="si"?54:44)/(f.W-f.L-f.R));
   return labels.map((l,i)=>(labels.length-1-i)%every?"":`<text x="${cx(i)}" y="${f.H-8}" text-anchor="middle">${esc(l)}</text>`).join("")}
 function barChart(el,data,opt){
@@ -706,7 +696,7 @@ function lineChart(el,pts,fc,opt){
 }
 function spark(el,vals){
   if(!el||vals.length<2){if(el)el.innerHTML="";return}
-  const W=el.clientWidth||300,H=56,mn=Math.min.apply(0,vals),mx=Math.max.apply(0,vals),sp=(mx-mn)||1;
+  const W=widthOf.get(el)||el.clientWidth||300,H=56,mn=Math.min.apply(0,vals),mx=Math.max.apply(0,vals),sp=(mx-mn)||1;
   const pt=vals.map((v,i)=>[6+(W-12)*i/(vals.length-1),6+(H-12)*(1-(v-mn)/sp)]),e=pt[pt.length-1];
   el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t("price_chart_h"))}"><polyline class="sp" pathLength="1" points="${pt.map(p=>p.join(",")).join(" ")}"/><circle cx="${e[0]}" cy="${e[1]}" r="5"/></svg>`;
 }
@@ -743,7 +733,6 @@ const updCard=()=>UPD?`<div class="card" id="updCard"><h2>${t("upd_h")}</h2><p c
     <p class="updst" id="updSt" aria-live="polite">${updStatusHtml()}</p></div>`:"";
 window.onUpdateStatus=j=>{let st;try{st=JSON.parse(j)}catch(e){return}readShell();UST=st;
   const el=$("#updSt");if(el)el.innerHTML=updStatusHtml();
-  if(!st.manual&&st.state==="page_ready")toast(t("upd_ready",st.page));
   if(!st.manual&&st.state==="apk"&&route!=="data")render();
 };
 
@@ -912,15 +901,17 @@ function applyStatic(){
   document.querySelectorAll(".curlab").forEach(e=>e.textContent=state.cur);
   setSync(syncCls,syncKey);
 }
-function render(o){o=o||{};
+let rendered=false;
+function render(o){o=o||{};const first=!rendered;rendered=true;
   const hs=calc();drawFns=[];tips.clear();applyStatic();
   $("#estateName").textContent=state.estate;$("#viewSub").textContent=t("sub_"+route);
   document.querySelectorAll(".rail [data-go]").forEach(b=>b.dataset.go===route?b.setAttribute("aria-current","page"):b.removeAttribute("aria-current"));
-  view.innerHTML=`<div class="view${o.quiet?" quiet":o.dir?" dir-"+o.dir:""}">${({overview:vOverview,months:vMonths,insights:vInsights,forecast:vForecast,data:vData})[route](hs)}</div>`;
-  draw();countUp();moveInd();
-  requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll(".prog").forEach(c=>c.style.strokeDashoffset=c.dataset.off)));
+  view.innerHTML=`<div class="view${first?"":" calm"+(o.dir?" dir-"+o.dir:"")}">${({overview:vOverview,months:vMonths,insights:vInsights,forecast:vForecast,data:vData})[route](hs)}</div>`;
+  draw();moveInd();
+  if(first){countUp();requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll(".prog").forEach(c=>c.style.strokeDashoffset=c.dataset.off)))}
+  else document.querySelectorAll(".prog").forEach(c=>c.style.strokeDashoffset=c.dataset.off);
 }
-function draw(){drawFns.forEach(f=>{try{f()}catch(e){console.error(e)}})}
+function draw(){widthOf.clear();document.querySelectorAll(".chart,.spark").forEach(el=>widthOf.set(el,el.clientWidth));drawFns.forEach(f=>{try{f()}catch(e){console.error(e)}})}
 function countUp(){
   const still=matchMedia("(prefers-reduced-motion:reduce)").matches;
   document.querySelectorAll("[data-count]").forEach(el=>{const to=+el.dataset.count;if(still||!isFinite(to))return;const t0=performance.now(),dur=800;
@@ -943,27 +934,20 @@ function moveInd(){const b=document.querySelector('.rail [data-go="'+route+'"]')
   if(!indReady)ind.style.transition="none";
   ind.style.width=w+"px";ind.style.height=h+"px";ind.style.transform=`translate(${b.offsetLeft+(b.offsetWidth-w)/2}px,${b.offsetTop+(b.offsetHeight-h)/2}px)`;
   if(!indReady){ind.offsetWidth;ind.style.transition="";indReady=true}}
+let goToken=0;
 function go(r){if(ROUTES.indexOf(r)<0)r="overview";
-  if(r===route){render();return}
-  const dir=ROUTES.indexOf(r)>ROUTES.indexOf(route)?"fwd":"back";
-  const set=()=>{route=r;if(location.hash!=="#"+r){try{history.replaceState(null,"","#"+r)}catch(e){}}};
-  vt(["nav-vt","dir-"+dir],()=>{set();render({quiet:true});scrollTo(0,0)},()=>{set();render({dir});scrollTo(0,0)});
+  const dir=r===route?"":ROUTES.indexOf(r)>ROUTES.indexOf(route)?"fwd":"back",tk=++goToken;
+  route=r;if(location.hash!=="#"+r){try{history.replaceState(null,"","#"+r)}catch(e){}}
+  document.querySelectorAll(".rail [data-go]").forEach(b=>b.dataset.go===route?b.setAttribute("aria-current","page"):b.removeAttribute("aria-current"));
+  moveInd();
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{if(tk!==goToken)return;render({dir:still()?"":dir});scrollTo(0,0)}));
 }
 function toggleSkin(ev){
   const next=document.documentElement.getAttribute("data-skin")==="light"?"neon":"light",bt=$("#skinBtn").getBoundingClientRect();
   const x=ev&&ev.clientX?ev.clientX:bt.left+bt.width/2,y=ev&&ev.clientY?ev.clientY:bt.top+bt.height/2,r=Math.hypot(Math.max(x,innerWidth-x),Math.max(y,innerHeight-y));
-  let ring=null;
-  const tr=vt(["theme-vt"],()=>{setSkin(next);
-      ring=document.createElement("div");ring.className="theme-ring";
-      Object.assign(ring.style,{left:(x-r)+"px",top:(y-r)+"px",width:2*r+"px",height:2*r+"px"});document.body.appendChild(ring)},
-    ()=>{const h=document.documentElement;h.classList.add("theming");setSkin(next);setTimeout(()=>h.classList.remove("theming"),500)});
-  if(!tr)return;
-  const ease="cubic-bezier(.65,0,.35,1)",dur=720;
-  tr.ready.then(()=>{const h=document.documentElement;
-    h.animate({clipPath:[`circle(0px at ${x}px ${y}px)`,`circle(${r}px at ${x}px ${y}px)`]},{duration:dur,easing:ease,pseudoElement:"::view-transition-new(root)"});
-    h.animate([{transform:"scale(0)",opacity:1},{opacity:1,offset:.7},{transform:"scale(1)",opacity:0}],{duration:dur,easing:ease,pseudoElement:"::view-transition-new(theme-ring)"});
-  }).catch(()=>{});
-  tr.finished.finally(()=>{if(ring)ring.remove()});
+  const tr=vt(["theme-vt"],()=>setSkin(next),()=>{const h=document.documentElement;h.classList.add("theming");setSkin(next);setTimeout(()=>h.classList.remove("theming"),500)});
+  if(tr)tr.ready.then(()=>document.documentElement.animate({clipPath:[`circle(0px at ${x}px ${y}px)`,`circle(${r}px at ${x}px ${y}px)`]},
+    {duration:560,easing:"cubic-bezier(.65,0,.35,1)",pseudoElement:"::view-transition-new(root)"})).catch(()=>{});
 }
 addEventListener("hashchange",()=>{const r=location.hash.slice(1);if(ROUTES.indexOf(r)>=0&&r!==route)go(r)});
 let rz;addEventListener("resize",()=>{moveInd();clearTimeout(rz);rz=setTimeout(draw,150)});
@@ -1128,7 +1112,7 @@ function setSkin(s){if(s==="light")document.documentElement.setAttribute("data-s
 document.addEventListener("click",async e=>{
   const b=e.target.closest("button,[data-go]");if(!b)return;
   if(b.dataset.go) return go(b.dataset.go);
-  if(b.dataset.lang){if(b.dataset.lang===lang)return;const nl=b.dataset.lang;LS.set("coconut-ledger-lang",nl);vt(["lang-vt"],()=>{lang=nl;mirror();render({quiet:true})},()=>{lang=nl;mirror();render()});return}
+  if(b.dataset.lang){if(b.dataset.lang===lang)return;lang=b.dataset.lang;LS.set("coconut-ledger-lang",lang);mirror();return render({dir:still()?"":"fade"})}
   if(b.id==="skinBtn") return toggleSkin(e);
   if(b.dataset.upd&&UPD){const k=b.dataset.upd,inp=$("#u-link");
     if(k==="save"||(k==="check"&&inp&&inp.value.trim()!==(SH.updateUrl||""))){if(NB.setUpdateUrl(inp?inp.value:"")!=="ok")return toast(t("upd_badlink"));readShell();if(k==="save"){const el=$("#updSt");if(el)el.innerHTML=updStatusHtml();return toast(t("upd_saved"))}}
@@ -1161,7 +1145,15 @@ if(LS.get("coconut-ledger-skin")==="light") setSkin("light");
 route=ROUTES.indexOf(location.hash.slice(1))>=0?location.hash.slice(1):"overview";
 readShell();
 render();initCloud();mirror();
-if(SH.justApplied)toast(t("upd_applied",SH.justApplied));
+/* An update applied while the app was in the background is announced when the person comes back. */
+let pendingNote=SH.justApplied?t("upd_applied",SH.justApplied):"";
+if(pendingNote&&document.visibilityState!=="hidden"){toast(pendingNote);pendingNote=""}
+window.onAppResume=()=>{if(pendingNote){setTimeout(()=>toast(pendingNote),250);pendingNote=""}};
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")window.onAppResume()});
+/* The Android app asks this before swapping in a new version in the background. */
+window.canReload=()=>{if(dlg.open||ask.open||document.body.classList.contains("rep"))return false;
+  const a=document.activeElement;if(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))return false;
+  const imp=$("#imp");return !(imp&&imp.value.trim())};
 </script>
 </body>
 </html>
