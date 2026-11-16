@@ -463,8 +463,7 @@ h3 {
   inset: -1px;
   border-radius: inherit;
   box-shadow: 0 0 46px rgba(43, 255, 160, 0.3);
-  opacity: 0.25;
-  animation: glow 4s ease-in-out 1s infinite;
+  opacity: 0.6;
   pointer-events: none;
 }
 :root[data-skin="light"] .pricehero::after {
@@ -1223,9 +1222,6 @@ tr:last-child td {
 .view.calm *::before,
 .view.calm *::after {
   animation: none !important;
-}
-.view.calm .pricehero::after {
-  animation: glow 4s ease-in-out 1s infinite !important;
 }
 .view.calm .ln,
 .view.calm .sp {
@@ -2085,4 +2081,327 @@ label.fld select {
   .legal {
     padding-bottom: 72px;
   }
+}
+
+/* ---------- full screen: keep content clear of the camera hole ----------
+   The Android app sets --safe-top etc. to the camera cutout size; browsers use env(). */
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+.main {
+  padding-top: calc(16px + var(--safe-top));
+  padding-left: calc(16px + var(--safe-left));
+  padding-right: calc(16px + var(--safe-right));
+}
+.rail {
+  padding-bottom: calc(6px + var(--safe-bottom));
+}
+#report .rbar {
+  padding-top: calc(10px + var(--safe-top));
+}
+@media (min-width: 920px) {
+  .main {
+    padding-top: calc(26px + var(--safe-top));
+  }
+  .rail {
+    padding-top: calc(18px + var(--safe-top));
+  }
+}
+
+/* ---------- loading screen ---------- */
+#loader {
+  --leaf: #2fd47f;
+  --leaf-2: #1d9c5b;
+  --trunk: #b98a5a;
+  --nut: #8a5a2b;
+  --lorry: #22d3ff;
+  --cab: #2bffa0;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding-top: var(--safe-top);
+  background: var(--bg);
+  transition: opacity 0.35s ease;
+}
+:root[data-skin="light"] #loader {
+  --leaf: #2f9a55;
+  --leaf-2: #237a42;
+  --trunk: #9a6a3c;
+  --nut: #7a4a22;
+  --lorry: #3a78c2;
+  --cab: #1f7a4d;
+}
+#loader.bye {
+  opacity: 0;
+  pointer-events: none;
+}
+.ld-scene {
+  position: relative;
+  width: 300px;
+  height: 180px;
+  overflow: hidden;
+  animation: ldIn 0.4s ease-out both;
+}
+.ld-moon {
+  position: absolute;
+  left: 214px;
+  top: 22px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--accent-2);
+  opacity: 0.22;
+  box-shadow: 0 0 40px 10px var(--accent-2);
+}
+:root[data-skin="light"] .ld-moon {
+  background: #ffb020;
+  box-shadow: 0 0 30px 6px #ffd27a;
+  opacity: 0.55;
+}
+.ld-ground {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.ld-trunk {
+  fill: none;
+  stroke: var(--trunk);
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+.ld-rings {
+  fill: none;
+  stroke: rgba(0, 0, 0, 0.28);
+  stroke-width: 10;
+  stroke-dasharray: 2 9;
+}
+.ld-land {
+  fill: var(--surface-2);
+}
+.ld-crown {
+  position: absolute;
+  left: 58px;
+  top: 14px;
+  width: 120px;
+  height: 80px;
+  transform-origin: 60px 40px;
+  animation: ldSway 2.4s ease-in-out infinite alternate;
+}
+.ld-crown svg,
+.ld-lorry svg,
+.ld-wheel svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.ld-leaves path {
+  fill: var(--leaf);
+  stroke: var(--leaf-2);
+  stroke-width: 1.2;
+}
+.ld-nuts circle,
+.ld-drop,
+.ld-load {
+  fill: var(--nut);
+  background: var(--nut);
+}
+.ld-drop {
+  position: absolute;
+  left: 112px;
+  top: 64px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  opacity: 0;
+}
+.ld-drop.d1 {
+  animation:
+    ldFall 0.32s cubic-bezier(0.55, 0, 1, 0.45) 1.05s forwards,
+    ldGone 0.01s linear 1.37s forwards;
+}
+.ld-drop.d2 {
+  --dx: -9px;
+  animation:
+    ldFall 0.32s cubic-bezier(0.55, 0, 1, 0.45) 1.15s forwards,
+    ldGone 0.01s linear 1.47s forwards;
+}
+.ld-drop.d3 {
+  --dx: 8px;
+  animation:
+    ldFall 0.32s cubic-bezier(0.55, 0, 1, 0.45) 1.25s forwards,
+    ldGone 0.01s linear 1.57s forwards;
+}
+.ld-lorry {
+  position: absolute;
+  left: 78px;
+  top: 121px;
+  width: 130px;
+  height: 50px;
+  animation: ldDrive 2.1s both;
+}
+.ld-bed {
+  fill: var(--lorry);
+}
+.ld-cab {
+  fill: var(--cab);
+}
+.ld-slat {
+  stroke: rgba(0, 0, 0, 0.22);
+  stroke-width: 1.5;
+}
+.ld-glass {
+  fill: var(--bg);
+  opacity: 0.85;
+}
+.ld-chassis {
+  fill: var(--ink-3);
+}
+.ld-lamp {
+  fill: #ffd34d;
+}
+.ld-load {
+  position: absolute;
+  left: 12px;
+  top: 4px;
+  width: 54px;
+  height: 14px;
+  border-radius: 10px 10px 3px 3px;
+  transform: scale(0);
+  transform-origin: 50% 100%;
+  animation: ldPop 0.25s cubic-bezier(0.3, 1.6, 0.5, 1) 1.5s forwards;
+}
+.ld-wheel {
+  position: absolute;
+  top: 32px;
+  width: 18px;
+  height: 18px;
+  animation:
+    ldSpin 0.35s linear 0.3s 2,
+    ldSpin 0.35s linear 1.51s 2;
+}
+.ld-wheel.w1 {
+  left: 13px;
+}
+.ld-wheel.w2 {
+  left: 95px;
+}
+.ld-wheel circle {
+  fill: #20262f;
+  stroke: var(--ink-3);
+  stroke-width: 2;
+}
+.ld-wheel path {
+  stroke: var(--ink-3);
+  stroke-width: 2;
+}
+.ld-name {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  animation: ldIn 0.5s ease-out 0.1s both;
+}
+.ld-bar {
+  width: 150px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.ld-bar i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transform: scaleX(0.04);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+.ld-tag {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink-3);
+}
+html[lang="si"] .ld-tag .en,
+html:not([lang="si"]) .ld-tag .si {
+  display: none;
+}
+@keyframes ldIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+@keyframes ldSway {
+  from {
+    transform: rotate(-6deg);
+  }
+  to {
+    transform: rotate(5deg);
+  }
+}
+@keyframes ldDrive {
+  0%,
+  14% {
+    transform: translateX(-250px);
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+  48%,
+  72% {
+    transform: translateX(0);
+    animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.5);
+  }
+  100% {
+    transform: translateX(260px);
+  }
+}
+@keyframes ldSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes ldFall {
+  from {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate(var(--dx, 0px), 60px);
+  }
+}
+@keyframes ldGone {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes ldPop {
+  to {
+    transform: scale(1);
+  }
+}
+
+/* ---------- kept pages: only the page on screen is drawn ---------- */
+#view {
+  position: relative;
+}
+#view > .view:not(.on) {
+  content-visibility: hidden;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
 }

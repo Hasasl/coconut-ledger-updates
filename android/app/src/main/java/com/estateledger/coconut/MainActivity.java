@@ -4,11 +4,18 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.print.PrintAttributes;
 import android.print.PrintManager;
 import android.util.Base64;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.WindowInsets;
+import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -65,6 +72,7 @@ public class MainActivity extends Activity {
 
     @Override protected void onCreate(Bundle state) {
         super.onCreate(state);
+        allowCutout();
         prefs = getSharedPreferences("ledger", MODE_PRIVATE);
         bundledPage = readBundledVersion();
         web = new WebView(this);
@@ -73,6 +81,8 @@ public class MainActivity extends Activity {
         web.setVerticalScrollBarEnabled(false);
         web.setHorizontalScrollBarEnabled(false);
         setContentView(web);
+        goFullScreen();
+        watchInsetsAndKeyboard();
         WebSettings s = web.getSettings();
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);
@@ -89,6 +99,7 @@ public class MainActivity extends Activity {
                 return true;
             }
             @Override public void onPageFinished(WebView v, String url) {
+                sendSafeArea();
                 if (firstLoad) { firstLoad = false; autoCheck(); }
             }
         });
@@ -111,12 +122,92 @@ public class MainActivity extends Activity {
         loadStart();
     }
 
+    // ---------- full screen ----------
+
+    /** Hides the status bar and the navigation bar. A swipe from the edge shows them for a moment. */
+    private void goFullScreen() {
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+    }
+
+    @Override public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) goFullScreen();
+    }
+
+    /** Lets the app draw beside the punch-hole camera instead of leaving a black strip (Android 9 and newer). */
+    private void allowCutout() {
+        if (Build.VERSION.SDK_INT < 28) return;
+        try {
+            WindowManager.LayoutParams lp = getWindow().getAttributes();
+            lp.getClass().getField("layoutInDisplayCutoutMode").setInt(lp, 1); // SHORT_EDGES
+            getWindow().setAttributes(lp);
+        } catch (Exception ignored) { }
+    }
+
+    private int safeTop, safeLeft, safeRight, safeBottom;
+
+    /** Tells the page how much room the camera hole needs, in CSS pixels. */
+    private void sendSafeArea() {
+        float d = getResources().getDisplayMetrics().density;
+        String js = "(function(s){s.setProperty('--safe-top','" + Math.round(safeTop / d) + "px');"
+                + "s.setProperty('--safe-left','" + Math.round(safeLeft / d) + "px');"
+                + "s.setProperty('--safe-right','" + Math.round(safeRight / d) + "px');"
+                + "s.setProperty('--safe-bottom','" + Math.round(safeBottom / d) + "px')})(document.documentElement.style)";
+        web.evaluateJavascript(js, null);
+    }
+
+    private void watchInsetsAndKeyboard() {
+        final View decor = getWindow().getDecorView();
+        decor.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+            @Override public WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
+                int t = 0, l = 0, r = 0, b = 0;
+                if (Build.VERSION.SDK_INT >= 28) {
+                    try {
+                        Object cut = insets.getClass().getMethod("getDisplayCutout").invoke(insets);
+                        if (cut != null) {
+                            t = (Integer) cut.getClass().getMethod("getSafeInsetTop").invoke(cut);
+                            l = (Integer) cut.getClass().getMethod("getSafeInsetLeft").invoke(cut);
+                            r = (Integer) cut.getClass().getMethod("getSafeInsetRight").invoke(cut);
+                            b = (Integer) cut.getClass().getMethod("getSafeInsetBottom").invoke(cut);
+                        }
+                    } catch (Exception ignored) { }
+                }
+                if (t != safeTop || l != safeLeft || r != safeRight || b != safeBottom) {
+                    safeTop = t; safeLeft = l; safeRight = r; safeBottom = b;
+                    sendSafeArea();
+                }
+                return v.onApplyWindowInsets(insets);
+            }
+        });
+        // Full screen apps do not shrink for the keyboard on their own: shrink the page so the form stays visible.
+        decor.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override public void onGlobalLayout() {
+                Rect r = new Rect();
+                decor.getWindowVisibleDisplayFrame(r);
+                int full = decor.getRootView().getHeight();
+                int want = (full - r.bottom) > full * 0.15 ? r.bottom : ViewGroup.LayoutParams.MATCH_PARENT;
+                ViewGroup.LayoutParams lp = web.getLayoutParams();
+                if (lp != null && lp.height != want) {
+                    lp.height = want;
+                    web.setLayoutParams(lp);
+                }
+            }
+        });
+    }
+
     // ---------- app comes and goes ----------
 
     @Override protected void onStart() { super.onStart(); stopped = false; }
 
     @Override protected void onResume() {
         super.onResume();
+        goFullScreen();
         web.onResume();
         if (!firstLoad) {
             autoCheck();

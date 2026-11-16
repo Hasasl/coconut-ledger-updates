@@ -123,16 +123,22 @@ Press **Ctrl+Shift+O** in VS Code to jump to a function by name.
 | `state`, `norm()`, `persist()`, `mirror()` | Saved data: loading, fixing older records, saving, and the backup copy kept inside the Android app |
 | `calc()` | **The money rules**: income = loaded × price; rejected = harvested − home use − loaded; free coconuts; transport cart = harvested × rate |
 | `monthly()` | Groups harvests into months |
-| `forecast()` | Next harvest date, coconuts, price and balance |
+| `yieldModel()`, `priceModel()`, `gapModel()`, `forecast()` | The forecast (see section 7b) |
 | `barChart()`, `lineChart()`, `spark()` | The charts (hand-drawn SVG, no library) |
 | Updates section (`UPD`, `readShell`, `updCard`) | The App updates card and messages from the Android shell |
 | `vOverview`, `vMonths`, `vInsights`, `vForecast`, `vData` | **One function per tab.** Each returns the tab's HTML. |
-| `render()`, `go()`, `toggleSkin()` | Draw the current tab, switch tabs, switch dark/light |
+| `pages`, `build()`, `render()`, `go()` | Tabs kept in memory: `build()` makes a tab, `go()` switches tabs, `render()` rebuilds after a change |
+| `boot()` (near the end) | Start-up: the loading screen plays while every tab is built |
+| `toggleSkin()` | Switch dark/light |
 | `openForm()` and the `submit` handler | The add/edit harvest form and its checks |
 | `toCSV()`, `importText()`, `doImport()` | CSV and backup export and import |
 | `openReport()`, `openMonthReport()` | The PDF reports |
 | `document.addEventListener("click", ...)` | What every button does (looks at `data-` attributes) |
 | The last lines | Start-up |
+
+### `web/index.html`
+- The loading screen (`#loader`): palm tree, lorry, wheels and falling coconuts. Each moving part is its own
+  element, animated in `styles.css` (search `ldDrive`, `ldSway`, `ldFall`).
 
 ### `web/styles.css`
 - The top `:root { ... }` block holds the **neon colours**. `:root[data-skin="light"]` holds the light ones.
@@ -140,7 +146,9 @@ Press **Ctrl+Shift+O** in VS Code to jump to a function by name.
 - After that, styles go roughly in screen order: header, cards, charts, months, dialog, report, animations.
 
 ### `android/app/src/main/java/com/estateledger/coconut/`
-- `MainActivity.java`: shows the page, checks for updates, installs them, and talks to the page
+- `MainActivity.java`: shows the page full screen (hides the status and navigation bars, uses the area
+  beside the camera hole, and shrinks the page when the keyboard opens), checks for updates, installs them,
+  and talks to the page
   through `AndroidBridge` (`saveFile`, `shareFile`, `printPage`, `getShellInfo`, `checkForUpdates`, ...).
 - `ShareProvider.java`: lets other apps (Drive, Gmail, the installer) read a file the app shares.
 
@@ -175,6 +183,26 @@ compare against a hand calculation.
   need a default in `norm()`.
 - Adding a deduction type to `CATS` also moves the CSV columns. Add it at the end and update
   `toCSV()` and `importText()` together.
+
+### 7b. How the forecast works
+
+All of it is in `web/app.js`, from `/* ---------- forecast models` down to `function forecast`.
+
+- **Three models.** Coconuts per day between harvests (`yieldModel`), price (`priceModel`) and days
+  between harvests (`gapModel`).
+- **Backtest.** Each model tries a few settings. For every past harvest, it predicts that harvest from
+  only the records before it, and keeps the average error.
+- **Simplest good setting wins.** The simplest setting within one standard error of the best one is
+  used (the "one standard error rule"). A season or a trend is only used when it clearly predicts your
+  own past harvests better. That protects against overfitting with few records.
+- **Public data.** National output usually peaks around March to June (Central Bank of Sri Lanka), so
+  the season model starts from that shape (`SEASON`). The price model may assume prices rise when supply
+  is low. Both are only kept if the backtest says they help.
+- **Ranges.** The "likely" ranges come from the backtest errors, and widen further into the future.
+- **Market notes.** The Forecast tab's market text is the word `fm_market_p` in `L.en` and `L.si`.
+  Update it when the Central Bank publishes new figures (agriculture data bulletin, cbsl.gov.lk).
+
+To check a change, open the Forecast tab: the "How much to trust this" card shows the backtest errors.
 
 ---
 
