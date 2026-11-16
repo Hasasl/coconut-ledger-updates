@@ -1,0 +1,8 @@
+{
+  "files.eol": "\n",
+  "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode", "editor.formatOnSave": true },
+  "[css]": { "editor.defaultFormatter": "esbenp.prettier-vscode", "editor.formatOnSave": true },
+  "[html]": { "editor.defaultFormatter": "esbenp.prettier-vscode", "editor.formatOnSave": true },
+  "files.exclude": { "android/.gradle": true, "android/build": true, "android/app/build": true, "**/__pycache__": true },
+  "search.exclude": { "published/**": true, "android/app/src/main/assets/**": true }
+}

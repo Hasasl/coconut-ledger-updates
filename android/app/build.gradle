@@ -1,0 +1,45 @@
+plugins {
+    id 'com.android.application'
+}
+
+// The app's version lives in one place: apk/apk_info.json (make_release.py reads it too).
+def apkInfo = new groovy.json.JsonSlurper().parse(rootProject.file('../apk/apk_info.json'))
+
+android {
+    namespace 'com.estateledger.coconut'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.estateledger.coconut'
+        minSdk 24
+        targetSdk 34
+        versionCode apkInfo.versionCode as int
+        versionName apkInfo.versionName as String
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lint {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+}
+
+// The page must be built into the app before every build: python tools/build_page.py
+tasks.register('checkPage') {
+    doLast {
+        if (!file('src/main/assets/index.html').exists()) {
+            throw new GradleException('The page is missing. In a terminal at the project folder run:  python tools/build_page.py')
+        }
+    }
+}
+tasks.named('preBuild') { dependsOn 'checkPage' }

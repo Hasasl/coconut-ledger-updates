@@ -1,0 +1,23 @@
+# ---- Your signing key and its password: NEVER upload these ----
+signing/*
+!signing/README.txt
+*.keystore
+*.jks
+keystore.properties
+
+# ---- Made by tools, rebuilt any time ----
+android/app/src/main/assets/
+android/app/release/
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
+android/.kotlin/
+*.iml
+__pycache__/
+node_modules/
+
+# ---- Computer clutter ----
+.DS_Store
+Thumbs.db

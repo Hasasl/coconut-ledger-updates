@@ -1,0 +1,8 @@
+# Keep line endings as-is so the published files match the fingerprints in update.json.
+* text=auto eol=lf
+update.json binary
+update.json.sig binary
+published/** binary
+*.apk binary
+*.png binary
+*.keystore binary

@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Coconut Estate Ledger</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&family=Noto+Sans+Sinhala:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <nav class="rail" aria-label="Sections">
+        <i class="rail-ind" aria-hidden="true"></i>
+        <div class="brand">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="16" cy="18" r="10" />
+            <circle cx="12.5" cy="15.5" r="1" fill="currentColor" />
+            <circle cx="19.5" cy="15.5" r="1" fill="currentColor" />
+            <circle cx="16" cy="20" r="1" fill="currentColor" />
+            <path d="M16 8c0-3 2-5 5-5M16 8c0-2-2-4-5-4" /></svg
+          >Estate Ledger
+        </div>
+        <button data-go="overview">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" /></svg
+          ><span data-t="nav_overview"></span>
+        </button>
+        <button data-go="months">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="5" width="18" height="16" rx="2" />
+            <path d="M3 10h18M8 3v4M16 3v4" /></svg
+          ><span data-t="nav_months"></span>
+        </button>
+        <button data-go="insights">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /></svg
+          ><span data-t="nav_insights"></span>
+        </button>
+        <button data-go="forecast">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M3 17l5-5 4 3 8-9" />
+            <path d="M15 6h5v5" /></svg
+          ><span data-t="nav_forecast"></span>
+        </button>
+        <button data-go="data">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <ellipse cx="12" cy="6" rx="8" ry="3" />
+            <path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6" /></svg
+          ><span data-t="nav_data"></span>
+        </button>
+        <div class="rail-foot" data-t="rail_foot"></div>
+      </nav>
+      <main class="main">
+        <div class="top">
+          <h1><span id="estateName"></span><span class="sub" id="viewSub"></span></h1>
+          <div class="seg lang" role="group" aria-label="Language">
+            <button data-lang="en" lang="en">English</button><button data-lang="si" lang="si">සිංහල</button>
+          </div>
+          <button class="iconbtn" id="skinBtn" aria-label="Switch between neon and light colours">
+            <svg
+              class="ic-moon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" /></svg
+            ><svg
+              class="ic-sun"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            >
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19" />
+            </svg>
+          </button>
+          <span class="chip" id="sync"><i></i><span></span></span>
+          <button class="btn primary add" data-add data-t="add_harvest"></button>
+        </div>
+        <div id="view"></div>
+      </main>
+    </div>
+    <button class="btn primary fab" data-add data-t="add_short"></button>
+    <div id="tip" role="status"></div>
+    <div id="toast" role="status"></div>
+    <div id="report"></div>
+
+    <dialog id="dlg" aria-labelledby="dlgTitle">
+      <form class="sheet" id="hform" novalidate>
+        <header>
+          <h2 id="dlgTitle"></h2>
+          <button type="button" class="x" data-close aria-label="Close">×</button>
+        </header>
+        <div class="fields">
+          <label class="fld"><span data-t="f_date"></span><input id="f-date" type="date" required /></label>
+          <label class="fld lead"
+            ><span><span data-t="f_price"></span> (<span class="curlab"></span>)</span
+            ><input id="f-price" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"
+          /></label>
+          <label class="fld lead"
+            ><span data-t="f_total"></span
+            ><input id="f-total" type="number" inputmode="numeric" min="0" step="1" placeholder="0"
+          /></label>
+          <label class="fld lead"
+            ><span data-t="f_loaded"></span
+            ><input id="f-loaded" type="number" inputmode="numeric" min="0" step="1" placeholder="0"
+          /></label>
+          <label class="fld"
+            ><span data-t="f_home"></span
+            ><input id="f-home" type="number" inputmode="numeric" min="0" step="1" placeholder="0"
+          /></label>
+          <label class="fld"
+            ><span id="freeLab"></span><input id="f-free" type="number" inputmode="numeric" min="0" step="1"
+          /></label>
+        </div>
+        <div class="sect"><span data-t="buyer"></span></div>
+        <div class="fields">
+          <label class="fld"
+            ><span data-t="f_bname"></span><input id="f-buyer" type="text" maxlength="60" autocomplete="off"
+          /></label>
+          <label class="fld"
+            ><span data-t="f_bcontact"></span
+            ><input id="f-contact" type="tel" maxlength="30" autocomplete="off" data-tp="phone_ph"
+          /></label>
+        </div>
+        <div class="sect">
+          <span><span data-t="deductions"></span> (<span class="curlab"></span>)</span
+          ><button type="button" class="btn small" id="copyLast" data-t="copy_prev"></button>
+        </div>
+        <div class="fields ded" id="dedFields"></div>
+        <label class="fld"
+          ><span data-t="f_othernote"></span><input id="f-othernote" type="text" maxlength="80" data-tp="othernote_ph"
+        /></label>
+        <div class="fields">
+          <label class="fld"
+            ><span data-t="entered_by"></span><input id="f-by" type="text" maxlength="40" data-tp="by_ph"
+          /></label>
+          <label class="fld"><span data-t="f_note"></span><input id="f-note" type="text" maxlength="140" /></label>
+        </div>
+        <div class="live" aria-live="polite">
+          <div><span data-t="rejected"></span><b class="num" id="l-paid">0</b></div>
+          <div><span data-t="income"></span><b class="num" id="l-inc">0</b></div>
+          <div><span data-t="balance"></span><b class="num" id="l-net">0</b></div>
+          <div><span id="l-shareLab"></span><b class="num" id="l-share">0</b></div>
+        </div>
+        <p class="err" id="f-err"></p>
+        <footer>
+          <button type="button" class="btn danger" id="delBtn" data-t="delete"></button><span style="flex: 1"></span
+          ><button type="button" class="btn" data-close data-t="cancel"></button
+          ><button type="submit" class="btn primary" data-t="save_h"></button>
+        </footer>
+      </form>
+    </dialog>
+    <dialog id="ask" aria-labelledby="askT">
+      <div class="sheet">
+        <header><h2 id="askT"></h2></header>
+        <p id="askP" style="margin: 0; color: var(--ink-2)"></p>
+        <footer>
+          <button class="btn" id="askNo" data-t="cancel"></button><button class="btn primary" id="askYes"></button>
+        </footer>
+      </div>
+    </dialog>
+
+    <script src="app.js"></script>
+  </body>
+</html>
