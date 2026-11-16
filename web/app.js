@@ -25,7 +25,8 @@ const L = {
       "so you can see how everything works. Clear them and add your own, or import your past months from the Data tab.",
     sample_btn: "Clear sample and start mine",
     empty_h: "No harvests yet",
-    empty_p: "Add your first harvest, or import your past records from the Data tab.",
+    empty_p:
+      "Add your first harvest, or import your past records from the Data tab.",
     price_lab: "Coconut price",
     per_coconut: "per coconut",
     from_prev: "from {0} at the harvest before",
@@ -65,7 +66,8 @@ const L = {
     exp_price: "expected price",
     coconuts: "coconuts",
     see_fc: "See the full forecast",
-    need3: "Add at least 3 harvests and this card will estimate the next harvest date, yield and price.",
+    need3:
+      "Add at least 3 harvests and this card will estimate the next harvest date, yield and price.",
     per_harvest_h: "Coconuts per harvest",
     per_harvest_hint: "Last {0} harvests. Tap a bar for the numbers.",
     harvested: "Harvested",
@@ -122,10 +124,12 @@ const L = {
     paid_so_far: "Paid so far",
     fc_range: "Forecast, with likely range",
     fc_harv_h: "Harvest forecast",
-    fc_rate: "Your trees have been giving about {0} coconuts a day between harvests.",
+    fc_rate:
+      "Your trees have been giving about {0} coconuts a day between harvests.",
     forecast_w: "Forecast",
     next3: "Next three harvests",
-    next3_hint: "Assumes about {0}% of each harvest is loaded and your usual charges.",
+    next3_hint:
+      "Assumes about {0}% of each harvest is loaded and your usual charges.",
     n_paid_for: "≈ {0} harvested, {1} loaded",
     about: "About {0}",
     trust_h: "How much to trust this",
@@ -150,11 +154,13 @@ const L = {
     btn_json: "Save full backup",
     btn_copy: "Copy backup text",
     open_drive: "Open Google Drive",
-    bk_note: "The CSV holds your harvests. The full backup also holds your settings.",
+    bk_note:
+      "The CSV holds your harvests. The full backup also holds your settings.",
     imp_h: "Import records",
     imp_hint:
       "Choose a CSV or backup file from the phone, Drive or Gmail, or paste rows below. One harvest per line, in this order:",
-    imp_ex: "Dates can be 2026-11-02 or 02/11/2026. Empty charges count as zero. Free coconuts are worked out for you.",
+    imp_ex:
+      "Dates can be 2026-11-02 or 02/11/2026. Empty charges count as zero. Free coconuts are worked out for you.",
     imp_ph: "Paste rows or backup text here",
     imp_go: "Import pasted rows",
     choose_file: "Choose file",
@@ -195,7 +201,8 @@ const L = {
     t_file: "File saved",
     t_nofile: "The file was not saved",
     t_copied: "Backup text copied",
-    t_copyblock: "Copy blocked. The text is in the import box, select and copy it.",
+    t_copyblock:
+      "Copy blocked. The text is in the import box, select and copy it.",
     t_loaded: "Loaded your latest records",
     t_imported: "Imported {0} harvests",
     t_savedl: "File saved. Upload it to Drive from your Files app.",
@@ -205,7 +212,8 @@ const L = {
     c_clear_h: "Clear the sample records?",
     c_clear_p: "The app will be empty and ready for your own harvests.",
     c_wipe_h: "Delete all records?",
-    c_wipe_p: "Every harvest will be removed from this app. This cannot be undone.",
+    c_wipe_p:
+      "Every harvest will be removed from this app. This cannot be undone.",
     i_none: "Nothing to import. Paste rows or choose a file.",
     i_bad: "That backup text is damaged and cannot be read.",
     i_notbk: "That file is not a backup from this app.",
@@ -243,7 +251,8 @@ const L = {
     rep_made: "Made on {0}",
     rep_save: "Save as PDF / Print",
     rep_close: "Close",
-    rep_hint: "Choose Save as PDF in the print screen. If nothing opens here, use the Android app or the offline file.",
+    rep_hint:
+      "Choose Save as PDF in the print screen. If nothing opens here, use the Android app or the offline file.",
     rep_all: "All harvests",
     rep_latest: "Latest price",
     rep_fc_note: "Estimates from past records, not certain.",
@@ -311,18 +320,23 @@ const L = {
     upd_save: "Save link",
     upd_check: "Check for updates",
     upd_cur: "This app: version {0} (Android app {1})",
-    upd_none: "No update link. Paste one above, or leave it empty and tap Save link to use the built-in one.",
+    upd_none:
+      "No update link. Paste one above, or leave it empty and tap Save link to use the built-in one.",
     upd_checking: "Checking…",
     upd_ok: "Up to date. Last checked {0}.",
-    upd_ready: "Version {0} is downloaded. It switches on by itself after you leave the app and come back.",
+    upd_ready:
+      "Version {0} is downloaded. It switches on by itself after you leave the app and come back.",
     upd_restart: "Use it now",
     upd_apk: "Android app version {0} is available.",
     upd_install: "Install",
     upd_dl: "Downloading…",
-    upd_opened: "The installer is open. Tap Install. If Android asks, allow Coconut Ledger to install apps.",
-    upd_err_net: "Could not reach the update link. Check the internet connection and the link.",
+    upd_opened:
+      "The installer is open. Tap Install. If Android asks, allow Coconut Ledger to install apps.",
+    upd_err_net:
+      "Could not reach the update link. Check the internet connection and the link.",
     upd_err_sig: "This update is not signed with your key, so it was not used.",
-    upd_err_file: "The downloaded file did not match, so it was not used. Try again later.",
+    upd_err_file:
+      "The downloaded file did not match, so it was not used. Try again later.",
     upd_err_bad: "The link does not point to a valid update.json file.",
     upd_applied: "Updated to version {0}",
     upd_banner: "Android app version {0} is ready to install.",
@@ -335,7 +349,8 @@ const L = {
     nav_insights: "විශ්ලේෂණ",
     nav_forecast: "අනාවැකි",
     nav_data: "දත්ත",
-    rail_foot: "අන්තර්ජාලය නැතිවත් වැඩ කරයි. නම්, අංක සහ මුදල් සියල්ල ඔබ ඇතුළත් කරන දත්ත පමණි.",
+    rail_foot:
+      "අන්තර්ජාලය නැතිවත් වැඩ කරයි. නම්, අංක සහ මුදල් සියල්ල ඔබ ඇතුළත් කරන දත්ත පමණි.",
     sub_overview: "මුලින්ම පොල් මිල සහ පොල් ගණන",
     sub_months: "සෑම මාසයකම දත්ත, අලුත්ම ඒවා මුලින්",
     sub_insights: "මිල, අස්වැන්න සහ මුදල් යන තැන්",
@@ -352,7 +367,8 @@ const L = {
       "යෙදුම වැඩ කරන හැටි පෙන්වීමට පමණි. මේවා ඉවත් කර ඔබේ දත්ත එක් කරන්න, නැත්නම් දත්ත පිටුවෙන් පරණ මාස ඇතුළත් කරන්න.",
     sample_btn: "ආදර්ශ ඉවත් කර මගේ දත්ත පටන් ගන්න",
     empty_h: "තවම අස්වනු නැත",
-    empty_p: "පළමු අස්වැන්න එක් කරන්න, නැත්නම් දත්ත පිටුවෙන් පරණ දත්ත ඇතුළත් කරන්න.",
+    empty_p:
+      "පළමු අස්වැන්න එක් කරන්න, නැත්නම් දත්ත පිටුවෙන් පරණ දත්ත ඇතුළත් කරන්න.",
     price_lab: "පොල් මිල",
     per_coconut: "පොල් ගෙඩියකට",
     from_prev: "පෙර අස්වැන්නේ {0} සිට",
@@ -432,7 +448,8 @@ const L = {
     bal_per_h: "එක් අස්වැන්නක ඉතිරිය",
     best: "හොඳම අස්වැන්න: {0}, {1}.",
     fc_none_h: "දත්ත තවම මදි",
-    fc_none_p: "අනාවැකියකට අස්වනු 3ක් වත් අවශ්‍යයි. දැන් ඇත්තේ {0}යි. දත්ත වැඩි වන තරමට අනාවැකිය හොඳ වේ.",
+    fc_none_p:
+      "අනාවැකියකට අස්වනු 3ක් වත් අවශ්‍යයි. දැන් ඇත්තේ {0}යි. දත්ත වැඩි වන තරමට අනාවැකිය හොඳ වේ.",
     exp_price_k: "අනුමාන මිල",
     exp_coconuts: "අනුමාන පොල් ගණන",
     likely: "බොහෝ විට {0} සිට {1}",
@@ -451,7 +468,8 @@ const L = {
     fc_rate: "අස්වනු අතර ඔබේ ගස් දිනකට පොල් {0}ක් පමණ දී ඇත.",
     forecast_w: "අනාවැකිය",
     next3: "ඊළඟ අස්වනු තුන",
-    next3_hint: "අස්වැන්නෙන් {0}%කට පමණ මුදල් ලැබෙන බවත්, සාමාන්‍ය වියදම් බවත් සලකයි.",
+    next3_hint:
+      "අස්වැන්නෙන් {0}%කට පමණ මුදල් ලැබෙන බවත්, සාමාන්‍ය වියදම් බවත් සලකයි.",
     n_paid_for: "≈ කැඩූ {0}, පැටවූ {1}",
     about: "{0} පමණ",
     trust_h: "මෙය කොතරම් විශ්වාස කළ හැකිද",
@@ -480,7 +498,8 @@ const L = {
     imp_h: "දත්ත ඇතුළත් කිරීම",
     imp_hint:
       "දුරකථනයෙන්, Drive හෝ Gmail වෙතින් CSV හෝ උපස්ථ ගොනුවක් තෝරන්න, නැත්නම් පහත පේළි අලවන්න. එක් පේළියකට එක් අස්වැන්නක්, මේ පිළිවෙළට:",
-    imp_ex: "දිනය 2026-11-02 හෝ 02/11/2026 ලෙස. හිස් වියදම් බිංදුව ලෙස ගැනේ. නොමිලේ දුන් පොල් ගණන යෙදුම ගණනය කරයි.",
+    imp_ex:
+      "දිනය 2026-11-02 හෝ 02/11/2026 ලෙස. හිස් වියදම් බිංදුව ලෙස ගැනේ. නොමිලේ දුන් පොල් ගණන යෙදුම ගණනය කරයි.",
     imp_ph: "පේළි හෝ උපස්ථ පෙළ මෙහි අලවන්න",
     imp_go: "අලවපු පේළි ඇතුළත් කරන්න",
     choose_file: "ගොනුවක් තෝරන්න",
@@ -521,7 +540,8 @@ const L = {
     t_file: "ගොනුව සුරැකුණා",
     t_nofile: "ගොනුව සුරැකුණේ නැත",
     t_copied: "උපස්ථ පෙළ පිටපත් වුණා",
-    t_copyblock: "පිටපත් කළ නොහැකි විය. පෙළ ඇතුළත් කිරීමේ කොටුවේ ඇත, එතැනින් පිටපත් කරන්න.",
+    t_copyblock:
+      "පිටපත් කළ නොහැකි විය. පෙළ ඇතුළත් කිරීමේ කොටුවේ ඇත, එතැනින් පිටපත් කරන්න.",
     t_loaded: "ඔබේ අලුත්ම දත්ත ලැබුණා",
     t_imported: "අස්වනු {0}ක් ඇතුළත් කළා",
     t_savedl: "ගොනුව සුරැකුණා. Files යෙදුමෙන් Drive වෙත උඩුගත කරන්න.",
@@ -535,7 +555,8 @@ const L = {
     i_none: "ඇතුළත් කිරීමට කිසිවක් නැත. පේළි අලවන්න හෝ ගොනුවක් තෝරන්න.",
     i_bad: "ඒ උපස්ථ පෙළ හානි වී ඇත, කියවිය නොහැක.",
     i_notbk: "ඒ ගොනුව මේ යෙදුමේ උපස්ථයක් නොවේ.",
-    i_date: '{0} වන පේළිය: "{1}" දිනයක් නොවේ. 2026-11-02 හෝ 02/11/2026 ලෙස දෙන්න.',
+    i_date:
+      '{0} වන පේළිය: "{1}" දිනයක් නොවේ. 2026-11-02 හෝ 02/11/2026 ලෙස දෙන්න.',
     i_count: "{0} වන පේළිය: කැඩූ පොල් ගණන නැත.",
     i_sum: "{0} වන පේළිය: අයින් කළ සහ ගෙදරට ගත් ගණන කැඩූ ගණනට වඩා වැඩියි.",
     i_rows: "අස්වනු පේළි හමු නොවීය.",
@@ -642,16 +663,20 @@ const L = {
       "යාවත්කාලීන සබැඳියක් නැත. ඉහත එකක් අලවන්න, නැත්නම් හිස්ව තබා සබැඳිය සුරකින්න ඔබා යෙදුමේ ඇතුළත් සබැඳිය භාවිත කරන්න.",
     upd_checking: "පරීක්ෂා කරමින්…",
     upd_ok: "අලුත්ම සංස්කරණයයි. අවසන් වරට පරීක්ෂා කළේ {0}.",
-    upd_ready: "සංස්කරණය {0} බාගත විය. ඔබ යෙදුමෙන් ඉවත් වී නැවත පැමිණි පසු එය ඉබේම ක්‍රියාත්මක වේ.",
+    upd_ready:
+      "සංස්කරණය {0} බාගත විය. ඔබ යෙදුමෙන් ඉවත් වී නැවත පැමිණි පසු එය ඉබේම ක්‍රියාත්මක වේ.",
     upd_restart: "දැන් භාවිත කරන්න",
     upd_apk: "Android යෙදුම් සංස්කරණය {0} ලබා ගත හැක.",
     upd_install: "ස්ථාපනය කරන්න",
     upd_dl: "බාගත කරමින්…",
     upd_opened:
       "ස්ථාපන තිරය විවෘතයි. Install ඔබන්න. Android අසන්නේ නම් Coconut Ledger යෙදුමට යෙදුම් ස්ථාපනයට අවසර දෙන්න.",
-    upd_err_net: "යාවත්කාලීන සබැඳියට සම්බන්ධ විය නොහැකි විය. අන්තර්ජාලය සහ සබැඳිය පරීක්ෂා කරන්න.",
-    upd_err_sig: "මෙම යාවත්කාලීනය ඔබේ යතුරෙන් අත්සන් කර නැති නිසා භාවිත කළේ නැත.",
-    upd_err_file: "බාගත කළ ගොනුව නොගැළපුණු නිසා භාවිත කළේ නැත. පසුව නැවත උත්සාහ කරන්න.",
+    upd_err_net:
+      "යාවත්කාලීන සබැඳියට සම්බන්ධ විය නොහැකි විය. අන්තර්ජාලය සහ සබැඳිය පරීක්ෂා කරන්න.",
+    upd_err_sig:
+      "මෙම යාවත්කාලීනය ඔබේ යතුරෙන් අත්සන් කර නැති නිසා භාවිත කළේ නැත.",
+    upd_err_file:
+      "බාගත කළ ගොනුව නොගැළපුණු නිසා භාවිත කළේ නැත. පසුව නැවත උත්සාහ කරන්න.",
     upd_err_bad: "සබැඳිය වලංගු update.json ගොනුවකට යොමු නොවේ.",
     upd_applied: "සංස්කරණය {0} දක්වා යාවත්කාලීන විය",
     upd_banner: "Android යෙදුම් සංස්කරණය {0} ස්ථාපනයට සූදානම්.",
@@ -660,8 +685,34 @@ const L = {
   },
 };
 const MONS = {
-  en: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-  si: ["ජන", "පෙබ", "මාර්", "අප්‍රේ", "මැයි", "ජූනි", "ජූලි", "අගෝ", "සැප්", "ඔක්", "නොවැ", "දෙසැ"],
+  en: [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ],
+  si: [
+    "ජන",
+    "පෙබ",
+    "මාර්",
+    "අප්‍රේ",
+    "මැයි",
+    "ජූනි",
+    "ජූලි",
+    "අගෝ",
+    "සැප්",
+    "ඔක්",
+    "නොවැ",
+    "දෙසැ",
+  ],
 };
 const MONLS = {
   en: [
@@ -718,12 +769,21 @@ const t = (k, ...a) => {
   return s;
 };
 
-const VER = "1.8.0";
+const VER = "1.8.1";
 /* Your company, shown at the bottom of the Data tab. Leave it empty to show the app name instead. */
-const COMPANY = "";
+const COMPANY = "CyberTech Lanka PVT(LTD)";
 const FIRST_YEAR = 2026;
 const MIN_SHELL = 6; /* the oldest Android app (version code) this page works with */
-const CATS = ["harvest", "cart", "transport", "church", "personal", "fertilizer", "power", "other"];
+const CATS = [
+  "harvest",
+  "cart",
+  "transport",
+  "church",
+  "personal",
+  "fertilizer",
+  "power",
+  "other",
+];
 const KEY = "coconut-ledger-v1",
   ME = "coconut-ledger-me",
   $ = (s) => document.querySelector(s),
@@ -731,10 +791,15 @@ const KEY = "coconut-ledger-v1",
 const esc = (s) =>
   String(s == null ? "" : s).replace(
     /[&<>"']/g,
-    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c],
+    (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
+        c
+      ],
   );
-const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-const NB = window.AndroidBridge || null; /* present only inside the Android app */
+const uid = () =>
+  Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const NB =
+  window.AndroidBridge || null; /* present only inside the Android app */
 
 /* ---------- state: the code holds no personal details, only the sample below ---------- */
 function sample() {
@@ -805,7 +870,9 @@ if (NBX) {
       n &&
       n.state &&
       Array.isArray(n.state.harvests) &&
-      (!state || !Array.isArray(state.harvests) || (n.state.updatedAt || 0) > (state.updatedAt || 0))
+      (!state ||
+        !Array.isArray(state.harvests) ||
+        (n.state.updatedAt || 0) > (state.updatedAt || 0))
     )
       state = n.state;
     if (n && n.ui) {
@@ -813,7 +880,8 @@ if (NBX) {
         lang = n.ui.lang === "si" ? "si" : "en";
         LS.set("coconut-ledger-lang", lang);
       }
-      if (LS.get("coconut-ledger-skin") == null && n.ui.skin) LS.set("coconut-ledger-skin", n.ui.skin);
+      if (LS.get("coconut-ledger-skin") == null && n.ui.skin)
+        LS.set("coconut-ledger-skin", n.ui.skin);
       if (LS.get(ME) == null && n.ui.me) LS.set(ME, n.ui.me);
     }
   } catch (e) {}
@@ -825,7 +893,11 @@ function mirror() {
     NB.saveState(
       JSON.stringify({
         state: state.sample ? null : state,
-        ui: { lang, skin: LS.get("coconut-ledger-skin") || "neon", me: LS.get(ME) || "" },
+        ui: {
+          lang,
+          skin: LS.get("coconut-ledger-skin") || "neon",
+          me: LS.get(ME) || "",
+        },
       }),
     );
   } catch (e) {}
@@ -911,7 +983,10 @@ function pushCloud() {
     writing = true;
     setSync("busy", "sync_busy");
     try {
-      await docRef.set({ updatedAt: state.updatedAt, json: JSON.stringify(state) });
+      await docRef.set({
+        updatedAt: state.updatedAt,
+        json: JSON.stringify(state),
+      });
       setSync("ok", "sync_ok");
     } catch (e) {
       setSync("", "sync_fail");
@@ -948,7 +1023,12 @@ const DAY = 864e5;
 const iso = (ms) => new Date(ms).toISOString().slice(0, 10);
 const fd = (s, y) => {
   const d = new Date(typeof s === "number" ? s : pd(s));
-  return d.getUTCDate() + " " + MONS[lang][d.getUTCMonth()] + (y === false ? "" : " " + d.getUTCFullYear());
+  return (
+    d.getUTCDate() +
+    " " +
+    MONS[lang][d.getUTCMonth()] +
+    (y === false ? "" : " " + d.getUTCFullYear())
+  );
 };
 const todayMs = () => {
   const d = new Date();
@@ -961,22 +1041,33 @@ const sd = (a) => {
   const m = mean(a);
   return Math.sqrt(sum(a.map((x) => (x - m) * (x - m))) / (a.length - 1));
 };
-const ewma = (a, al) => a.reduce((s, x, i) => (i ? al * x + (1 - al) * s : x), 0);
+const ewma = (a, al) =>
+  a.reduce((s, x, i) => (i ? al * x + (1 - al) * s : x), 0);
 const autoFree = (g) => (state.freePer > 0 ? Math.floor(g / state.freePer) : 0);
 const freeRule = () => t("free_rule", N(state.freePer));
-const shareLab = () => (state.shareName === "child" ? t("share_child") : t("share_custom", state.shareName));
-const catName = (k, h) => t("cat_" + k) + (k === "other" && h && h.otherNote ? ": " + h.otherNote : "");
+const shareLab = () =>
+  state.shareName === "child"
+    ? t("share_child")
+    : t("share_custom", state.shareName);
+const catName = (k, h) =>
+  t("cat_" + k) + (k === "other" && h && h.otherNote ? ": " + h.otherNote : "");
 /* Income = Loaded × price. Home use comes off the whole harvest first; what is left and not loaded is Rejected:
    rejected = harvested − home use − loaded. The buyer's free coconuts (1 per 100 loaded) are shown but do not reduce income.
    Transport cart = harvested × rate unless typed in. */
 const blank = (v) => v == null || v === "";
-const dedVal = (h, c) => (c === "transport" && blank(h.ded[c]) ? (+h.total || 0) * state.transRate : +h.ded[c] || 0);
+const dedVal = (h, c) =>
+  c === "transport" && blank(h.ded[c])
+    ? (+h.total || 0) * state.transRate
+    : +h.ded[c] || 0;
 function calc() {
   const hs = state.harvests.slice().sort((a, b) => pd(a.date) - pd(b.date));
   return hs.map((h, i) => {
     const home = +h.home || 0,
       loadedSet = blank(h.loaded) ? null : +h.loaded || 0,
-      loaded = loadedSet == null ? Math.max(0, h.total - home - (+h.rejected || 0)) : loadedSet,
+      loaded =
+        loadedSet == null
+          ? Math.max(0, h.total - home - (+h.rejected || 0))
+          : loadedSet,
       rejected = Math.max(0, h.total - home - loaded),
       taken = loaded,
       freeSet = blank(h.free) ? null : +h.free || 0,
@@ -1052,7 +1143,8 @@ const monthPos = (ms) => {
   const d = new Date(ms);
   return d.getUTCMonth() + 1 + (d.getUTCDate() - 1) / 31;
 };
-const seasonF = (ms, amp) => 1 + amp * Math.cos((2 * Math.PI * (monthPos(ms) - SEASON.peak)) / 12);
+const seasonF = (ms, amp) =>
+  1 + amp * Math.cos((2 * Math.PI * (monthPos(ms) - SEASON.peak)) / 12);
 const priceSeasonF = (ms, amp) => 1 - 0.5 * (seasonF(ms, amp) - 1); // less supply, higher price
 const quant = (a, q) => {
   if (!a.length) return 0;
@@ -1066,7 +1158,9 @@ const median = (a) => quant(a, 0.5);
    "one standard error" rule, the simplest config whose error is within one standard error of the best
    wins: a more complex model has to be clearly better, not just luckier on a few harvests. */
 function pickBest(configs, score) {
-  const rs = configs.map((c) => ({ c, r: score(c) })).filter((x) => isFinite(x.r.mape));
+  const rs = configs
+    .map((c) => ({ c, r: score(c) }))
+    .filter((x) => isFinite(x.r.mape));
   if (!rs.length) return null;
   const best = rs.reduce((a, b) => (b.r.mape < a.r.mape ? b : a)),
     ae = best.r.errs.map(Math.abs),
@@ -1075,8 +1169,15 @@ function pickBest(configs, score) {
 }
 /* Relative errors (actual / predicted - 1) give the "likely" range; never narrower than ±floor. */
 function bands(errs, floor) {
-  if (errs.length >= 5) return { lo: Math.min(-floor, quant(errs, 0.1)), hi: Math.max(floor, quant(errs, 0.9)) };
-  const s = Math.max(floor, errs.length ? Math.sqrt(mean(errs.map((e) => e * e))) * 1.3 : floor * 1.5);
+  if (errs.length >= 5)
+    return {
+      lo: Math.min(-floor, quant(errs, 0.1)),
+      hi: Math.max(floor, quant(errs, 0.9)),
+    };
+  const s = Math.max(
+    floor,
+    errs.length ? Math.sqrt(mean(errs.map((e) => e * e))) * 1.3 : floor * 1.5,
+  );
   return { lo: -s, hi: s };
 }
 
@@ -1094,23 +1195,34 @@ function yieldModel(hs) {
     return xs.length ? ewma(xs, c.a) : 0;
   };
   const configs = [];
-  [0, SEASON.amp / 2, SEASON.amp].forEach((amp) => [0.45, 0.25, 0.7].forEach((a) => configs.push({ amp, a })));
+  [0, SEASON.amp / 2, SEASON.amp].forEach((amp) =>
+    [0.45, 0.25, 0.7].forEach((a) => configs.push({ amp, a })),
+  );
   const score = (c) => {
     const errs = [];
     for (let i = 3; i < pts.length; i++) {
       const p = run(c, i) * seasonF(pts[i].mid, c.amp);
       if (p > 0) errs.push(pts[i].rate / p - 1);
     }
-    return { errs, mape: errs.length >= 3 ? mean(errs.map(Math.abs)) : Infinity };
+    return {
+      errs,
+      mape: errs.length >= 3 ? mean(errs.map(Math.abs)) : Infinity,
+    };
   };
-  const best = pickBest(configs, score) || { c: { amp: SEASON.amp / 2, a: 0.45 }, r: { errs: [], mape: NaN } };
+  const best = pickBest(configs, score) || {
+    c: { amp: SEASON.amp / 2, a: 0.45 },
+    r: { errs: [], mape: NaN },
+  };
   const level = run(best.c, pts.length);
   return {
     c: best.c,
     tested: best.r.errs.length,
     mape: best.r.mape,
     band: bands(best.r.errs, 0.06),
-    at: (fromMs, toMs) => level * seasonF((fromMs + toMs) / 2, best.c.amp) * ((toMs - fromMs) / DAY),
+    at: (fromMs, toMs) =>
+      level *
+      seasonF((fromMs + toMs) / 2, best.c.amp) *
+      ((toMs - fromMs) / DAY),
   };
 }
 
@@ -1150,9 +1262,15 @@ function priceModel(hs, gapDays) {
         p = ahead(c, m, 1) * priceSeasonF(ps[i].ms, c.amp);
       if (p > 0) errs.push(ps[i].p / p - 1);
     }
-    return { errs, mape: errs.length >= 3 ? mean(errs.map(Math.abs)) : Infinity };
+    return {
+      errs,
+      mape: errs.length >= 3 ? mean(errs.map(Math.abs)) : Infinity,
+    };
   };
-  const best = pickBest(configs, score) || { c: configs[2], r: { errs: [], mape: NaN } };
+  const best = pickBest(configs, score) || {
+    c: configs[2],
+    r: { errs: [], mape: NaN },
+  };
   const m = fit(best.c, ps.length),
     lastMs = ps[ps.length - 1].ms,
     band = bands(best.r.errs, 0.03);
@@ -1164,7 +1282,11 @@ function priceModel(hs, gapDays) {
       const steps = Math.max(0, (ms - lastMs) / DAY / gapDays),
         p = Math.max(0, ahead(best.c, m, steps) * priceSeasonF(ms, best.c.amp)),
         w = Math.sqrt(Math.max(1, steps));
-      return { p, lo: Math.max(0, p * (1 + band.lo * w)), hi: p * (1 + band.hi * w) };
+      return {
+        p,
+        lo: Math.max(0, p * (1 + band.lo * w)),
+        hi: p * (1 + band.hi * w),
+      };
     },
   };
 }
@@ -1180,13 +1302,21 @@ function gapModel(hs) {
     { kind: "ewma", a: 0.35 },
     { kind: "ewma", a: 0.6 },
   ];
-  const pred = (c, xs) => (c.kind === "median" ? median(xs.slice(-c.k)) : ewma(xs, c.a));
+  const pred = (c, xs) =>
+    c.kind === "median" ? median(xs.slice(-c.k)) : ewma(xs, c.a);
   const score = (c) => {
     const errs = [];
-    for (let i = 2; i < gs.length; i++) errs.push(gs[i] / pred(c, gs.slice(0, i)) - 1);
-    return { errs, mape: errs.length >= 3 ? mean(errs.map(Math.abs)) : Infinity };
+    for (let i = 2; i < gs.length; i++)
+      errs.push(gs[i] / pred(c, gs.slice(0, i)) - 1);
+    return {
+      errs,
+      mape: errs.length >= 3 ? mean(errs.map(Math.abs)) : Infinity,
+    };
   };
-  const best = pickBest(configs, score) || { c: configs[0], r: { errs: [], mape: NaN } };
+  const best = pickBest(configs, score) || {
+    c: configs[0],
+    r: { errs: [], mape: NaN },
+  };
   const recent = gs.slice(-8);
   return {
     c: best.c,
@@ -1238,13 +1368,19 @@ function forecast(hs) {
     };
   };
   const steps = [];
-  for (let k = 1, from = last; k <= 3; k++, from += G.gap * DAY) steps.push(step(from, from + G.gap * DAY, k));
+  for (let k = 1, from = last; k <= 3; k++, from += G.gap * DAY)
+    steps.push(step(from, from + G.gap * DAY, k));
   /* the next 12 months from today */
   const now = todayMs(),
     yearEnd = now + 365 * DAY,
     year = [];
-  for (let k = 1, from = last; from + G.gap * DAY <= yearEnd && k < 60; k++, from += G.gap * DAY)
-    if (from + G.gap * DAY > now) year.push(step(from, from + G.gap * DAY, Math.min(k, 6)));
+  for (
+    let k = 1, from = last;
+    from + G.gap * DAY <= yearEnd && k < 60;
+    k++, from += G.gap * DAY
+  )
+    if (from + G.gap * DAY > now)
+      year.push(step(from, from + G.gap * DAY, Math.min(k, 6)));
   /* next calendar month */
   const d = new Date(),
     nmStart = Date.UTC(d.getFullYear(), d.getMonth() + 1, 1),
@@ -1286,10 +1422,14 @@ function frame(el, h, w) {
   return { W, H: h || 220, L: 42, R: 10, T: 12, B: 26 };
 }
 function xLabels(f, labels, cx) {
-  const every = Math.ceil((labels.length * (lang === "si" ? 54 : 44)) / (f.W - f.L - f.R));
+  const every = Math.ceil(
+    (labels.length * (lang === "si" ? 54 : 44)) / (f.W - f.L - f.R),
+  );
   return labels
     .map((l, i) =>
-      (labels.length - 1 - i) % every ? "" : `<text x="${cx(i)}" y="${f.H - 8}" text-anchor="middle">${esc(l)}</text>`,
+      (labels.length - 1 - i) % every
+        ? ""
+        : `<text x="${cx(i)}" y="${f.H - 8}" text-anchor="middle">${esc(l)}</text>`,
     )
     .join("");
 }
@@ -1302,7 +1442,9 @@ function barChart(el, data, opt) {
     ph = f.H - f.T - f.B,
     band = pw / n,
     bw = Math.max(6, Math.min(30, band * 0.6));
-  const tops = data.map((d) => sum(d.segs.filter((s) => s.v > 0).map((s) => s.v))),
+  const tops = data.map((d) =>
+      sum(d.segs.filter((s) => s.v > 0).map((s) => s.v)),
+    ),
     bots = data.map((d) => sum(d.segs.filter((s) => s.v < 0).map((s) => s.v)));
   const mx = Math.max.apply(0, tops.concat(1)),
     mn = Math.min.apply(0, bots.concat(0)),
@@ -1372,7 +1514,8 @@ function lineChart(el, pts, fc, opt) {
   const st = niceStep((mx - mn || mx || 1) / 3),
     lo = Math.max(0, Math.floor((mn - st * 0.2) / st) * st),
     hi = Math.ceil((mx + st * 0.1) / st) * st || 1;
-  const cx = (i) => (n > 1 ? f.L + 10 + ((pw - 20) * i) / (n - 1) : f.L + pw / 2),
+  const cx = (i) =>
+      n > 1 ? f.L + 10 + ((pw - 20) * i) / (n - 1) : f.L + pw / 2,
     y = (v) => f.T + ph * (1 - (v - lo) / (hi - lo));
   let g = "";
   for (let v = lo; v <= hi + 1e-9; v += st)
@@ -1423,7 +1566,10 @@ function spark(el, vals) {
     mn = Math.min.apply(0, vals),
     mx = Math.max.apply(0, vals),
     sp = mx - mn || 1;
-  const pt = vals.map((v, i) => [6 + ((W - 12) * i) / (vals.length - 1), 6 + (H - 12) * (1 - (v - mn) / sp)]),
+  const pt = vals.map((v, i) => [
+      6 + ((W - 12) * i) / (vals.length - 1),
+      6 + (H - 12) * (1 - (v - mn) / sp),
+    ]),
     e = pt[pt.length - 1];
   el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t("price_chart_h"))}"><polyline class="sp" pathLength="1" points="${pt.map((p) => p.join(",")).join(" ")}"/><circle cx="${e[0]}" cy="${e[1]}" r="5"/></svg>`;
 }
@@ -1486,7 +1632,8 @@ const apkBanner = () =>
 function updStatusHtml() {
   const s = UST || {},
     busy = s.state === "downloading" || s.state === "opened",
-    bt = (k, l, pr) => ` <button class="btn small${pr ? " primary" : ""}" data-upd="${k}">${t(l)}</button>`,
+    bt = (k, l, pr) =>
+      ` <button class="btn small${pr ? " primary" : ""}" data-upd="${k}">${t(l)}</button>`,
     out = [];
   if (!SH.updateUrl) out.push(t("upd_none"));
   else if (s.state === "checking") out.push(t("upd_checking"));
@@ -1494,11 +1641,23 @@ function updStatusHtml() {
   else if (s.state === "opened") out.push(t("upd_opened"));
   else if (s.state === "error")
     out.push(
-      t({ nolink: "upd_none", net: "upd_err_net", sig: "upd_err_sig", file: "upd_err_file" }[s.code] || "upd_err_bad"),
+      t(
+        {
+          nolink: "upd_none",
+          net: "upd_err_net",
+          sig: "upd_err_sig",
+          file: "upd_err_file",
+        }[s.code] || "upd_err_bad",
+      ),
     );
-  else if (!SH.pendingPage && !SH.apkName && SH.lastCheck) out.push(t("upd_ok", fdt(SH.lastCheck)));
-  if (SH.pendingPage) out.push(t("upd_ready", esc(SH.pendingPage)) + bt("restart", "upd_restart"));
-  if (SH.apkName && !busy) out.push(t("upd_apk", esc(SH.apkName)) + bt("install", "upd_install", 1));
+  else if (!SH.pendingPage && !SH.apkName && SH.lastCheck)
+    out.push(t("upd_ok", fdt(SH.lastCheck)));
+  if (SH.pendingPage)
+    out.push(
+      t("upd_ready", esc(SH.pendingPage)) + bt("restart", "upd_restart"),
+    );
+  if (SH.apkName && !busy)
+    out.push(t("upd_apk", esc(SH.apkName)) + bt("install", "upd_install", 1));
   return out.join("<br>");
 }
 /* Everyone sees only the version and what the updater is doing. Tapping the version line 7 times shows the
@@ -1537,7 +1696,8 @@ let route = "overview",
   drawFns = [];
 const kpi = (lab, val, foot) =>
   `<div class="card kpi"><div class="lab">${lab}</div><div class="val num">${val}</div>${foot ? `<div class="foot">${foot}</div>` : ""}</div>`;
-const cnt = (v, pre) => `${pre ? `<small>${esc(pre)}</small>` : ""}<span data-count="${v}">${N(v)}</span>`;
+const cnt = (v, pre) =>
+  `${pre ? `<small>${esc(pre)}</small>` : ""}<span data-count="${v}">${N(v)}</span>`;
 function delta(a, b) {
   if (!b) return "";
   const p = ((a - b) / b) * 100;
@@ -1617,7 +1777,8 @@ function vOverview(hs) {
     <div class="txt"><div class="big">${t("around", fd(s.date))}</div><div style="color:var(--ink-2);font-size:13px">${t("day_of", Math.max(0, since), fc.gap)}</div>
     <div class="facts"><div><b class="num">≈ ${price(Math.round(s.price))}</b>${t("exp_price")}</div><div><b class="num">≈ ${N(s.loaded)}</b>${t("loaded")}</div><div><b class="num">≈ ${money(s.share)}</b>${esc(shareLab())}</div></div>
     <button class="btn small" data-go="forecast" style="margin-top:12px">${t("see_fc")}</button></div></div></div>`;
-  } else hero = `<div class="card"><h2>${t("next_harvest")}</h2><p class="hint">${t("need3")}</p></div>`;
+  } else
+    hero = `<div class="card"><h2>${t("next_harvest")}</h2><p class="hint">${t("need3")}</p></div>`;
   const parts = [
     ["k1", t("loaded"), last.loaded],
     ["k3", t("rejected"), last.rejected],
@@ -1628,7 +1789,9 @@ function vOverview(hs) {
       $("#c-spark"),
       hs.slice(-12).map((h) => h.price),
     );
-    barChart($("#c-nuts"), nutsData(hs.slice(-12)), { label: t("per_harvest_h") });
+    barChart($("#c-nuts"), nutsData(hs.slice(-12)), {
+      label: t("per_harvest_h"),
+    });
   });
   return (
     banner() +
@@ -1660,7 +1823,8 @@ function vOverview(hs) {
 }
 function vMonths(hs) {
   if (!hs.length) return banner() + emptyState();
-  const F = (l, v, c) => `<div class="f ${c || ""}"><span>${l}</span><b class="num">${v}</b></div>`;
+  const F = (l, v, c) =>
+    `<div class="f ${c || ""}"><span>${l}</span><b class="num">${v}</b></div>`;
   return (
     banner() +
     monthly(hs)
@@ -1691,7 +1855,10 @@ function vMonths(hs) {
 function vInsights(all) {
   if (!all.length) return banner() + emptyState();
   const lastMs = pd(all[all.length - 1].date),
-    hs = range === "all" ? all : all.filter((h) => pd(h.date) > lastMs - +range * 30.5 * DAY);
+    hs =
+      range === "all"
+        ? all
+        : all.filter((h) => pd(h.date) > lastMs - +range * 30.5 * DAY);
   const tot = sum(hs.map((h) => h.total)),
     rej = sum(hs.map((h) => h.rejected)),
     paid = sum(hs.map((h) => h.paid)),
@@ -1726,7 +1893,10 @@ function vInsights(all) {
     ["12", t("m12")],
     ["6", t("m6")],
   ]
-    .map((r) => `<button data-range="${r[0]}" aria-pressed="${range === r[0]}">${r[1]}</button>`)
+    .map(
+      (r) =>
+        `<button data-range="${r[0]}" aria-pressed="${range === r[0]}">${r[1]}</button>`,
+    )
     .join("")}</div>
   <div class="grid kpis sm">
     ${kpi(t("avg_price"), cnt(paid ? inc / paid : 0, state.cur), t("per_paid"))}
@@ -1758,7 +1928,10 @@ function vForecast(hs) {
       `<div class="card empty"><h2>${t("fc_none_h")}</h2><p>${t("fc_none_p", hs.length)}</p><button class="btn primary" data-add>${t("add_harvest")}</button></div>`
     );
   const s = fc.steps[0],
-    nmName = MONLS[lang][new Date(fc.nm.start).getUTCMonth()] + " " + new Date(fc.nm.start).getUTCFullYear(),
+    nmName =
+      MONLS[lang][new Date(fc.nm.start).getUTCMonth()] +
+      " " +
+      new Date(fc.nm.start).getUTCFullYear(),
     nmH = fc.nm.harvests,
     pct = (x) => (isFinite(x) ? "±" + (x * 100).toFixed(1) + "%" : "–");
   const mTxt = nmH.length
@@ -1816,7 +1989,11 @@ function vForecast(hs) {
       $("#fc-season"),
       MONS[lang].map((m, i) => {
         const v = seasonF(Date.UTC(2026, i, 15), ampShow) * 100;
-        return { label: m, v, tip: `<b>${MONLS[lang][i]}</b>${t("fm_season_tip", Math.round(v))}` };
+        return {
+          label: m,
+          v,
+          tip: `<b>${MONLS[lang][i]}</b>${t("fm_season_tip", Math.round(v))}`,
+        };
       }),
       [],
       { label: t("fm_season_h"), h: 180 },
@@ -1894,10 +2071,18 @@ function vData() {
 }
 function applyStatic() {
   document.documentElement.lang = lang;
-  document.querySelectorAll("[data-t]").forEach((e) => (e.textContent = t(e.dataset.t)));
-  document.querySelectorAll("[data-tp]").forEach((e) => (e.placeholder = t(e.dataset.tp)));
-  document.querySelectorAll("[data-lang]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.lang === lang));
-  document.querySelectorAll(".curlab").forEach((e) => (e.textContent = state.cur));
+  document
+    .querySelectorAll("[data-t]")
+    .forEach((e) => (e.textContent = t(e.dataset.t)));
+  document
+    .querySelectorAll("[data-tp]")
+    .forEach((e) => (e.placeholder = t(e.dataset.tp)));
+  document
+    .querySelectorAll("[data-lang]")
+    .forEach((b) => b.setAttribute("aria-pressed", b.dataset.lang === lang));
+  document
+    .querySelectorAll(".curlab")
+    .forEach((e) => (e.textContent = state.cur));
   setSync(syncCls, syncKey);
 }
 /* ---------- pages kept in memory ----------
@@ -1907,7 +2092,13 @@ function applyStatic() {
    At start-up the loading screen builds every tab while its animation plays. */
 const pages = {};
 let rendered = false;
-const VIEWS = { overview: vOverview, months: vMonths, insights: vInsights, forecast: vForecast, data: vData };
+const VIEWS = {
+  overview: vOverview,
+  months: vMonths,
+  insights: vInsights,
+  forecast: vForecast,
+  data: vData,
+};
 function invalidate() {
   for (const k in pages) {
     if (k !== route && pages[k].parentNode) pages[k].remove();
@@ -1929,7 +2120,9 @@ function header() {
   document
     .querySelectorAll(".rail [data-go]")
     .forEach((b) =>
-      b.dataset.go === route ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current"),
+      b.dataset.go === route
+        ? b.setAttribute("aria-current", "page")
+        : b.removeAttribute("aria-current"),
     );
 }
 /* Builds tab r and puts it on screen (it must be on screen so the charts can measure their width). */
@@ -1940,16 +2133,22 @@ function build(r, intro) {
   el.innerHTML = VIEWS[r](calc());
   if (pages[r] && pages[r].parentNode) pages[r].replaceWith(el);
   else view.appendChild(el);
-  [...view.children].forEach((c) => !Object.values(pages).includes(c) && c !== el && c.remove());
+  [...view.children].forEach(
+    (c) => !Object.values(pages).includes(c) && c !== el && c.remove(),
+  );
   showPage(el);
   draw(el);
-  if (!intro) el.querySelectorAll(".prog").forEach((c) => (c.style.strokeDashoffset = c.dataset.off));
+  if (!intro)
+    el.querySelectorAll(".prog").forEach(
+      (c) => (c.style.strokeDashoffset = c.dataset.off),
+    );
   pages[r] = el;
   return el;
 }
 function slideIn(el, dir) {
   if (!dir || still() || !el.animate) return;
-  const from = dir === "fade" ? "none" : `translateX(${dir === "back" ? -18 : 18}px)`;
+  const from =
+    dir === "fade" ? "none" : `translateX(${dir === "back" ? -18 : 18}px)`;
   el.animate(
     [
       { opacity: 0, transform: from },
@@ -1971,7 +2170,9 @@ function render(o) {
 }
 function draw(root) {
   widthOf.clear();
-  (root || view).querySelectorAll(".chart,.spark").forEach((el) => widthOf.set(el, el.clientWidth));
+  (root || view)
+    .querySelectorAll(".chart,.spark")
+    .forEach((el) => widthOf.set(el, el.clientWidth));
   drawFns.forEach((f) => {
     try {
       f();
@@ -2036,8 +2237,14 @@ function moveInd() {
 }
 function go(r) {
   if (ROUTES.indexOf(r) < 0) r = "overview";
-  if (r === route && pages[r] && pages[r].classList.contains("on")) return scrollTo(0, 0);
-  const dir = r === route ? "" : ROUTES.indexOf(r) > ROUTES.indexOf(route) ? "fwd" : "back";
+  if (r === route && pages[r] && pages[r].classList.contains("on"))
+    return scrollTo(0, 0);
+  const dir =
+    r === route
+      ? ""
+      : ROUTES.indexOf(r) > ROUTES.indexOf(route)
+        ? "fwd"
+        : "back";
   route = r;
   if (location.hash !== "#" + r) {
     try {
@@ -2053,7 +2260,10 @@ function go(r) {
   slideIn(el, dir);
 }
 function toggleSkin(ev) {
-  const next = document.documentElement.getAttribute("data-skin") === "light" ? "neon" : "light",
+  const next =
+      document.documentElement.getAttribute("data-skin") === "light"
+        ? "neon"
+        : "light",
     bt = $("#skinBtn").getBoundingClientRect();
   const x = ev && ev.clientX ? ev.clientX : bt.left + bt.width / 2,
     y = ev && ev.clientY ? ev.clientY : bt.top + bt.height / 2,
@@ -2072,8 +2282,17 @@ function toggleSkin(ev) {
     tr.ready
       .then(() =>
         document.documentElement.animate(
-          { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },
-          { duration: 560, easing: "cubic-bezier(.65,0,.35,1)", pseudoElement: "::view-transition-new(root)" },
+          {
+            clipPath: [
+              `circle(0px at ${x}px ${y}px)`,
+              `circle(${r}px at ${x}px ${y}px)`,
+            ],
+          },
+          {
+            duration: 560,
+            easing: "cubic-bezier(.65,0,.35,1)",
+            pseudoElement: "::view-transition-new(root)",
+          },
         ),
       )
       .catch(() => {});
@@ -2168,7 +2387,14 @@ function liveCalc() {
     inc = loaded * val("f-price"),
     autoT = total * state.transRate,
     net =
-      inc - sum(CATS.map((c) => (c === "transport" && $("#d-transport").value.trim() === "" ? autoT : val("d-" + c))));
+      inc -
+      sum(
+        CATS.map((c) =>
+          c === "transport" && $("#d-transport").value.trim() === ""
+            ? autoT
+            : val("d-" + c),
+        ),
+      );
   return { taken: loaded, rej, autoT, auto, free, paid: loaded, inc, net };
 }
 function live() {
@@ -2203,13 +2429,16 @@ function openForm(id) {
   $("#dlgTitle").textContent = t(h ? "f_edit" : "f_add");
   $("#delBtn").style.display = h ? "" : "none";
   $("#f-err").textContent = "";
-  $("#freeLab").textContent = state.freePer > 0 ? t("f_free", freeRule()) : t("free");
+  $("#freeLab").textContent =
+    state.freePer > 0 ? t("f_free", freeRule()) : t("free");
   $("#l-shareLab").textContent = shareLab();
   $("#f-date").value = h ? h.date : iso(todayMs());
   $("#f-total").value = h ? h.total : "";
   $("#f-home").value = h && h.home ? h.home : "";
   $("#f-free").value = h && !blank(h.free) ? h.free : "";
-  $("#f-loaded").value = h ? (calc().find((x) => x.id === h.id) || {}).loaded || "" : "";
+  $("#f-loaded").value = h
+    ? (calc().find((x) => x.id === h.id) || {}).loaded || ""
+    : "";
   $("#f-price").value = h ? h.price : "";
   $("#f-note").value = h ? h.note || "" : "";
   $("#f-othernote").value = h ? h.otherNote || "" : "";
@@ -2224,7 +2453,9 @@ function openForm(id) {
 $("#copyLast").onclick = () => {
   const l = prevOf(editId);
   if (!l) return toast(t("t_noprev"));
-  CATS.forEach((c) => ($("#d-" + c).value = blank(l.ded[c]) ? "" : l.ded[c] || ""));
+  CATS.forEach(
+    (c) => ($("#d-" + c).value = blank(l.ded[c]) ? "" : l.ded[c] || ""),
+  );
   $("#f-othernote").value = l.otherNote || "";
   live();
 };
@@ -2240,10 +2471,15 @@ $("#hform").addEventListener("submit", (e) => {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return (err.textContent = t("e_date"));
   if (pr <= 0) return (err.textContent = t("e_price"));
   if (total <= 0) return (err.textContent = t("e_total"));
-  if (lv === "" || val("f-loaded") <= 0) return (err.textContent = t("e_loadreq"));
+  if (lv === "" || val("f-loaded") <= 0)
+    return (err.textContent = t("e_loadreq"));
   if (val("f-loaded") + home > total) return (err.textContent = t("e_loaded"));
-  if (fv !== "" && val("f-free") > liveCalc().taken) return (err.textContent = t("e_free"));
-  if (state.harvests.some((h) => h.date === date && h.id !== editId) && !state.sample)
+  if (fv !== "" && val("f-free") > liveCalc().taken)
+    return (err.textContent = t("e_free"));
+  if (
+    state.harvests.some((h) => h.date === date && h.id !== editId) &&
+    !state.sample
+  )
     return (err.textContent = t("e_dup"));
   if (state.sample) {
     state.harvests = [];
@@ -2251,7 +2487,13 @@ $("#hform").addEventListener("submit", (e) => {
     editId = null;
   }
   const ded = {};
-  CATS.forEach((c) => (ded[c] = c === "transport" && $("#d-transport").value.trim() === "" ? null : val("d-" + c)));
+  CATS.forEach(
+    (c) =>
+      (ded[c] =
+        c === "transport" && $("#d-transport").value.trim() === ""
+          ? null
+          : val("d-" + c)),
+  );
   const by = $("#f-by").value.trim();
   if (by) LS.set(ME, by);
   const rec = {
@@ -2371,13 +2613,19 @@ async function shareFile(name, text) {
 function parseDate(s) {
   s = s.trim();
   let m = s.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})$/);
-  if (m) return m[1] + "-" + m[2].padStart(2, "0") + "-" + m[3].padStart(2, "0");
+  if (m)
+    return m[1] + "-" + m[2].padStart(2, "0") + "-" + m[3].padStart(2, "0");
   m = s.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})$/);
-  if (m) return m[3] + "-" + m[2].padStart(2, "0") + "-" + m[1].padStart(2, "0");
+  if (m)
+    return m[3] + "-" + m[2].padStart(2, "0") + "-" + m[1].padStart(2, "0");
   return null;
 }
 function splitRow(line) {
-  const d = line.includes("\t") ? "\t" : line.includes(";") && !line.includes(",") ? ";" : ",",
+  const d = line.includes("\t")
+      ? "\t"
+      : line.includes(";") && !line.includes(",")
+        ? ";"
+        : ",",
     out = [];
   let cur = "",
     inq = false;
@@ -2410,7 +2658,10 @@ function importText(txt) {
       throw t("i_bad");
     }
     if (!o || !Array.isArray(o.harvests)) throw t("i_notbk");
-    return { replace: Object.assign(o, { sample: false }), count: o.harvests.length };
+    return {
+      replace: Object.assign(o, { sample: false }),
+      count: o.harvests.length,
+    };
   }
   const out = [];
   txt.split(/\r?\n/).forEach((line, ln) => {
@@ -2428,7 +2679,11 @@ function importText(txt) {
     if (n(1) <= 0) throw t("i_count", ln + 1);
     if (n(2) + n(3) > n(1)) throw t("i_sum", ln + 1);
     const ded = {};
-    CATS.forEach((k, i) => (ded[k] = k === "transport" && (c[5 + i] || "") === "" ? null : n(5 + i)));
+    CATS.forEach(
+      (k, i) =>
+        (ded[k] =
+          k === "transport" && (c[5 + i] || "") === "" ? null : n(5 + i)),
+    );
     out.push({
       id: uid(),
       date,
@@ -2538,11 +2793,23 @@ function openReport() {
   repName = "coconut-report-" + iso(todayMs());
   document.body.classList.add("rep");
   $("#report").scrollTop = 0;
-  lineChart($("#r-price"), priceData(hs), [], { label: t("price_chart_h"), w: 720, h: 230 });
-  barChart($("#r-nuts"), nutsData(hs), { label: t("per_harvest_h"), w: 720, h: 230 });
+  lineChart($("#r-price"), priceData(hs), [], {
+    label: t("price_chart_h"),
+    w: 720,
+    h: 230,
+  });
+  barChart($("#r-nuts"), nutsData(hs), {
+    label: t("per_harvest_h"),
+    w: 720,
+    h: 230,
+  });
   barChart(
     $("#r-net"),
-    hs.map((h) => ({ label: fd(h.date, false), segs: [{ v: h.net, cls: h.net < 0 ? "neg" : "s1" }], tip: "" })),
+    hs.map((h) => ({
+      label: fd(h.date, false),
+      segs: [{ v: h.net, cls: h.net < 0 ? "neg" : "s1" }],
+      tip: "",
+    })),
     { label: t("bal_per_h"), w: 720, h: 200 },
   );
 }
@@ -2575,7 +2842,8 @@ function agg(l) {
   };
 }
 function cocoTable(o) {
-  const R = (l, v, c) => `<tr class="${c || ""}"><td>${l}</td><td>${v}</td></tr>`;
+  const R = (l, v, c) =>
+    `<tr class="${c || ""}"><td>${l}</td><td>${v}</td></tr>`;
   return `<table class="st two num"><tbody>${R(t("harvested"), N(o.total))}${R(t("home"), "− " + N(o.home))}${R(t("rejected"), "− " + N(o.rejected))}${R(t("loaded_lab"), N(o.loaded), "tot")}${state.freePer > 0 ? R(t("free") + " (" + freeRule() + ")", N(o.free), "shr") : ""}</tbody></table>`;
 }
 function moneyTable(o) {
@@ -2635,7 +2903,8 @@ function printReport() {
 
 /* ---------- events ---------- */
 function setSkin(s) {
-  if (s === "light") document.documentElement.setAttribute("data-skin", "light");
+  if (s === "light")
+    document.documentElement.setAttribute("data-skin", "light");
   else document.documentElement.removeAttribute("data-skin");
   LS.set("coconut-ledger-skin", s);
   mirror();
@@ -2669,8 +2938,12 @@ document.addEventListener("click", async (e) => {
   if (b.dataset.upd && UPD) {
     const k = b.dataset.upd,
       inp = $("#u-link");
-    if (k === "save" || (k === "check" && inp && inp.value.trim() !== (SH.updateUrl || ""))) {
-      if (NB.setUpdateUrl(inp ? inp.value : "") !== "ok") return toast(t("upd_badlink"));
+    if (
+      k === "save" ||
+      (k === "check" && inp && inp.value.trim() !== (SH.updateUrl || ""))
+    ) {
+      if (NB.setUpdateUrl(inp ? inp.value : "") !== "ok")
+        return toast(t("upd_badlink"));
       readShell();
       if (k === "save") {
         const el = $("#updSt");
@@ -2713,9 +2986,15 @@ document.addEventListener("click", async (e) => {
     }
     return;
   }
-  if (b.dataset.exp === "share") return shareFile("coconut-harvests-" + iso(todayMs()) + ".csv", toCSV());
-  if (b.dataset.exp === "json") return saveFile("coconut-backup-" + iso(todayMs()) + ".json", JSON.stringify(state));
-  if (b.dataset.exp === "csv") return saveFile("coconut-harvests-" + iso(todayMs()) + ".csv", toCSV());
+  if (b.dataset.exp === "share")
+    return shareFile("coconut-harvests-" + iso(todayMs()) + ".csv", toCSV());
+  if (b.dataset.exp === "json")
+    return saveFile(
+      "coconut-backup-" + iso(todayMs()) + ".json",
+      JSON.stringify(state),
+    );
+  if (b.dataset.exp === "csv")
+    return saveFile("coconut-harvests-" + iso(todayMs()) + ".csv", toCSV());
   if (b.dataset.exp === "copy") {
     try {
       await navigator.clipboard.writeText(JSON.stringify(state));
@@ -2749,7 +3028,10 @@ document.addEventListener("change", (e) => {
 });
 
 if (LS.get("coconut-ledger-skin") === "light") setSkin("light");
-route = ROUTES.indexOf(location.hash.slice(1)) >= 0 ? location.hash.slice(1) : "overview";
+route =
+  ROUTES.indexOf(location.hash.slice(1)) >= 0
+    ? location.hash.slice(1)
+    : "overview";
 readShell();
 /* Start-up: the loading screen plays while every tab is built and kept in memory. */
 (async function boot() {
@@ -2768,7 +3050,10 @@ readShell();
     }
     if (bar) bar.style.transform = `scaleX(${(i + 1) / (order.length + 1)})`;
   }
-  if (loader && !still()) await new Promise((res) => setTimeout(res, Math.max(0, 2150 - (performance.now() - t0))));
+  if (loader && !still())
+    await new Promise((res) =>
+      setTimeout(res, Math.max(0, 2150 - (performance.now() - t0))),
+    );
   header();
   const el = build(route, true);
   rendered = true;
@@ -2777,7 +3062,9 @@ readShell();
   countUp();
   requestAnimationFrame(() =>
     requestAnimationFrame(() =>
-      el.querySelectorAll(".prog").forEach((c) => (c.style.strokeDashoffset = c.dataset.off)),
+      el
+        .querySelectorAll(".prog")
+        .forEach((c) => (c.style.strokeDashoffset = c.dataset.off)),
     ),
   );
   /* once the opening animation is over, the page behaves like every other kept page */
@@ -2810,7 +3097,8 @@ document.addEventListener("visibilitychange", () => {
 });
 /* The Android app asks this before swapping in a new version in the background. */
 window.canReload = () => {
-  if (dlg.open || ask.open || document.body.classList.contains("rep")) return false;
+  if (dlg.open || ask.open || document.body.classList.contains("rep"))
+    return false;
   const a = document.activeElement;
   if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return false;
   const imp = $("#imp");
