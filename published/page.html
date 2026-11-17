@@ -95,6 +95,8 @@ body {
   font-size: 15px;
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
+  -webkit-user-select: text;
+  user-select: text;
 }
 body::before {
   content: "";
@@ -1421,7 +1423,7 @@ label.fld.lead input {
   font-weight: 700;
   color: var(--accent);
 }
-label.fld input:focus,
+label.fld input:not([type="checkbox"]):focus,
 textarea:focus {
   outline: 2px solid var(--accent);
   outline-offset: 0;
@@ -3255,6 +3257,10 @@ const L = {
     sync_set_active: "Open estate",
     sync_active: "Active estate",
     sync_sync_now: "Sync now",
+    sync_copy_invite: "Copy invite code",
+    sync_invite_copied: "Invite code copied",
+    sync_copy_failed: "Could not copy the invite code. Select the code and copy it manually.",
+    sync_role_saved_refresh_failed: "Role saved, but the member list could not refresh: {0}. Tap Sync now to refresh.",
     sync_new_invite: "Create 24-hour invite",
     sync_invite_created: "Invite created. Share it only with the intended person; owner approval is still required.",
     sync_invites: "Active invites",
@@ -3735,7 +3741,7 @@ const L = {
     upd_err_bad: "The link does not point to a valid update.json file.",
     upd_applied: "Updated to version {0}",
     upd_security_applied: "Major security update {0} installed automatically. No action is needed.",
-    upd_banner: "Android app version {0} is ready to install.",
+    upd_banner: "Update available: Android version {0}. Tap Install to get the latest app.",
     upd_saved: "Link saved",
     upd_badlink: "The link must start with https://",
     dev_sync_settings: "Estate sync connection",
@@ -3790,6 +3796,10 @@ const L = {
     sync_set_active: "වත්ත විවෘත කරන්න",
     sync_active: "දැනට භාවිත වත්ත",
     sync_sync_now: "දැන් සමමුහුර්ත කරන්න",
+    sync_copy_invite: "ආරාධනා කේතය පිටපත් කරන්න",
+    sync_invite_copied: "ආරාධනා කේතය පිටපත් වුණා",
+    sync_copy_failed: "ආරාධනා කේතය පිටපත් කළ නොහැකි විය. කේතය තෝරා අතින් පිටපත් කරන්න.",
+    sync_role_saved_refresh_failed: "භූමිකාව සුරැකුණා, නමුත් සාමාජික ලැයිස්තුව යාවත්කාලීන කළ නොහැකි විය: {0}. යාවත්කාලීන කිරීමට දැන් සමමුහුර්ත කරන්න ඔබන්න.",
     sync_new_invite: "පැය 24ක ආරාධනයක් සාදන්න",
     sync_invite_created: "ආරාධනය සෑදුණා. එය අදහස් කළ පුද්ගලයාට පමණක් යවන්න; හිමිකරුගේ අනුමැතිය තවම අවශ්‍යයි.",
     sync_invites: "සක්‍රිය ආරාධනා",
@@ -4266,7 +4276,7 @@ const L = {
     upd_err_bad: "සබැඳිය වලංගු update.json ගොනුවකට යොමු නොවේ.",
     upd_applied: "සංස්කරණය {0} දක්වා යාවත්කාලීන විය",
     upd_security_applied: "ප්‍රධාන ආරක්ෂක යාවත්කාලීනය {0} ස්වයංක්‍රීයව ස්ථාපනය විය. ඔබට කිසිවක් කිරීමට අවශ්‍ය නැත.",
-    upd_banner: "Android යෙදුම් සංස්කරණය {0} ස්ථාපනයට සූදානම්.",
+    upd_banner: "යාවත්කාලීනයක් ඇත: Android සංස්කරණය {0}. නවතම යෙදුම ලබා ගැනීමට ස්ථාපනය කරන්න ඔබන්න.",
     upd_saved: "සබැඳිය සුරැකුණා",
     upd_badlink: "සබැඳිය https:// වලින් පටන් ගත යුතුයි.",
     dev_sync_settings: "වතු සමමුහුර්ත සම්බන්ධතාව",
@@ -4331,7 +4341,7 @@ const t = (k, ...a) => {
   return s;
 };
 
-const VER = "1.9.0";
+const VER = "1.9.1";
 const SECURITY_NOTICE_VERSION = "1.8.5";
 /* Your company, shown at the bottom of the Data tab. Leave it empty to show the app name instead. */
 const COMPANY = "CyberTech Lanka";
@@ -4532,7 +4542,9 @@ let estateSyncState = {
   busy: false,
 };
 let estateSyncTimer = 0,
-  estateSyncRunning = false;
+  estateSyncRunning = false,
+  estateSyncQueued = false,
+  estateSyncQueuedToast = false;
 const MEMBER_ROLES = ["member_1", "member_2", "member_3", "member_4", "member_5"],
   MEMBER_FEATURES = ["overview", "months", "insights", "forecast"],
   FEATURE_LABELS = {
@@ -4554,6 +4566,24 @@ function canViewEstateRoute(routeName) {
   if (!estateSyncState.active || !accessReady) return routeName === "months";
   if (estateSyncState.active.role === "owner" || estateSyncState.active.role === "manager") return true;
   return routeName === "months" || estateSyncState.features.includes(routeName);
+}
+async function copyTextToClipboard(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return;
+    } catch (error) {}
+  }
+  const field = document.createElement("textarea");
+  field.value = text;
+  field.setAttribute("readonly", "");
+  field.style.position = "fixed";
+  field.style.opacity = "0";
+  document.body.appendChild(field);
+  field.select();
+  const copied = typeof document.execCommand === "function" && document.execCommand("copy");
+  field.remove();
+  if (!copied) throw new Error(t("sync_copy_failed"));
 }
 function defaultEstateRoute() {
   return activeEstateId ? "months" : "overview";
@@ -4760,17 +4790,23 @@ function scheduleEstateSync() {
   estateSyncTimer = setTimeout(() => syncEstateNow(false), 1200);
 }
 async function syncEstateNow(showToast) {
-  if (!ESTATE_SYNC || !activeEstateId || estateSyncRunning || !ESTATE_SYNC.publicStatus().signedIn) return;
+  if (!ESTATE_SYNC || !activeEstateId || !ESTATE_SYNC.publicStatus().signedIn) return;
+  if (estateSyncRunning) {
+    estateSyncQueued = true;
+    estateSyncQueuedToast = estateSyncQueuedToast || !!showToast;
+    return;
+  }
   estateSyncRunning = true;
   estateSyncState.busy = true;
   estateSyncState.error = "";
   setSync("busy", "sync_busy");
   if (route === "data") render();
+  const estateId = activeEstateId,
+    storageKey = stateStorageKey;
   try {
-    const estateId = activeEstateId,
-      storageKey = stateStorageKey,
-      estates = await ESTATE_SYNC.listEstates(),
-      membership = estates.find((item) => item.estate_id === estateId);
+    const estates = await ESTATE_SYNC.listEstates();
+    if (activeEstateId !== estateId || stateStorageKey !== storageKey) return;
+    const membership = estates.find((item) => item.estate_id === estateId);
     if (!membership) {
       estateSyncState.estates = estates;
       estateSyncState.active = null;
@@ -4789,7 +4825,7 @@ async function syncEstateNow(showToast) {
     if (!Array.isArray(features) || features.some((feature) => !MEMBER_FEATURES.includes(feature)))
       throw new Error("The estate service returned invalid feature permissions.");
     estateSyncState.features = checkedEstateFeatures(features);
-    estateSyncState.roleFeatures = role === "owner" ? await ESTATE_SYNC.listRoleFeatures(estateId) : [];
+    if (role !== "owner") estateSyncState.roleFeatures = [];
     accessReady = true;
     const scope = role + ":" + estateSyncState.features.join(",");
     if (previousScope && previousScope !== scope) invalidateAllViews();
@@ -4924,6 +4960,7 @@ async function syncEstateNow(showToast) {
         });
       }
     }
+    if (activeEstateId !== estateId || stateStorageKey !== storageKey) return;
     const latestRows = changes.length ? await ESTATE_SYNC.listRecords(estateId) : remoteRows;
     const nextBase = {};
     latestRows.forEach((row) => {
@@ -4941,13 +4978,18 @@ async function syncEstateNow(showToast) {
     header();
     setSync("ok", "sync_ok");
     if (route === "data") {
-      await refreshEstatePanel();
+      try {
+        await refreshEstatePanel();
+      } catch (error) {
+        if (activeEstateId === estateId && stateStorageKey === storageKey)
+          estateSyncState.error = estateErrorText(error);
+      }
       render();
     } else if (apply.length) render();
     if (showToast) toast(t("sync_ok"));
   } catch (error) {
+    if (activeEstateId !== estateId || stateStorageKey !== storageKey) return;
     estateSyncState.error = estateErrorText(error);
-    accessReady = false;
     invalidateAllViews();
     header();
     go(canViewEstateRoute(route) ? route : "months");
@@ -4957,6 +4999,14 @@ async function syncEstateNow(showToast) {
   } finally {
     estateSyncRunning = false;
     estateSyncState.busy = false;
+    const syncButton = $("#estateSyncNow");
+    if (syncButton) syncButton.disabled = false;
+    if (estateSyncQueued) {
+      const queuedToast = estateSyncQueuedToast;
+      estateSyncQueued = false;
+      estateSyncQueuedToast = false;
+      void syncEstateNow(queuedToast);
+    }
   }
 }
 async function activateEstate(estateId, migrateLocal = true) {
@@ -5056,33 +5106,41 @@ async function useLocalLedger() {
 }
 async function refreshEstatePanel() {
   if (!ESTATE_SYNC || !ESTATE_SYNC.publicStatus().signedIn) return;
+  const estateId = activeEstateId;
   const previousScope = estateSyncState.active
     ? estateSyncState.active.role + ":" + estateSyncState.features.slice().sort().join(",")
     : "";
-  estateSyncState.estates = await ESTATE_SYNC.listEstates();
-  const active = estateSyncState.estates.find((item) => item.estate_id === activeEstateId);
+  const estates = await ESTATE_SYNC.listEstates();
+  if (activeEstateId !== estateId) return;
+  estateSyncState.estates = estates;
+  const active = estateSyncState.estates.find((item) => item.estate_id === estateId);
   estateSyncState.active = active || null;
   const features = active
     ? ["owner", "manager"].includes(active.role)
       ? MEMBER_FEATURES.slice()
-      : await ESTATE_SYNC.getFeatures(activeEstateId)
+      : await ESTATE_SYNC.getFeatures(estateId)
     : [];
+  if (activeEstateId !== estateId) return;
   estateSyncState.features = active ? checkedEstateFeatures(features) : [];
+  accessReady = true;
   estateSyncState.roleFeatures =
-    active && active.role === "owner" ? await ESTATE_SYNC.listRoleFeatures(activeEstateId) : [];
+    active && active.role === "owner" ? await ESTATE_SYNC.listRoleFeatures(estateId) : [];
+  if (activeEstateId !== estateId) return;
   const nextScope = active ? active.role + ":" + estateSyncState.features.slice().sort().join(",") : "";
   if (previousScope && previousScope !== nextScope) invalidateAllViews();
-  if (active) prepareMemberAccess(activeEstateId, active.role, estateSyncState.features);
-  estateSyncState.requests = active && active.role === "owner" ? await ESTATE_SYNC.listRequests(activeEstateId) : [];
-  estateSyncState.invites = active && active.role === "owner" ? await ESTATE_SYNC.listInvites(activeEstateId) : [];
+  if (active) prepareMemberAccess(estateId, active.role, estateSyncState.features);
+  estateSyncState.requests = active && active.role === "owner" ? await ESTATE_SYNC.listRequests(estateId) : [];
+  if (activeEstateId !== estateId) return;
+  estateSyncState.invites = active && active.role === "owner" ? await ESTATE_SYNC.listInvites(estateId) : [];
+  if (activeEstateId !== estateId) return;
   if (
     estateSyncState.invite &&
     !estateSyncState.invites.some((invite) => invite.invite_id === estateSyncState.invite.invite_id)
   )
     estateSyncState.invite = null;
   estateSyncState.members =
-    active && ["owner", "manager"].includes(active.role) ? await ESTATE_SYNC.listMembers(activeEstateId) : [];
-  accessReady = true;
+    active && ["owner", "manager"].includes(active.role) ? await ESTATE_SYNC.listMembers(estateId) : [];
+  if (activeEstateId !== estateId) return;
   header();
   if (!canViewEstateRoute(route)) go(defaultEstateRoute());
   else if (previousScope && previousScope !== nextScope) render();
@@ -5137,7 +5195,7 @@ function estateSyncCard() {
         <h3>${t("sync_active")}: ${esc(estateSyncState.active.estates.name)}</h3>
         <div class="btnrow"><button class="btn" id="estateSyncNow" ${estateSyncState.busy ? "disabled" : ""}>${t("sync_sync_now")}</button>
           ${estateSyncState.active.role === "owner" ? `<button class="btn" id="estateNewInvite">${t("sync_new_invite")}</button>` : ""}</div>
-        ${estateSyncState.invite ? `<p>${t("sync_invite_created")}</p><p><code>${esc(estateSyncState.invite.invite_code)}</code></p><p class="hint">${t("sync_invite_expires", esc(new Date(estateSyncState.invite.expires_at).toLocaleString()))}</p>` : ""}
+        ${estateSyncState.invite ? `<p>${t("sync_invite_created")}</p><p><code>${esc(estateSyncState.invite.invite_code)}</code> <button class="btn small" data-copy-invite>${t("sync_copy_invite")}</button></p><p class="hint">${t("sync_invite_expires", esc(new Date(estateSyncState.invite.expires_at).toLocaleString()))}</p>` : ""}
         ${estateSyncState.active.role === "owner" && estateSyncState.invites.length ? `<h3>${t("sync_invites")}</h3>${estateSyncState.invites.map((invite) => `<div class="fields member-row"><span>${esc(new Date(invite.expires_at).toLocaleString())}</span><button class="btn small danger" data-revoke-invite="${esc(invite.invite_id)}">${t("sync_revoke_invite")}</button></div>`).join("")}` : ""}
         ${estateSyncState.error ? `<p class="err">${esc(estateSyncState.error)}</p>` : ""}
         ${estateSyncState.active.role === "owner" ? `<h3>${t("sync_pending_requests")}</h3><p class="hint">${t("sync_approve_hint")}</p>
@@ -6341,6 +6399,7 @@ function vMemberMonths() {
     totals.set(month, (totals.get(month) || 0) + (Number(harvest.total) || 0));
   });
   return (
+    apkBanner() +
     `<div class="grid stag"><p class="hint">${t("sync_member_readonly")}</p>` +
     (rows.length
       ? Array.from(totals, ([month, total]) => {
@@ -8036,6 +8095,11 @@ document.addEventListener("click", async (e) => {
     });
   if (b.id === "estateActivate") return runEstateAction(() => activateEstate($("#estateSelect").value));
   if (b.id === "estateSyncNow") return runEstateAction(() => syncEstateNow(true));
+  if (b.dataset.copyInvite)
+    return runEstateAction(async () => {
+      if (!estateSyncState.invite) throw new Error(t("sync_copy_failed"));
+      await copyTextToClipboard(estateSyncState.invite.invite_code);
+    }, "sync_invite_copied");
   if (b.id === "estateNewInvite")
     return runEstateAction(async () => {
       estateSyncState.invite = await ESTATE_SYNC.createInvite(activeEstateId);
@@ -8340,8 +8404,27 @@ document.addEventListener("change", (e) => {
   }
   if (e.target.matches("[data-member-role]"))
     runEstateAction(async () => {
-      await ESTATE_SYNC.changeRole(activeEstateId, e.target.dataset.memberRole, e.target.value);
-      await refreshEstatePanel();
+      const control = e.target,
+        estateId = activeEstateId,
+        memberId = control.dataset.memberRole,
+        requestedRole = control.value,
+        actorRole = estateSyncState.active?.role,
+        member = estateSyncState.members.find((item) => item.user_id === memberId),
+        allowedRoles = actorRole === "manager" ? MEMBER_ROLES : ["manager", ...MEMBER_ROLES];
+      if (
+        !member ||
+        member.role === "owner" ||
+        !allowedRoles.includes(requestedRole) ||
+        (actorRole === "manager" && !MEMBER_ROLES.includes(member.role))
+      )
+        throw new Error(t("sync_role_denied"));
+      await ESTATE_SYNC.changeRole(estateId, memberId, requestedRole);
+      try {
+        await refreshEstatePanel();
+      } catch (error) {
+        if (activeEstateId === estateId)
+          estateSyncState.error = t("sync_role_saved_refresh_failed", estateErrorText(error));
+      }
     });
 });
 

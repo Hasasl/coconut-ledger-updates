@@ -88,6 +88,8 @@ body {
   font-size: 15px;
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
+  -webkit-user-select: text;
+  user-select: text;
 }
 body::before {
   content: "";
@@ -1414,7 +1416,7 @@ label.fld.lead input {
   font-weight: 700;
   color: var(--accent);
 }
-label.fld input:focus,
+label.fld input:not([type="checkbox"]):focus,
 textarea:focus {
   outline: 2px solid var(--accent);
   outline-offset: 0;

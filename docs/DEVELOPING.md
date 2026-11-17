@@ -38,6 +38,8 @@ a join request, and an estate owner must approve every request before the accoun
 Users without an active estate membership keep full local app access and can create an estate; its creator
 becomes the owner. A previously selected estate is restored only after the signed-in account's membership
 is confirmed.
+While the app is open, local edits are debounced for sync and the active estate is checked every 30 seconds;
+**Sync now** requests an immediate refresh. This is foreground syncing, not background push.
 
 Before using real estate data:
 
