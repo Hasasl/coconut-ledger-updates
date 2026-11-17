@@ -3,10 +3,41 @@
   const CONFIG_KEY = "coconut-ledger-sync-config-v1",
     SESSION_KEY = "coconut-ledger-sync-session-v1",
     STORE_KEY = "coconut-ledger-sync-store-v1",
+    REQUEST_TIMEOUT_MS = 15000,
     DEFAULT_CONFIG = Object.freeze({
       url: "https://ukmyztfewlklzitmpccc.supabase.co",
       anonKey: "sb_publishable_Y2p8MJP4de_Lqz1TZGfl0w_YFGXzxh6",
     });
+
+  async function fetchWithTimeout(url, options) {
+    const controller = typeof AbortController === "function" ? new AbortController() : null;
+    let timer = controller ? setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS) : null,
+      responseReceived = false;
+    try {
+      const response = await fetch(url, controller ? { ...options, signal: controller.signal } : options),
+        readText = response.text.bind(response);
+      responseReceived = true;
+      response.text = async () => {
+        try {
+          return await readText();
+        } catch (error) {
+          if (controller && controller.signal.aborted)
+            throw new Error("Sync request timed out. Check your connection and try again.");
+          throw error;
+        } finally {
+          if (timer !== null) clearTimeout(timer);
+          timer = null;
+        }
+      };
+      return response;
+    } catch (error) {
+      if (controller && controller.signal.aborted)
+        throw new Error("Sync request timed out. Check your connection and try again.");
+      throw error;
+    } finally {
+      if (!responseReceived && timer !== null) clearTimeout(timer);
+    }
+  }
 
   function read(key, fallback) {
     try {
@@ -94,7 +125,7 @@
   }
   async function authRequest(path, body) {
     if (!config) throw new Error("Configure the estate sync connection first.");
-    const response = await fetch(config.url + "/auth/v1/" + path, {
+    const response = await fetchWithTimeout(config.url + "/auth/v1/" + path, {
       method: "POST",
       headers: authHeaders(),
       body: JSON.stringify(body),
@@ -126,7 +157,7 @@
   async function api(path, options, includeResponse) {
     const active = await currentSession();
     if (!active) throw new Error("Sign in to sync this estate.");
-    const response = await fetch(config.url + path, {
+    const response = await fetchWithTimeout(config.url + path, {
       ...options,
       headers: {
         ...authHeaders(active.access_token),
@@ -137,7 +168,7 @@
       session.expires_at = 0;
       const renewed = await currentSession();
       if (!renewed) throw new Error("Your session expired. Sign in again to sync this estate.");
-      const retry = await fetch(config.url + path, {
+      const retry = await fetchWithTimeout(config.url + path, {
         ...options,
         headers: {
           ...authHeaders(renewed.access_token),
@@ -170,7 +201,7 @@
     let logoutError;
     try {
       if (session && session.access_token && config) {
-        const response = await fetch(config.url + "/auth/v1/logout", {
+        const response = await fetchWithTimeout(config.url + "/auth/v1/logout", {
           method: "POST",
           headers: authHeaders(session.access_token),
         });
@@ -326,7 +357,7 @@
     }
     throw new Error("Estate records changed while downloading. Try syncing again.");
   }
-  async function submitChanges(estateId, changes) {
+  async function submitChanges(estateId, changes, rpcName = "sync_estate_records") {
     if (!changes.length) return { ok: true, records: [] };
     const batches = [];
     let batch = [],
@@ -347,7 +378,7 @@
     const records = [],
       conflicts = [];
     for (const changesInBatch of batches) {
-      const result = await rpc("sync_estate_records", {
+      const result = await rpc(rpcName, {
         p_estate_id: estateId,
         p_changes: changesInBatch,
       });
@@ -388,6 +419,8 @@
     manageAccount,
     listRecords,
     submitChanges,
+    submitDeviceChanges: (estateId, changes) =>
+      submitChanges(estateId, changes, "sync_estate_records_from_device"),
     storeFor,
     saveStore,
     currentSession,

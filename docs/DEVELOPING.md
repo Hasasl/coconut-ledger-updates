@@ -38,17 +38,17 @@ a join request, and an estate owner must approve every request before the accoun
 Users without an active estate membership keep full local app access and can create an estate; its creator
 becomes the owner. A previously selected estate is restored only after the signed-in account's membership
 is confirmed.
-While the app is open, local edits are debounced for sync and the active estate is checked every 30 seconds;
-**Sync now** requests an immediate refresh. Owners also refresh pending join requests while the app is open
+While the app is open, local edits are debounced for sync and estate data is refreshed every 10 seconds;
+**Sync now** requests an immediate refresh. Owners also refresh pending join requests every 30 seconds
 and when **Data** is opened; a new request shows an in-app notice. This is foreground syncing, not background push.
 
 Before using real estate data:
 
 1. Create a Supabase project and configure email/password authentication and email confirmation.
 2. In the Supabase SQL Editor, run these migrations in order, once each:
-   `202611170001_estate_sync.sql`, `202611172001_add_member_roles.sql`, and
-   `202611172002_role_access_controls.sql`, and
-   `202611180001_restrict_estate_membership_visibility.sql`. Do not rerun an already-applied migration.
+   `202611170001_estate_sync.sql`, `202611172001_add_member_roles.sql`,
+   `202611172002_role_access_controls.sql`, `202611180001_restrict_estate_membership_visibility.sql`,
+   and `202611180002_manager_device_sync.sql`. Do not rerun an already-applied migration.
 3. The project's URL and public publishable/anon key are bundled into `web/sync.js`. They are public
    client settings, not secrets; never bundle a `service_role` or `sb_secret` key. To inspect or change
    these settings on a device, open **Data > App updates** and tap the app version line seven times.
@@ -64,14 +64,17 @@ Before using real estate data:
    through the Supabase dashboard or CLI before enabling global account actions.
 6. Test with separate owner, manager, and member accounts before migrating production records. Verify
    that member roles can only see enabled tabs, that restricted members receive only harvest dates and
-   coconut counts, that managers cannot change ledger records or elevate users, and that role changes
-   take effect on other devices.
+   coconut counts, that managers cannot edit ledger records through normal app actions or elevate users,
+   and that the explicit **Use this device's data** action merges records with conflict review. Confirm
+   role changes take effect on other devices during the foreground refresh.
 
 Owners can approve requests as Manager or Member 1–5. Owners control each Member role's analytical
 tabs; the monthly harvest-date and coconut-count view is always available. Members cannot open the
 Data management tab. Managers can view every tab and
-manage, suspend, or remove Member 1–5 accounts, but cannot edit ledger records, promote anyone to
-Manager/Owner, approve join requests, or change feature visibility. Member 1–5 accounts are read-only.
+manage, suspend, or remove Member 1–5 accounts, but cannot edit ledger records through normal app
+actions, promote anyone to Manager/Owner, approve join requests, or change feature visibility. Managers can publish pending
+on-device estate changes only through the explicit, confirmed **Use this device's data** merge action;
+conflicting records require review. Member 1–5 accounts are read-only.
 The database denies direct record reads and exposes only an authorized, role-filtered read function.
 Global ban/delete actions are owner-only and require the deployed Edge Function. Accounts that own an
 estate cannot be globally banned or deleted; transfer ownership first. Visibility reductions purge the
@@ -204,8 +207,9 @@ Press **Ctrl+Shift+O** in VS Code to jump to a function by name.
   and the signed-in user's session.
 - `supabase/migrations/202611170001_estate_sync.sql` contains the schema, row-level security policies
   and initial owner-gated RPCs. Apply the incremental migrations in timestamp order; the role-access
-  migration removes direct authenticated record reads and adds the filtered record RPC. The latest
-  migration limits direct membership reads to the signed-in user's own active role.
+  migration removes direct authenticated record reads and adds the filtered record RPC. Incremental
+  migrations restrict membership visibility and add the explicit Manager device-sync RPC without
+  enabling ordinary Manager writes.
 - `supabase/functions/manage-account/index.ts` performs owner-verified global account actions. Its
   service-role key must remain a server-side Supabase secret and must never be bundled into the app.
 

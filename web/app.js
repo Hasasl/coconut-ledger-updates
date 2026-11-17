@@ -22,7 +22,7 @@ const L = {
     sync_fail: "Sync failed, saved on this device",
     estate_sync_title: "Estate sharing and sync",
     estate_sync_hint:
-      "Connection is preconfigured. Each person signs in with their own account; only approved members can access estate records.",
+      "Connection is preconfigured. Each person signs in with their own account; only approved members can access estate records. While the app is open, devices refresh estate data every 10 seconds.",
     sync_connection_public:
       "These are public client settings, not secrets. Never use a service-role key; Supabase row-level security protects estate data.",
     supabase_url: "Supabase project URL",
@@ -55,6 +55,9 @@ const L = {
     sync_set_active: "Open estate",
     sync_active: "Active estate",
     sync_sync_now: "Sync now",
+    sync_device_data: "Use this device's data",
+    sync_device_data_confirm:
+      "Merge this device's local ledger into the active estate? Shared records will not be deleted; conflicting records will be shown for review.",
     sync_copy_invite: "Copy invite code",
     sync_invite_copied: "Invite code copied",
     sync_copy_failed: "Could not copy the invite code. Select the code and copy it manually.",
@@ -110,6 +113,7 @@ const L = {
     sync_conflicts: "Records need review",
     sync_conflict_hint:
       "Both this device and another approved device changed the same record. Choose which version to keep; neither version is discarded until you choose.",
+    sync_manager_publish_hint: "Managers can publish pending changes only with the explicit device-data merge action.",
     sync_not_ready: "Estate sync is unavailable until Supabase is configured.",
     sync_not_signed_in: "Sign in to manage estate sync.",
     sync_read_only: "This account has view-only access to the active estate.",
@@ -564,7 +568,7 @@ const L = {
     sync_fail: "Cloud එකට සුරැකීම අසාර්ථකයි, උපාංගයේ සුරැකුණා",
     estate_sync_title: "වතු දත්ත බෙදාගැනීම සහ සමමුහුර්ත කිරීම",
     estate_sync_hint:
-      "සම්බන්ධතාව කලින් සකසා ඇත. සෑම අයෙකුම තමන්ගේ ගිණුමෙන් ඇතුළු වේ; අනුමත සාමාජිකයන්ට පමණක් වතු දත්ත වෙත පිවිසිය හැක.",
+      "සම්බන්ධතාව කලින් සකසා ඇත. සෑම අයෙකුම තමන්ගේ ගිණුමෙන් ඇතුළු වේ; අනුමත සාමාජිකයන්ට පමණක් වතු දත්ත වෙත පිවිසිය හැක. යෙදුම විවෘතව තිබියදී උපාංග සෑම තත්පර 10කට වරක් වතු දත්ත යාවත්කාලීන කරයි.",
     sync_connection_public:
       "මේවා රහස් නොවන පොදු client සැකසුම්ය. service-role යතුර කිසිවිටෙක භාවිත නොකරන්න; වතු දත්ත ආරක්ෂා කරන්නේ Supabase row-level security මඟිනි.",
     supabase_url: "Supabase ව්‍යාපෘති URL",
@@ -597,6 +601,9 @@ const L = {
     sync_set_active: "වත්ත විවෘත කරන්න",
     sync_active: "දැනට භාවිත වත්ත",
     sync_sync_now: "දැන් සමමුහුර්ත කරන්න",
+    sync_device_data: "මෙම උපාංගයේ දත්ත භාවිත කරන්න",
+    sync_device_data_confirm:
+      "මෙම උපාංගයේ දේශීය ලෙජරය දැනට භාවිත වත්තට එක් කරන්නද? බෙදාගත් වාර්තා මකා නොදමන අතර, ගැටුම් ඇති වාර්තා සමාලෝචනය සඳහා පෙන්වනු ඇත.",
     sync_copy_invite: "ආරාධනා කේතය පිටපත් කරන්න",
     sync_invite_copied: "ආරාධනා කේතය පිටපත් වුණා",
     sync_copy_failed: "ආරාධනා කේතය පිටපත් කළ නොහැකි විය. කේතය තෝරා අතින් පිටපත් කරන්න.",
@@ -649,6 +656,7 @@ const L = {
     sync_conflicts: "වාර්තා සමාලෝචනය අවශ්‍යයි",
     sync_conflict_hint:
       "මෙම උපාංගය සහ වෙනත් අනුමත උපාංගයක් එකම වාර්තාව වෙනස් කර ඇත. තබාගත යුතු සංස්කරණය තෝරන්න; ඔබ තෝරන තුරු කිසිදු සංස්කරණයක් ඉවත් නොවේ.",
+    sync_manager_publish_hint: "කළමනාකරුවන්ට ඉතිරි වෙනස්කම් බෙදාගත හැක්කේ පැහැදිලි උපාංග-දත්ත ඒකාබද්ධ කිරීමේ ක්‍රියාවෙන් පමණි.",
     sync_not_ready: "Supabase සකස් කරන තුරු වතු සමමුහුර්ත කිරීම ලබාගත නොහැක.",
     sync_not_signed_in: "වතු සමමුහුර්ත කිරීම කළමනාකරණය කිරීමට ඇතුළු වන්න.",
     sync_read_only: "මෙම ගිණුමට දැනට භාවිත වත්ත බැලීමට පමණක් අවසර ඇත.",
@@ -1346,6 +1354,7 @@ let estateSyncTimer = 0,
   estateSyncRunning = false,
   estateSyncQueued = false,
   estateSyncQueuedToast = false,
+  estateSyncQueuedDeviceData = false,
   estateRequestsEstateId = "",
   estateInviteRunning = false;
 const MEMBER_ROLES = ["member_1", "member_2", "member_3", "member_4", "member_5"],
@@ -1473,6 +1482,34 @@ function applyEstateRecord(target, type, id, payload) {
 function estatePayload(row) {
   return row && !row.deleted_at ? row.payload : null;
 }
+function planDeviceLedgerMerge(deviceRecords, remoteRows, existingConflicts) {
+  const remote = new Map(
+      remoteRows.map((row) => [
+        row.record_type + ":" + row.record_id,
+        { revision: Number(row.revision), payload: estatePayload(row) },
+      ]),
+    ),
+    conflicts = new Map(existingConflicts.map((item) => [item.key, item])),
+    staged = [];
+  deviceRecords.forEach((record, key) => {
+    const remoteRecord = remote.get(key);
+    if (conflicts.has(key) || (remoteRecord && stableJson(record.payload) === stableJson(remoteRecord.payload)))
+      return;
+    const [recordType, ...idParts] = key.split(":"),
+      recordId = idParts.join(":");
+    staged.push({ recordType, recordId, payload: record.payload });
+    if (remoteRecord)
+      conflicts.set(key, {
+        key,
+        recordType,
+        recordId,
+        localPayload: record.payload,
+        remotePayload: remoteRecord.payload,
+        remoteRevision: remoteRecord.revision,
+      });
+  });
+  return { staged, conflicts: Array.from(conflicts.values()) };
+}
 function sanitizeMemberLedger() {
   const previous = state,
     harvests = previous.sample ? [] : previous.harvests || [];
@@ -1594,11 +1631,14 @@ function scheduleEstateSync() {
   clearTimeout(estateSyncTimer);
   estateSyncTimer = setTimeout(() => syncEstateNow(false), 1200);
 }
-async function syncEstateNow(showToast) {
+async function syncEstateNow(showToast, options = {}) {
   if (!ESTATE_SYNC || !activeEstateId || !ESTATE_SYNC.publicStatus().signedIn) return;
   if (estateSyncRunning) {
-    estateSyncQueued = true;
-    estateSyncQueuedToast = estateSyncQueuedToast || !!showToast;
+    if (options.queueIfBusy !== false) {
+      estateSyncQueued = true;
+      estateSyncQueuedToast = estateSyncQueuedToast || !!showToast;
+      estateSyncQueuedDeviceData = estateSyncQueuedDeviceData || !!options.publishDeviceData;
+    }
     return;
   }
   estateSyncRunning = true;
@@ -1632,7 +1672,9 @@ async function syncEstateNow(showToast) {
     estateSyncState.features = checkedEstateFeatures(features);
     if (role !== "owner") estateSyncState.roleFeatures = [];
     accessReady = true;
-    const scope = role + ":" + estateSyncState.features.join(",");
+    const scope = role + ":" + estateSyncState.features.join(","),
+      savedAccessScope = ESTATE_SYNC.storeFor(estateId).accessScope || "",
+      managerDevicePublish = !!options.publishDeviceData && role === "manager";
     if (previousScope && previousScope !== scope) invalidateAllViews();
     header();
     if (!canViewEstateRoute(route)) go(defaultEstateRoute());
@@ -1652,9 +1694,10 @@ async function syncEstateNow(showToast) {
       );
     if (activeEstateId !== estateId || stateStorageKey !== storageKey) return;
     const currentStore = ESTATE_SYNC.storeFor(estateId);
-    const scopeChanged = !!currentStore.accessScope && currentStore.accessScope !== scope,
-      firstReadOnlySync = role !== "owner" && !currentStore.accessScope;
-    if (scopeChanged || firstReadOnlySync) {
+    const scopeChanged = !!savedAccessScope && savedAccessScope !== scope,
+      firstReadOnlySync = role !== "owner" && !currentStore.accessScope,
+      firstManagerDeviceSync = managerDevicePublish && !savedAccessScope;
+    if (scopeChanged || (firstReadOnlySync && !firstManagerDeviceSync)) {
       stateFromEstateRecords(remoteRows);
       if (monthOnlyMember) sanitizeMemberLedger();
       const nextBase = {};
@@ -1675,9 +1718,12 @@ async function syncEstateNow(showToast) {
       if (showToast) toast(t("sync_ok"));
       return;
     }
+    if (firstManagerDeviceSync)
+      saveEstateSyncStore(estateId, { base: {}, conflicts: [], accessScope: "" });
 
-    const base = currentStore.base || {},
-      conflictMap = new Map((currentStore.conflicts || []).map((item) => [item.key, item])),
+    const syncStore = ESTATE_SYNC.storeFor(estateId),
+      base = syncStore.base || {},
+      conflictMap = new Map((syncStore.conflicts || []).map((item) => [item.key, item])),
       local = estateRecords(state),
       apply = [],
       changes = [];
@@ -1724,7 +1770,7 @@ async function syncEstateNow(showToast) {
         apply.push({ recordType, recordId: idParts.join(":"), payload: remotePayload });
       }
     }
-    if (role !== "owner" && changes.length) {
+    if (role !== "owner" && !managerDevicePublish && changes.length) {
       stateFromEstateRecords(remoteRows);
       if (monthOnlyMember) sanitizeMemberLedger();
       const nextBase = {};
@@ -1747,7 +1793,10 @@ async function syncEstateNow(showToast) {
       mirror();
     }
     if (changes.length) {
-      const result = await ESTATE_SYNC.submitChanges(estateId, changes);
+      const result =
+        managerDevicePublish && role === "manager"
+          ? await ESTATE_SYNC.submitDeviceChanges(estateId, changes)
+          : await ESTATE_SYNC.submitChanges(estateId, changes);
       if (!result.ok) {
         (result.conflicts || []).forEach((row) => {
           const key = row.record_type + ":" + row.record_id,
@@ -1804,15 +1853,62 @@ async function syncEstateNow(showToast) {
   } finally {
     estateSyncRunning = false;
     estateSyncState.busy = false;
-    const syncButton = $("#estateSyncNow");
+    const syncButton = $("#estateSyncNow"),
+      deviceSyncButton = $("#estateSyncDeviceData");
     if (syncButton) syncButton.disabled = false;
+    if (deviceSyncButton) deviceSyncButton.disabled = false;
     if (estateSyncQueued) {
       const queuedToast = estateSyncQueuedToast;
+    const queuedDeviceData = estateSyncQueuedDeviceData;
       estateSyncQueued = false;
       estateSyncQueuedToast = false;
-      void syncEstateNow(queuedToast);
+    estateSyncQueuedDeviceData = false;
+    void syncEstateNow(queuedToast, { publishDeviceData: queuedDeviceData });
     }
   }
+}
+async function syncDeviceDataToEstate() {
+  const estateId = activeEstateId,
+    storageKey = stateStorageKey;
+  if (!estateId) throw new Error(t("sync_read_only"));
+  await syncEstateNow(false, {
+    queueIfBusy: false,
+    publishDeviceData: estateSyncState.active?.role === "manager",
+  });
+  if (estateSyncState.error) throw new Error(estateSyncState.error);
+  if (activeEstateId !== estateId || stateStorageKey !== storageKey) return;
+  const role = estateSyncState.active?.role;
+  if (!["owner", "manager"].includes(role)) throw new Error(t("sync_read_only"));
+
+  let deviceState;
+  try {
+    deviceState = JSON.parse(LS.get(KEY) || "null");
+  } catch (error) {
+    throw new Error("The on-device ledger could not be read; shared estate data was left unchanged.");
+  }
+  if (deviceState && !deviceState.sample) {
+    const deviceRecords = estateRecords(deviceState);
+    if (deviceRecords.size) {
+      const remoteRows = await ESTATE_SYNC.listRecords(estateId);
+      if (activeEstateId !== estateId || stateStorageKey !== storageKey) return;
+      const saved = ESTATE_SYNC.storeFor(estateId),
+        plan = planDeviceLedgerMerge(deviceRecords, remoteRows, saved.conflicts || []);
+      if (plan.staged.length) {
+        const stagedState = JSON.parse(JSON.stringify(state));
+        plan.staged.forEach((item) =>
+          applyEstateRecord(stagedState, item.recordType, item.recordId, item.payload),
+        );
+        stagedState.updatedAt = Date.now();
+        state = stagedState;
+        LS.set(storageKey, JSON.stringify(state));
+        lastLocalSnapshot = JSON.stringify(state);
+        mirror();
+      }
+      if (plan.staged.length || plan.conflicts.length !== (saved.conflicts || []).length)
+        saveEstateSyncStore(estateId, { ...saved, conflicts: plan.conflicts });
+    }
+  }
+  await syncEstateNow(true, { publishDeviceData: role === "manager" });
 }
 async function activateEstate(estateId, migrateLocal = true) {
   if (!estateId) return;
@@ -2045,6 +2141,7 @@ function estateSyncCard() {
       ${activeEstateId && estateSyncState.active ? `<div class="sync-estate-controls">
         <h3>${t("sync_active")}: ${esc(estateSyncState.active.estates.name)}</h3>
         <div class="btnrow"><button class="btn" id="estateSyncNow" ${estateSyncState.busy ? "disabled" : ""}>${t("sync_sync_now")}</button>
+          ${["owner", "manager"].includes(estateSyncState.active.role) ? `<button class="btn" id="estateSyncDeviceData" ${estateSyncState.busy ? "disabled" : ""}>${t("sync_device_data")}</button>` : ""}
           ${estateSyncState.active.role === "owner" ? `<button class="btn" id="estateNewInvite" ${estateInviteRunning ? "disabled" : ""}>${t("sync_new_invite")}</button>` : ""}</div>
         ${estateSyncState.invite ? `<p>${t("sync_invite_created")}</p><p><code>${esc(estateSyncState.invite.invite_code)}</code> <button class="btn small" data-copy-invite>${t("sync_copy_invite")}</button></p><p class="hint">${t("sync_invite_expires", esc(new Date(estateSyncState.invite.expires_at).toLocaleString()))}</p>` : ""}
         ${estateSyncState.active.role === "owner" && estateSyncState.invites.length ? `<h3>${t("sync_invites")}</h3>${estateSyncState.invites.map((invite) => `<div class="fields member-row"><span>${esc(new Date(invite.expires_at).toLocaleString())}</span><button class="btn small danger" data-revoke-invite="${esc(invite.invite_id)}">${t("sync_revoke_invite")}</button></div>`).join("")}` : ""}
@@ -2054,7 +2151,7 @@ function estateSyncCard() {
             <label class="fld"><span>${t("sync_approve")}</span><select data-request-role="${esc(request.id)}">${roles.map((role) => `<option value="${role}">${t("sync_role_" + role)}</option>`).join("")}</select></label>
             <div class="btnrow"><button class="btn primary" data-approve-request="${esc(request.id)}">${t("sync_approve")}</button><button class="btn danger" data-reject-request="${esc(request.id)}">${t("sync_reject")}</button></div></div>`).join("") || `<p class="hint">—</p>`}` : ""}
         <h3>${t("sync_members")}</h3>
-        ${["owner", "manager"].includes(estateSyncState.active.role) ? `<p class="hint">${t("sync_member_readonly")}</p>` : ""}
+        ${estateSyncState.active.role === "manager" ? `<p class="hint">${t("sync_manager_publish_hint")}</p>` : estateSyncState.active.role === "owner" ? `<p class="hint">${t("sync_member_readonly")}</p>` : ""}
         ${estateSyncState.members.map((member) => {
           const owner = estateSyncState.active.role === "owner",
             manager = estateSyncState.active.role === "manager",
@@ -2074,7 +2171,7 @@ function estateSyncCard() {
         ${estateSyncState.active.role === "owner" ? `<h3>${t("sync_feature_access")}</h3><p class="hint">${t("sync_feature_hint")}</p>${MEMBER_ROLES.map(featureEditor).join("")}` : ""}
         ${(() => {
           const conflicts = ESTATE_SYNC.storeFor(activeEstateId).conflicts || [];
-          return conflicts.length && estateSyncState.active.role === "owner" ? `<h3>${t("sync_conflicts")}</h3><p class="hint">${t("sync_conflict_hint")}</p>${conflicts.map((item) => `<div class="card"><b>${esc(item.recordType)} · ${recordLabel(item.recordType, item.recordId)}</b>
+          return conflicts.length && ["owner", "manager"].includes(estateSyncState.active.role) ? `<h3>${t("sync_conflicts")}</h3><p class="hint">${t("sync_conflict_hint")}</p>${conflicts.map((item) => `<div class="card"><b>${esc(item.recordType)} · ${recordLabel(item.recordType, item.recordId)}</b>
             <div class="btnrow"><button class="btn" data-resolve-local="${esc(item.key)}">${t("sync_keep_local")}</button><button class="btn primary" data-resolve-cloud="${esc(item.key)}">${t("sync_use_cloud")}</button></div></div>`).join("")}` : "";
         })()}
       </div>` : ""}
@@ -2133,14 +2230,18 @@ async function resolveEstateConflict(key, useLocal) {
       conflict = conflicts.find((item) => item.key === key);
     if (!conflict) return;
     if (useLocal) {
-      const result = await ESTATE_SYNC.submitChanges(activeEstateId, [
-        {
-          record_type: conflict.recordType,
-          record_id: conflict.recordId,
-          expected_revision: conflict.remoteRevision,
-          payload: conflict.localPayload,
-        },
-      ]);
+      const submit =
+          estateSyncState.active?.role === "manager"
+            ? ESTATE_SYNC.submitDeviceChanges
+            : ESTATE_SYNC.submitChanges,
+        result = await submit(activeEstateId, [
+          {
+            record_type: conflict.recordType,
+            record_id: conflict.recordId,
+            expected_revision: conflict.remoteRevision,
+            payload: conflict.localPayload,
+          },
+        ]);
       if (!result.ok) throw new Error(t("sync_conflict_hint"));
       saveEstateSyncStore(activeEstateId, {
         ...saved,
@@ -2150,7 +2251,7 @@ async function resolveEstateConflict(key, useLocal) {
         },
         conflicts: conflicts.filter((item) => item.key !== key),
       });
-      await syncEstateNow(false);
+      await syncEstateNow(false, { publishDeviceData: estateSyncState.active?.role === "manager" });
     } else {
       applyEstateRecord(state, conflict.recordType, conflict.recordId, conflict.remotePayload);
       state.updatedAt = Date.now();
@@ -2165,7 +2266,7 @@ async function resolveEstateConflict(key, useLocal) {
         },
         conflicts: conflicts.filter((item) => item.key !== key),
       });
-      await syncEstateNow(false);
+      await syncEstateNow(false, { publishDeviceData: estateSyncState.active?.role === "manager" });
     }
 }
 /* ---------- sync to the owner's private store (only when opened inside Claude) ---------- */
@@ -4958,6 +5059,13 @@ document.addEventListener("click", async (e) => {
     });
   if (b.id === "estateActivate") return runEstateAction(() => activateEstate($("#estateSelect").value));
   if (b.id === "estateSyncNow") return runEstateAction(() => syncEstateNow(true));
+  if (b.id === "estateSyncDeviceData")
+    return runEstateAction(async () => {
+      if (!["owner", "manager"].includes(estateSyncState.active?.role))
+        throw new Error(t("sync_read_only"));
+      if (!(await confirmBox(t("sync_device_data"), t("sync_device_data_confirm"), t("sync_device_data")))) return;
+      await syncDeviceDataToEstate();
+    });
   if (b.hasAttribute("data-copy-invite"))
     return runEstateAction(async () => {
       if (!estateSyncState.invite) throw new Error(t("sync_copy_failed"));
@@ -5354,7 +5462,10 @@ readShell();
   initializeEstateSync();
   setInterval(() => {
     if (document.visibilityState !== "visible") return;
-    syncEstateNow(false);
+    syncEstateNow(false, { queueIfBusy: false });
+  }, 10000);
+  setInterval(() => {
+    if (document.visibilityState !== "visible") return;
     if (route !== "data") {
       const estateId = activeEstateId;
       refreshOwnerRequests().catch((error) => {
@@ -5392,7 +5503,7 @@ window.onAppResume = () => {
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
     window.onAppResume();
-    syncEstateNow(false);
+    syncEstateNow(false, { queueIfBusy: false });
   }
 });
 /* The Android app asks this before swapping in a new version in the background. */

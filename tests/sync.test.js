@@ -7,10 +7,13 @@ const vm = require("node:vm");
 const source = fs.readFileSync(path.join(__dirname, "..", "web", "sync.js"), "utf8");
 const appSource = fs.readFileSync(path.join(__dirname, "..", "web", "app.js"), "utf8");
 
-function createClient(fetch) {
+function createClient(fetch, timers = { setTimeout, clearTimeout }) {
   const values = new Map(),
     context = {
       fetch,
+      AbortController,
+      setTimeout: timers.setTimeout,
+      clearTimeout: timers.clearTimeout,
       localStorage: {
         getItem: (key) => values.get(key) || null,
         setItem: (key, value) => values.set(key, value),
@@ -338,6 +341,7 @@ test("changing Supabase projects clears the previous project's local session", a
 
 test("large record sets are sent in bounded, transactional batches", async () => {
   const batchSizes = [],
+    rpcPaths = [],
     { client } = createClient(async (url, options) => {
       if (url.endsWith("/auth/v1/token?grant_type=password"))
         return response({
@@ -346,6 +350,7 @@ test("large record sets are sent in bounded, transactional batches", async () =>
           expires_in: 3600,
           user: { id: "user-1" },
         });
+      rpcPaths.push(url.split("/rpc/")[1]);
       batchSizes.push(JSON.parse(options.body).p_changes.length);
       return response({ ok: true, records: [] });
     });
@@ -360,6 +365,47 @@ test("large record sets are sent in bounded, transactional batches", async () =>
   const result = await client.submitChanges("estate-1", changes);
   assert.equal(result.ok, true);
   assert.deepEqual(batchSizes, [200, 5]);
+  assert.deepEqual(rpcPaths, ["sync_estate_records", "sync_estate_records"]);
+});
+
+test("device-data publishing uses its dedicated RPC", async () => {
+  const rpcPaths = [],
+    { client } = createClient(async (url, options) => {
+      if (url.endsWith("/auth/v1/token?grant_type=password"))
+        return response({
+          access_token: "access",
+          refresh_token: "refresh",
+          expires_in: 3600,
+          user: { id: "manager-1" },
+        });
+      rpcPaths.push(url.split("/rpc/")[1]);
+      return response({ ok: true, records: [] });
+    });
+  client.setConfig({ url: "https://estate.supabase.co", anonKey: "public" });
+  await client.signIn("manager@example.test", "long-password");
+  const result = await client.submitDeviceChanges("estate-1", [
+    { record_type: "settings", record_id: "settings", expected_revision: 0, payload: {} },
+  ]);
+  assert.equal(result.ok, true);
+  assert.deepEqual(rpcPaths, ["sync_estate_records_from_device"]);
+});
+
+test("sync requests report a clear error when the network request times out", async () => {
+  const { client } = createClient(
+    (url, options) =>
+      new Promise((resolve, reject) => {
+        options.signal.addEventListener("abort", () => reject(new Error("request aborted")));
+      }),
+    {
+      setTimeout: (callback) => {
+        queueMicrotask(callback);
+        return 1;
+      },
+      clearTimeout: () => {},
+    },
+  );
+  client.setConfig({ url: "https://estate.supabase.co", anonKey: "public" });
+  await assert.rejects(client.signIn("owner@example.test", "long-password"), /Sync request timed out/);
 });
 
 test("remote record reads paginate past the PostgREST row limit", async () => {
