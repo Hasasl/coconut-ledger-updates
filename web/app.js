@@ -20,6 +20,66 @@ const L = {
     sync_ok: "Synced",
     sync_busy: "Syncing",
     sync_fail: "Sync failed, saved on this device",
+    estate_sync_title: "Estate sharing and sync",
+    estate_sync_hint:
+      "Each person signs in with their own account. Estate records are private to approved members. Configure your Supabase project to enable sharing; never enter a service-role key here.",
+    supabase_url: "Supabase project URL",
+    supabase_key: "Supabase publishable (anon) key",
+    sync_save_config: "Save connection",
+    sync_config_saved: "Sync connection saved",
+    sync_connection_settings: "Supabase connection settings",
+    sync_email: "Email",
+    sync_password: "Password",
+    sync_signin: "Sign in",
+    sync_login_success: "Signed in",
+    sync_signup: "Create account",
+    sync_signout: "Sign out",
+    sync_email_confirm: "Check your email to confirm the new account, then sign in.",
+    sync_signed_in: "Signed in as {0}",
+    sync_create_estate: "Create an estate",
+    sync_estate_name: "Estate name",
+    sync_create: "Create estate",
+    sync_request_join: "Request to join",
+    sync_invite_code: "One-time invite code",
+    sync_display_name: "Your name for the estate",
+    sync_join: "Send join request",
+    sync_pending_owner: "Request sent. An owner must approve it before this device can access records.",
+    sync_estates: "Your approved estates",
+    sync_select_estate: "Select estate",
+    sync_set_active: "Open estate",
+    sync_active: "Active estate",
+    sync_sync_now: "Sync now",
+    sync_new_invite: "Create 24-hour invite",
+    sync_invite_created: "Invite created. Share it only with the intended person; owner approval is still required.",
+    sync_invites: "Active invites",
+    sync_revoke_invite: "Revoke invite",
+    sync_revoke_invite_confirm: "Revoke this unused invite? Anyone holding its code will no longer be able to request access.",
+    sync_invite_expires: "Expires {0}",
+    sync_pending_requests: "Requests awaiting your approval",
+    sync_approve_hint: "Check the account email and display name before approving.",
+    sync_approve: "Approve as",
+    sync_reject: "Reject",
+    sync_role_owner: "Owner",
+    sync_role_manager: "Manager",
+    sync_role_data_entry: "Data entry",
+    sync_role_viewer: "View only",
+    sync_members: "Approved members",
+    sync_change_role: "Change role",
+    sync_remove_member: "Revoke access",
+    sync_remove_member_confirm: "Remove this member? Future access will stop, but data already downloaded may remain on their device.",
+    sync_no_estates: "No approved estate yet. Create one or request access with an invite code.",
+    sync_local_migration:
+      "This device already has local records. Copy them into this estate? Existing cloud records will be compared; conflicts require your choice. Your local backup remains on this device.",
+    sync_keep_local: "Keep this device's record",
+    sync_use_cloud: "Use the estate record",
+    sync_conflicts: "Records need review",
+    sync_conflict_hint:
+      "Both this device and another approved device changed the same record. Choose which version to keep; neither version is discarded until you choose.",
+    sync_not_ready: "Estate sync is unavailable until Supabase is configured.",
+    sync_not_signed_in: "Sign in to manage estate sync.",
+    sync_read_only: "This account has view-only access to the active estate.",
+    sync_role_denied: "This account cannot change this type of estate record.",
+    sync_change_too_large: "One record is too large to sync. Shorten its notes and try again.",
     sample_b: "These are sample records",
     sample_p:
       "so you can see how everything works. Clear them and add your own, or import your past months from the Data tab.",
@@ -466,6 +526,66 @@ const L = {
     sync_ok: "සුරැකුණා",
     sync_busy: "සුරකිමින්",
     sync_fail: "Cloud එකට සුරැකීම අසාර්ථකයි, උපාංගයේ සුරැකුණා",
+    estate_sync_title: "වතු දත්ත බෙදාගැනීම සහ සමමුහුර්ත කිරීම",
+    estate_sync_hint:
+      "සෑම අයෙකුම තමන්ගේ ගිණුමෙන් ඇතුළු වේ. අනුමත සාමාජිකයන්ට පමණක් වතු දත්ත දැකිය හැක. බෙදාගැනීම සඳහා Supabase සකසන්න; service-role යතුර මෙහි ඇතුළත් නොකරන්න.",
+    supabase_url: "Supabase ව්‍යාපෘති URL",
+    supabase_key: "Supabase publishable (anon) යතුර",
+    sync_save_config: "සම්බන්ධතාව සුරකින්න",
+    sync_config_saved: "සමමුහුර්ත සම්බන්ධතාව සුරැකුණා",
+    sync_connection_settings: "Supabase සම්බන්ධතා සැකසුම්",
+    sync_email: "විද්‍යුත් තැපෑල",
+    sync_password: "මුරපදය",
+    sync_signin: "ඇතුළු වන්න",
+    sync_login_success: "ඇතුළු වුණා",
+    sync_signup: "ගිණුමක් සාදන්න",
+    sync_signout: "ඉවත් වන්න",
+    sync_email_confirm: "නව ගිණුම තහවුරු කිරීමට ඔබේ විද්‍යුත් තැපෑල පරීක්ෂා කර, පසුව ඇතුළු වන්න.",
+    sync_signed_in: "{0} ලෙස ඇතුළු වී ඇත",
+    sync_create_estate: "වත්තක් සාදන්න",
+    sync_estate_name: "වත්තේ නම",
+    sync_create: "වත්ත සාදන්න",
+    sync_request_join: "එක්වීමට ඉල්ලීමක් යවන්න",
+    sync_invite_code: "එක්වරක් භාවිත කරන ආරාධනා කේතය",
+    sync_display_name: "වත්තේ පෙන්වන ඔබේ නම",
+    sync_join: "එක්වීමේ ඉල්ලීම යවන්න",
+    sync_pending_owner: "ඉල්ලීම යැවුණා. මෙම උපාංගයට දත්ත ලබාගැනීමට පෙර හිමිකරු අනුමත කළ යුතුය.",
+    sync_estates: "ඔබට අනුමත වතු",
+    sync_select_estate: "වත්ත තෝරන්න",
+    sync_set_active: "වත්ත විවෘත කරන්න",
+    sync_active: "දැනට භාවිත වත්ත",
+    sync_sync_now: "දැන් සමමුහුර්ත කරන්න",
+    sync_new_invite: "පැය 24ක ආරාධනයක් සාදන්න",
+    sync_invite_created: "ආරාධනය සෑදුණා. එය අදහස් කළ පුද්ගලයාට පමණක් යවන්න; හිමිකරුගේ අනුමැතිය තවම අවශ්‍යයි.",
+    sync_invites: "සක්‍රිය ආරාධනා",
+    sync_revoke_invite: "ආරාධනය අවලංගු කරන්න",
+    sync_revoke_invite_confirm: "මෙම භාවිත නොකළ ආරාධනය අවලංගු කරන්නද? කේතය ඇති අයට තවදුරටත් ප්‍රවේශය ඉල්ලිය නොහැක.",
+    sync_invite_expires: "{0} දිනෙන් කල් ඉකුත් වේ",
+    sync_pending_requests: "ඔබේ අනුමැතිය බලාපොරොත්තු වන ඉල්ලීම්",
+    sync_approve_hint: "අනුමත කිරීමට පෙර ගිණුමේ විද්‍යුත් තැපෑල සහ නම පරීක්ෂා කරන්න.",
+    sync_approve: "මෙම භූමිකාවෙන් අනුමත කරන්න",
+    sync_reject: "ප්‍රතික්ෂේප කරන්න",
+    sync_role_owner: "හිමිකරු",
+    sync_role_manager: "කළමනාකරු",
+    sync_role_data_entry: "දත්ත ඇතුළත් කිරීම",
+    sync_role_viewer: "බැලීම පමණි",
+    sync_members: "අනුමත සාමාජිකයන්",
+    sync_change_role: "භූමිකාව වෙනස් කරන්න",
+    sync_remove_member: "ප්‍රවේශය අවලංගු කරන්න",
+    sync_remove_member_confirm: "මෙම සාමාජිකයා ඉවත් කරන්නද? ඉදිරි ප්‍රවේශය නවතින නමුත් දැනටමත් බාගත කළ දත්ත ඔවුන්ගේ උපාංගයේ තිබිය හැක.",
+    sync_no_estates: "තවම අනුමත වත්තක් නැත. එකක් සාදන්න හෝ ආරාධනා කේතයකින් ප්‍රවේශය ඉල්ලන්න.",
+    sync_local_migration:
+      "මෙම උපාංගයේ දැනටමත් දේශීය දත්ත ඇත. ඒවා මෙම වත්තට පිටපත් කරන්නද? Cloud දත්ත සමඟ ගැටුම් ඇති නම් ඔබෙන් තෝරාගැනීමක් අසනු ඇත. දේශීය උපස්ථය මෙම උපාංගයේ පවතී.",
+    sync_keep_local: "මෙම උපාංගයේ වාර්තාව තබාගන්න",
+    sync_use_cloud: "වතු වාර්තාව භාවිත කරන්න",
+    sync_conflicts: "වාර්තා සමාලෝචනය අවශ්‍යයි",
+    sync_conflict_hint:
+      "මෙම උපාංගය සහ වෙනත් අනුමත උපාංගයක් එකම වාර්තාව වෙනස් කර ඇත. තබාගත යුතු සංස්කරණය තෝරන්න; ඔබ තෝරන තුරු කිසිදු සංස්කරණයක් ඉවත් නොවේ.",
+    sync_not_ready: "Supabase සකස් කරන තුරු වතු සමමුහුර්ත කිරීම ලබාගත නොහැක.",
+    sync_not_signed_in: "වතු සමමුහුර්ත කිරීම කළමනාකරණය කිරීමට ඇතුළු වන්න.",
+    sync_read_only: "මෙම ගිණුමට දැනට භාවිත වත්ත බැලීමට පමණක් අවසර ඇත.",
+    sync_role_denied: "මෙම වාර්තා වර්ගය වෙනස් කිරීමට මෙම ගිණුමට අවසර නැත.",
+    sync_change_too_large: "සමමුහුර්ත කිරීමට එක් වාර්තාවක් ඉතා විශාලය. සටහන් කෙටි කර නැවත උත්සාහ කරන්න.",
     sample_b: "මේවා ආදර්ශ දත්ත",
     sample_p:
       "යෙදුම වැඩ කරන හැටි පෙන්වීමට පමණි. මේවා ඉවත් කර ඔබේ දත්ත එක් කරන්න, නැත්නම් දත්ත පිටුවෙන් පරණ මාස ඇතුළත් කරන්න.",
@@ -953,7 +1073,7 @@ const t = (k, ...a) => {
   return s;
 };
 
-const VER = "1.8.6";
+const VER = "1.8.7";
 const SECURITY_NOTICE_VERSION = "1.8.5";
 /* Your company, shown at the bottom of the Data tab. Leave it empty to show the app name instead. */
 const COMPANY = "CyberTech Lanka";
@@ -961,6 +1081,8 @@ const FIRST_YEAR = 2026;
 const MIN_SHELL = 11; /* the oldest Android app (version code) this page works with */
 const CATS = ["harvest", "cart", "transport", "church", "personal", "fertilizer", "power", "other"];
 const KEY = "coconut-ledger-v1",
+  ESTATE_ACTIVE_KEY = "coconut-ledger-active-estate-v1",
+  ESTATE_LOCAL_PREFIX = "coconut-ledger-estate-v1:",
   ME = "coconut-ledger-me",
   $ = (s) => document.querySelector(s),
   view = $("#view");
@@ -1033,9 +1155,11 @@ function sample() {
     deductionPresets: [],
   };
 }
-let state;
+let activeEstateId = LS.get(ESTATE_ACTIVE_KEY) || "",
+  stateStorageKey = activeEstateId ? ESTATE_LOCAL_PREFIX + activeEstateId : KEY,
+  state;
 try {
-  state = JSON.parse(localStorage.getItem(KEY));
+  state = JSON.parse(localStorage.getItem(stateStorageKey));
 } catch (e) {}
 /* The Android app keeps a private copy of the records. Use it when it is newer, so an update can never lose them. */
 const NBX = !!(NB && typeof NB.loadState === "function");
@@ -1046,6 +1170,7 @@ if (NBX) {
       n &&
       n.state &&
       Array.isArray(n.state.harvests) &&
+      (n.activeEstateId || "") === activeEstateId &&
       (!state || !Array.isArray(state.harvests) || (n.state.updatedAt || 0) > (state.updatedAt || 0))
     )
       state = n.state;
@@ -1059,13 +1184,24 @@ if (NBX) {
     }
   } catch (e) {}
 }
-if (!state || !Array.isArray(state.harvests)) state = sample();
+if (!state || !Array.isArray(state.harvests)) {
+  state = sample();
+  if (activeEstateId) {
+    state.sample = false;
+    state.harvests = [];
+    state.otherIncome = [];
+    state.monthPayouts = {};
+    state.reviewedMonths = [];
+    state.deductionPresets = [];
+  }
+}
 function mirror() {
   if (!NBX) return;
   try {
     NB.saveState(
       JSON.stringify({
         state: state.sample ? null : state,
+        activeEstateId,
         ui: {
           lang,
           skin: LS.get("coconut-ledger-skin") || "neon",
@@ -1100,17 +1236,455 @@ function norm() {
   }
 }
 norm();
+let lastLocalSnapshot = JSON.stringify(state);
 function persist(touch) {
+  if (touch !== false && activeEstateId && estateSyncState.active?.role === "viewer") {
+    state = JSON.parse(lastLocalSnapshot);
+    toast(t("sync_read_only"));
+    render();
+    return false;
+  }
+  if (touch !== false && activeEstateId && estateSyncState.active?.role === "data_entry") {
+    const before = estateRecords(JSON.parse(lastLocalSnapshot)),
+      after = estateRecords(state),
+      keys = new Set([...before.keys(), ...after.keys()]),
+      forbidden = Array.from(keys).some((key) => {
+        if (stableJson(before.get(key)?.payload) === stableJson(after.get(key)?.payload)) return false;
+        const type = key.slice(0, key.indexOf(":"));
+        return !["harvest", "other_income"].includes(type) || !after.has(key);
+      });
+    if (forbidden) {
+      state = JSON.parse(lastLocalSnapshot);
+      toast(t("sync_role_denied"));
+      render();
+      return false;
+    }
+  }
   invalidate();
   if (touch !== false) {
     state.updatedAt = Date.now();
   }
-  LS.set(KEY, JSON.stringify(state));
+  LS.set(stateStorageKey, JSON.stringify(state));
+  lastLocalSnapshot = JSON.stringify(state);
   mirror();
-  if (touch !== false) pushCloud();
+  if (touch !== false && !activeEstateId) pushCloud();
+  if (touch !== false && activeEstateId) scheduleEstateSync();
   syncNativeReminders();
+  return true;
 }
 
+/* ---------- secure multi-device estate sync ---------- */
+const ESTATE_SYNC = window.EstateSync;
+let estateSyncState = {
+  estates: [],
+  active: null,
+  requests: [],
+  invites: [],
+  members: [],
+  invite: null,
+  error: "",
+  busy: false,
+};
+let estateSyncTimer = 0,
+  estateSyncRunning = false;
+function estateErrorText(error) {
+  const message = error && error.message ? error.message : String(error);
+  return message === "sync_change_too_large" ? t("sync_change_too_large") : message;
+}
+const stableJson = (value) => JSON.stringify(value === undefined ? null : value);
+function estateRecords(local) {
+  const records = new Map(),
+    add = (type, id, payload) => records.set(type + ":" + id, { record_type: type, record_id: String(id), payload });
+  add("settings", "settings", {
+    estate: local.estate,
+    cur: local.cur,
+    freePer: local.freePer,
+    shares: local.shares,
+    shareName: local.shareName,
+    transRate: local.transRate,
+    rejInLoaded: local.rejInLoaded,
+  });
+  if (local.sample) return records;
+  (local.harvests || []).forEach((row) => add("harvest", row.id, row));
+  (local.otherIncome || []).forEach((row) => add("other_income", row.id, row));
+  (local.deductionPresets || []).forEach((row) => add("deduction_preset", row.id, row));
+  Object.entries(local.monthPayouts || {}).forEach(([month, amounts]) => add("month_payout", month, { month, amounts }));
+  (local.reviewedMonths || []).forEach((month) => add("reviewed_month", month, { month }));
+  return records;
+}
+function applyEstateRecord(target, type, id, payload) {
+  if (type === "settings" && payload) {
+    ["estate", "cur", "freePer", "shares", "shareName", "transRate", "rejInLoaded"].forEach((key) => {
+      if (payload[key] !== undefined) target[key] = payload[key];
+    });
+    target.sample = false;
+    return;
+  }
+  const collection =
+    type === "harvest"
+      ? target.harvests
+      : type === "other_income"
+        ? target.otherIncome
+        : type === "deduction_preset"
+          ? target.deductionPresets
+          : null;
+  if (collection) {
+    const index = collection.findIndex((row) => String(row.id) === id);
+    if (index >= 0) collection.splice(index, 1);
+    if (payload) collection.push(payload);
+    target.sample = false;
+  } else if (type === "month_payout") {
+    if (payload) target.monthPayouts[id] = payload.amounts || [];
+    else delete target.monthPayouts[id];
+  } else if (type === "reviewed_month") {
+    target.reviewedMonths = target.reviewedMonths.filter((month) => month !== id);
+    if (payload && !target.reviewedMonths.includes(id)) target.reviewedMonths.push(id);
+  }
+}
+function estatePayload(row) {
+  return row && !row.deleted_at ? row.payload : null;
+}
+function saveEstateSyncStore(estateId, next) {
+  ESTATE_SYNC.saveStore(estateId, next);
+}
+function scheduleEstateSync() {
+  if (!ESTATE_SYNC || !activeEstateId || !ESTATE_SYNC.publicStatus().signedIn) return;
+  clearTimeout(estateSyncTimer);
+  estateSyncTimer = setTimeout(() => syncEstateNow(false), 1200);
+}
+async function syncEstateNow(showToast) {
+  if (!ESTATE_SYNC || !activeEstateId || estateSyncRunning || !ESTATE_SYNC.publicStatus().signedIn) return;
+  estateSyncRunning = true;
+  estateSyncState.busy = true;
+  estateSyncState.error = "";
+  setSync("busy", "sync_busy");
+  if (route === "data") render();
+  try {
+    const estateId = activeEstateId,
+      storageKey = stateStorageKey,
+      saved = ESTATE_SYNC.storeFor(estateId),
+      base = saved.base || {},
+      conflictMap = new Map((saved.conflicts || []).map((item) => [item.key, item])),
+      local = estateRecords(state),
+      remoteRows = await ESTATE_SYNC.listRecords(estateId),
+      remote = new Map(
+        remoteRows.map((row) => [
+          row.record_type + ":" + row.record_id,
+          { revision: Number(row.revision), payload: estatePayload(row) },
+        ]),
+      ),
+      apply = [],
+      changes = [];
+    if (activeEstateId !== estateId || stateStorageKey !== storageKey) return;
+    const keys = new Set([...Object.keys(base), ...local.keys(), ...remote.keys(), ...conflictMap.keys()]);
+    for (const key of keys) {
+      const previous = base[key],
+        localRecord = local.get(key),
+        localPayload = localRecord ? localRecord.payload : null,
+        remoteRecord = remote.get(key),
+        remotePayload = remoteRecord ? remoteRecord.payload : null,
+        baseRevision = previous ? Number(previous.revision) : 0,
+        remoteRevision = remoteRecord ? remoteRecord.revision : 0,
+        localChanged = stableJson(localPayload) !== stableJson(previous ? previous.payload : null),
+        remoteChanged = remoteRevision !== baseRevision;
+      if (conflictMap.has(key)) {
+        conflictMap.set(key, {
+          ...conflictMap.get(key),
+          localPayload,
+          remotePayload,
+          remoteRevision,
+        });
+        continue;
+      }
+      if (localChanged && remoteChanged && stableJson(localPayload) !== stableJson(remotePayload)) {
+        const [recordType, ...idParts] = key.split(":");
+        conflictMap.set(key, {
+          key,
+          recordType,
+          recordId: idParts.join(":"),
+          localPayload,
+          remotePayload,
+          remoteRevision,
+        });
+      } else if (localChanged && stableJson(localPayload) !== stableJson(remotePayload)) {
+        const [recordType, ...idParts] = key.split(":");
+        changes.push({
+          record_type: recordType,
+          record_id: idParts.join(":"),
+          expected_revision: remoteRevision,
+          payload: localPayload,
+        });
+      } else if (!localChanged && remoteChanged) {
+        const [recordType, ...idParts] = key.split(":");
+        apply.push({ recordType, recordId: idParts.join(":"), payload: remotePayload });
+      }
+    }
+    if (apply.length) {
+      apply.forEach((item) => applyEstateRecord(state, item.recordType, item.recordId, item.payload));
+      state.updatedAt = Date.now();
+      LS.set(storageKey, JSON.stringify(state));
+      lastLocalSnapshot = JSON.stringify(state);
+      mirror();
+    }
+    if (changes.length) {
+      const result = await ESTATE_SYNC.submitChanges(estateId, changes);
+      if (!result.ok) {
+        (result.conflicts || []).forEach((row) => {
+          const key = row.record_type + ":" + row.record_id,
+            change = changes.find((item) => item.record_type + ":" + item.record_id === key);
+          if (change) {
+            conflictMap.set(key, {
+              key,
+              recordType: row.record_type,
+              recordId: row.record_id,
+              localPayload: change.payload,
+              remotePayload: row.deleted ? null : row.payload,
+              remoteRevision: Number(row.revision) || 0,
+            });
+          }
+        });
+      }
+    }
+    const latestRows = changes.length ? await ESTATE_SYNC.listRecords(estateId) : remoteRows;
+    const nextBase = {};
+    latestRows.forEach((row) => {
+      nextBase[row.record_type + ":" + row.record_id] = {
+        revision: Number(row.revision),
+        payload: estatePayload(row),
+      };
+    });
+    saveEstateSyncStore(estateId, { base: nextBase, conflicts: Array.from(conflictMap.values()) });
+    estateSyncState.error = "";
+    setSync("ok", "sync_ok");
+    if (route === "data") {
+      await refreshEstatePanel();
+      render();
+    } else if (apply.length) render();
+    if (showToast) toast(t("sync_ok"));
+  } catch (error) {
+    estateSyncState.error = estateErrorText(error);
+    setSync("", "sync_fail");
+    if (route === "data") render();
+    if (showToast) toast(estateSyncState.error);
+  } finally {
+    estateSyncRunning = false;
+    estateSyncState.busy = false;
+  }
+}
+async function activateEstate(estateId) {
+  if (!estateId) return;
+  const oldKey = stateStorageKey,
+    targetKey = ESTATE_LOCAL_PREFIX + estateId,
+    existingText = LS.get(targetKey);
+  if (oldKey !== targetKey) LS.set(oldKey, JSON.stringify(state));
+  estateSyncState.invite = null;
+  let nextState;
+  if (existingText) {
+    try {
+      nextState = JSON.parse(existingText);
+    } catch (error) {
+      throw new Error("Saved records for this estate could not be read; the current ledger was left unchanged.");
+    }
+  } else {
+    const sourceState = oldKey === KEY ? state : JSON.parse(LS.get(KEY) || "null") || sample(),
+      hasRecords =
+        !state.sample &&
+        ((state.harvests || []).length > 0 ||
+          (state.otherIncome || []).length > 0 ||
+          Object.keys(state.monthPayouts || {}).length > 0);
+    const copyLocal =
+      oldKey === KEY &&
+      hasRecords &&
+      (await confirmBox(t("sync_create_estate"), t("sync_local_migration"), t("sync_set_active")));
+    nextState = copyLocal
+      ? JSON.parse(JSON.stringify(sourceState))
+      : {
+          ...sourceState,
+          sample: false,
+          updatedAt: Date.now(),
+          harvests: [],
+          otherIncome: [],
+          monthPayouts: {},
+          reviewedMonths: [],
+          deductionPresets: [],
+        };
+    nextState.sample = false;
+  }
+  activeEstateId = estateId;
+  stateStorageKey = targetKey;
+  LS.set(ESTATE_ACTIVE_KEY, estateId);
+  state = nextState;
+  norm();
+  lastLocalSnapshot = JSON.stringify(state);
+  persist(false);
+  await syncEstateNow(false);
+  await refreshEstatePanel();
+  render();
+}
+async function useLocalLedger() {
+  if (activeEstateId) LS.set(stateStorageKey, JSON.stringify(state));
+  activeEstateId = "";
+  stateStorageKey = KEY;
+  localStorage.removeItem(ESTATE_ACTIVE_KEY);
+  try {
+    state = JSON.parse(LS.get(KEY) || "null") || sample();
+  } catch (error) {
+    throw new Error("The on-device ledger could not be reopened.");
+  }
+  norm();
+  lastLocalSnapshot = JSON.stringify(state);
+  mirror();
+  render();
+  initCloud();
+}
+async function refreshEstatePanel() {
+  if (!ESTATE_SYNC || !ESTATE_SYNC.publicStatus().signedIn) return;
+  estateSyncState.estates = await ESTATE_SYNC.listEstates();
+  const active = estateSyncState.estates.find((item) => item.estate_id === activeEstateId);
+  estateSyncState.active = active || null;
+  estateSyncState.requests = active && active.role === "owner" ? await ESTATE_SYNC.listRequests(activeEstateId) : [];
+  estateSyncState.invites = active && active.role === "owner" ? await ESTATE_SYNC.listInvites(activeEstateId) : [];
+  if (
+    estateSyncState.invite &&
+    !estateSyncState.invites.some((invite) => invite.invite_id === estateSyncState.invite.invite_id)
+  )
+    estateSyncState.invite = null;
+  estateSyncState.members = active ? await ESTATE_SYNC.listMembers(activeEstateId) : [];
+}
+function recordLabel(type, id) {
+  const local = estateRecords(state).get(type + ":" + id);
+  if (local && local.payload)
+    return esc(local.payload.buyer || local.payload.note || local.payload.estate || local.payload.date || id);
+  return esc(id);
+}
+function estateSyncCard() {
+  if (!ESTATE_SYNC) return "";
+  const config = ESTATE_SYNC.getConfig(),
+    status = ESTATE_SYNC.publicStatus(),
+    roles = ["manager", "data_entry", "viewer"];
+  return `<div class="card estate-sync">
+    <h2>${t("estate_sync_title")}</h2><p class="hint">${t("estate_sync_hint")}</p>
+    <details ${!config.url || !config.anonKey ? "open" : ""}><summary>${t("sync_connection_settings")}</summary><div class="fields">
+      <label class="fld wide"><span>${t("supabase_url")}</span><input id="estateSyncUrl" type="url" autocomplete="url" value="${esc(config.url)}"></label>
+      <label class="fld wide"><span>${t("supabase_key")}</span><input id="estateSyncKey" type="password" autocomplete="off" value="${esc(config.anonKey)}"></label>
+      <button class="btn primary" id="estateSyncSaveConfig">${t("sync_save_config")}</button></div></details>
+    ${config.url && !status.signedIn ? `<p>${t("sync_not_signed_in")}</p><div class="fields">
+      <label class="fld"><span>${t("sync_email")}</span><input id="estateSyncEmail" type="email" autocomplete="email"></label>
+      <label class="fld"><span>${t("sync_password")}</span><input id="estateSyncPassword" type="password" autocomplete="current-password"></label>
+      <div class="btnrow"><button class="btn primary" id="estateSyncSignIn">${t("sync_signin")}</button><button class="btn" id="estateSyncSignUp">${t("sync_signup")}</button></div>
+      </div>` : ""}
+    ${status.signedIn ? `<p>${t("sync_signed_in", esc(status.user.email || ""))}</p>
+      <div class="btnrow"><button class="btn" id="estateSyncSignOut">${t("sync_signout")}</button><button class="btn" id="estateSyncLocal">${t("sync_device")}</button></div>
+      <div class="fields" style="margin-top:12px">
+        <label class="fld"><span>${t("sync_estate_name")}</span><input id="estateCreateName" type="text" maxlength="80"></label>
+        <button class="btn" id="estateCreate">${t("sync_create_estate")}</button>
+        <label class="fld"><span>${t("sync_invite_code")}</span><input id="estateJoinCode" type="text" inputmode="text" maxlength="64" autocomplete="off"></label>
+        <label class="fld"><span>${t("sync_display_name")}</span><input id="estateJoinName" type="text" maxlength="60" value="${esc(state.estate || "")}"></label>
+        <button class="btn" id="estateJoin">${t("sync_request_join")}</button>
+      </div>
+      ${estateSyncState.estates.length ? `<div class="fields" style="margin-top:12px">
+        <label class="fld wide"><span>${t("sync_estates")}</span><select id="estateSelect">${estateSyncState.estates.map((item) => `<option value="${esc(item.estate_id)}" ${item.estate_id === activeEstateId ? "selected" : ""}>${esc(item.estates.name)} · ${t("sync_role_" + item.role)}</option>`).join("")}</select></label>
+        <button class="btn" id="estateActivate">${t("sync_set_active")}</button>
+      </div>` : `<p class="hint">${t("sync_no_estates")}</p>`}
+      ${activeEstateId && estateSyncState.active ? `<div class="sync-estate-controls">
+        <h3>${t("sync_active")}: ${esc(estateSyncState.active.estates.name)}</h3>
+        <div class="btnrow"><button class="btn" id="estateSyncNow" ${estateSyncState.busy ? "disabled" : ""}>${t("sync_sync_now")}</button>
+          ${estateSyncState.active.role === "owner" ? `<button class="btn" id="estateNewInvite">${t("sync_new_invite")}</button>` : ""}</div>
+        ${estateSyncState.invite ? `<p>${t("sync_invite_created")}</p><p><code>${esc(estateSyncState.invite.invite_code)}</code></p><p class="hint">${t("sync_invite_expires", esc(new Date(estateSyncState.invite.expires_at).toLocaleString()))}</p>` : ""}
+        ${estateSyncState.active.role === "owner" && estateSyncState.invites.length ? `<h3>${t("sync_invites")}</h3>${estateSyncState.invites.map((invite) => `<div class="fields member-row"><span>${esc(new Date(invite.expires_at).toLocaleString())}</span><button class="btn small danger" data-revoke-invite="${esc(invite.invite_id)}">${t("sync_revoke_invite")}</button></div>`).join("")}` : ""}
+        ${estateSyncState.error ? `<p class="err">${esc(estateSyncState.error)}</p>` : ""}
+        ${estateSyncState.active.role === "owner" ? `<h3>${t("sync_pending_requests")}</h3><p class="hint">${t("sync_approve_hint")}</p>
+          ${estateSyncState.requests.map((request) => `<div class="card"><b>${esc(request.display_name)}</b><p class="hint">${esc(request.email || request.user_id)} · ${esc(new Date(request.requested_at).toLocaleString())}</p>
+            <label class="fld"><span>${t("sync_approve")}</span><select data-request-role="${esc(request.id)}">${roles.map((role) => `<option value="${role}">${t("sync_role_" + role)}</option>`).join("")}</select></label>
+            <div class="btnrow"><button class="btn primary" data-approve-request="${esc(request.id)}">${t("sync_approve")}</button><button class="btn danger" data-reject-request="${esc(request.id)}">${t("sync_reject")}</button></div></div>`).join("") || `<p class="hint">—</p>`}` : ""}
+        <h3>${t("sync_members")}</h3>
+        ${estateSyncState.members.map((member) => `<div class="fields member-row"><span>${esc(member.display_name || member.user_id)} · ${t("sync_role_" + member.role)}</span>
+          ${estateSyncState.active.role === "owner" && member.role !== "owner" ? `<select data-member-role="${esc(member.user_id)}">${roles.map((role) => `<option value="${role}" ${role === member.role ? "selected" : ""}>${t("sync_role_" + role)}</option>`).join("")}</select><button class="btn small danger" data-remove-member="${esc(member.user_id)}">${t("sync_remove_member")}</button>` : ""}</div>`).join("")}
+        ${(() => {
+          const conflicts = ESTATE_SYNC.storeFor(activeEstateId).conflicts || [];
+          return conflicts.length ? `<h3>${t("sync_conflicts")}</h3><p class="hint">${t("sync_conflict_hint")}</p>${conflicts.map((item) => `<div class="card"><b>${esc(item.recordType)} · ${recordLabel(item.recordType, item.recordId)}</b>
+            <div class="btnrow"><button class="btn" data-resolve-local="${esc(item.key)}">${t("sync_keep_local")}</button><button class="btn primary" data-resolve-cloud="${esc(item.key)}">${t("sync_use_cloud")}</button></div></div>`).join("")}` : "";
+        })()}
+      </div>` : ""}
+    </div>` : ""}
+  </div>`;
+}
+async function runEstateAction(action, successMessage) {
+    try {
+      await action();
+      if (successMessage) toast(t(successMessage));
+    } catch (error) {
+      estateSyncState.error = estateErrorText(error);
+      toast(estateSyncState.error);
+    }
+    if (route === "data") render();
+}
+async function initializeEstateSync() {
+    if (!ESTATE_SYNC) return;
+    if (!ESTATE_SYNC.publicStatus().configured || !ESTATE_SYNC.publicStatus().signedIn) {
+      if (activeEstateId) await useLocalLedger();
+      setSync("", "sync_device");
+      return;
+    }
+    try {
+      estateSyncState.estates = await ESTATE_SYNC.listEstates();
+      estateSyncState.active = estateSyncState.estates.find((item) => item.estate_id === activeEstateId) || null;
+      if (estateSyncState.active) {
+        await refreshEstatePanel();
+        await syncEstateNow(false);
+      } else {
+        if (activeEstateId) await useLocalLedger();
+        setSync("", "sync_device");
+      }
+      if (route === "data") render();
+    } catch (error) {
+      estateSyncState.error = estateErrorText(error);
+      setSync("", "sync_fail");
+      if (route === "data") render();
+    }
+}
+async function resolveEstateConflict(key, useLocal) {
+    if (!activeEstateId) return;
+    const saved = ESTATE_SYNC.storeFor(activeEstateId),
+      conflicts = saved.conflicts || [],
+      conflict = conflicts.find((item) => item.key === key);
+    if (!conflict) return;
+    if (useLocal) {
+      const result = await ESTATE_SYNC.submitChanges(activeEstateId, [
+        {
+          record_type: conflict.recordType,
+          record_id: conflict.recordId,
+          expected_revision: conflict.remoteRevision,
+          payload: conflict.localPayload,
+        },
+      ]);
+      if (!result.ok) throw new Error(t("sync_conflict_hint"));
+      saveEstateSyncStore(activeEstateId, {
+        ...saved,
+        base: {
+          ...saved.base,
+          [key]: { revision: conflict.remoteRevision + 1, payload: conflict.localPayload },
+        },
+        conflicts: conflicts.filter((item) => item.key !== key),
+      });
+      await syncEstateNow(false);
+    } else {
+      applyEstateRecord(state, conflict.recordType, conflict.recordId, conflict.remotePayload);
+      state.updatedAt = Date.now();
+      LS.set(stateStorageKey, JSON.stringify(state));
+      lastLocalSnapshot = JSON.stringify(state);
+      mirror();
+      saveEstateSyncStore(activeEstateId, {
+        ...saved,
+        base: {
+          ...saved.base,
+          [key]: { revision: conflict.remoteRevision, payload: conflict.remotePayload },
+        },
+        conflicts: conflicts.filter((item) => item.key !== key),
+      });
+      await syncEstateNow(false);
+    }
+}
 /* ---------- sync to the owner's private store (only when opened inside Claude) ---------- */
 let docRef = null,
   writing = false,
@@ -1126,16 +1700,22 @@ function setSync(cls, key) {
   c.lastElementChild.textContent = t(key);
 }
 async function initCloud() {
+  if (activeEstateId) return;
+  const localKey = stateStorageKey;
   if (!window.claude || typeof window.claude.use !== "function") return;
   let db = null;
   try {
     db = await window.claude.use("db");
   } catch (e) {}
-  if (!db) return;
+  if (!db || activeEstateId || stateStorageKey !== localKey) return;
   try {
     docRef = db.doc("estate/main");
     const s = await docRef.get(),
       d = s.exists ? s.data() : null;
+    if (activeEstateId || stateStorageKey !== localKey) {
+      docRef = null;
+      return;
+    }
     if (d && d.json && (d.updatedAt || 0) > (state.updatedAt || 0)) {
       const inc = JSON.parse(d.json);
       if (inc && Array.isArray(inc.harvests)) {
@@ -1155,9 +1735,10 @@ async function initCloud() {
   }
 }
 function pushCloud() {
-  if (!docRef || state.sample) return;
+  if (!docRef || state.sample || activeEstateId) return;
   clearTimeout(pushT);
   pushT = setTimeout(async function run() {
+    if (activeEstateId) return;
     if (writing) {
       queued = true;
       return;
@@ -2486,6 +3067,7 @@ function vData() {
   return (
     banner() +
     `<div class="grid datagrid stag">
+  ${estateSyncCard()}
   <div class="card"><h2>${t("bk_h")}</h2><p class="hint">${t("bk_hint")}</p>
     <div class="btnrow"><button class="btn primary" data-exp="share">${t("btn_share")}</button><button class="btn" data-pdf>${t("btn_pdf")}</button><button class="btn" data-exp="csv">${t("btn_csv")}</button><button class="btn" data-exp="json">${t("btn_json")}</button><button class="btn" data-exp="copy">${t("btn_copy")}</button><a class="btn" href="https://drive.google.com/drive/my-drive" target="_blank" rel="noopener">${t("open_drive")}</a></div>
     <p class="hint" style="margin:10px 0 0">${t("bk_note")}</p>
@@ -3064,7 +3646,7 @@ $("#hform").addEventListener("submit", (e) => {
   const i = state.harvests.findIndex((h) => h.id === rec.id);
   if (i >= 0) state.harvests[i] = rec;
   else state.harvests.push(rec);
-  persist();
+  if (!persist()) return;
   closeD(dlg);
   render();
   toast(t("t_saved"));
@@ -3074,7 +3656,7 @@ $("#delBtn").onclick = async () => {
   closeD(dlg);
   if (await confirmBox(t("c_del_h"), t("c_del_p"), t("delete"))) {
     state.harvests = state.harvests.filter((h) => h.id !== editId);
-    persist();
+    if (!persist()) return;
     render();
     toast(t("t_deleted"));
   }
@@ -3114,7 +3696,7 @@ $("#incomeForm").addEventListener("submit", (event) => {
     index = state.otherIncome.findIndex((income) => income.id === entry.id);
   if (index >= 0) state.otherIncome[index] = entry;
   else state.otherIncome.push(entry);
-  persist();
+  if (!persist()) return;
   closeD(incomeDlg);
   render();
   toast(t("income_saved"));
@@ -3124,7 +3706,7 @@ $("#incomeDel").onclick = async () => {
   closeD(incomeDlg);
   if (await confirmBox(t("c_del_income_h"), t("c_del_income_p"), t("delete"))) {
     state.otherIncome = state.otherIncome.filter((income) => income.id !== incomeEditId);
-    persist();
+    if (!persist()) return;
     render();
     toast(t("income_deleted"));
   }
@@ -3520,7 +4102,7 @@ function doImport(txt) {
       else state.otherIncome.push(income);
     });
   }
-  persist();
+  if (!persist()) return;
   go("months");
   toast(t("t_imported", r.count));
 }
@@ -3798,6 +4380,103 @@ document.addEventListener("click", async (e) => {
     return render({ dir: still() ? "" : "fade" });
   }
   if (b.id === "skinBtn") return toggleSkin(e);
+  if (b.id === "estateSyncSaveConfig")
+    return runEstateAction(() => {
+      ESTATE_SYNC.setConfig({ url: $("#estateSyncUrl").value, anonKey: $("#estateSyncKey").value });
+      estateSyncState.error = "";
+      setSync("", "sync_device");
+    }, "sync_config_saved");
+  if (b.id === "estateSyncSignIn")
+    return runEstateAction(async () => {
+      await ESTATE_SYNC.signIn($("#estateSyncEmail").value, $("#estateSyncPassword").value);
+      estateSyncState.error = "";
+      await initializeEstateSync();
+    }, "sync_login_success");
+  if (b.id === "estateSyncSignUp")
+    return runEstateAction(async () => {
+      await ESTATE_SYNC.signUp($("#estateSyncEmail").value, $("#estateSyncPassword").value);
+      if (!ESTATE_SYNC.publicStatus().signedIn) {
+        estateSyncState.error = "";
+        toast(t("sync_email_confirm"));
+      } else {
+        await initializeEstateSync();
+      }
+    });
+  if (b.id === "estateSyncSignOut")
+    return runEstateAction(async () => {
+      let logoutError;
+      try {
+        await ESTATE_SYNC.signOut();
+      } catch (error) {
+        logoutError = error;
+      }
+      estateSyncState = { estates: [], active: null, requests: [], invites: [], members: [], invite: null, error: "", busy: false };
+      await useLocalLedger();
+      setSync("", "sync_device");
+      if (logoutError) throw logoutError;
+    });
+  if (b.id === "estateSyncLocal") return runEstateAction(useLocalLedger);
+  if (b.id === "estateCreate")
+    return runEstateAction(async () => {
+      const name = $("#estateCreateName").value.trim();
+      if (!name) throw new Error(t("sync_estate_name"));
+      const estateId = await ESTATE_SYNC.createEstate(name);
+      await refreshEstatePanel();
+      await activateEstate(String(estateId));
+    });
+  if (b.id === "estateJoin")
+    return runEstateAction(async () => {
+      const result = await ESTATE_SYNC.requestAccess($("#estateJoinCode").value.trim(), $("#estateJoinName").value.trim());
+      toast(t("sync_pending_owner") + " " + (result.estate_name || ""));
+    });
+  if (b.id === "estateActivate") return runEstateAction(() => activateEstate($("#estateSelect").value));
+  if (b.id === "estateSyncNow") return runEstateAction(() => syncEstateNow(true));
+  if (b.id === "estateNewInvite")
+    return runEstateAction(async () => {
+      estateSyncState.invite = await ESTATE_SYNC.createInvite(activeEstateId);
+      if (!estateSyncState.invite) throw new Error("The server did not return an invitation.");
+      await refreshEstatePanel();
+    }, "sync_invite_created");
+  if (b.dataset.revokeInvite)
+    return runEstateAction(async () => {
+      if (!(await confirmBox(t("sync_revoke_invite"), t("sync_revoke_invite_confirm"), t("sync_revoke_invite")))) return;
+      await ESTATE_SYNC.revokeInvite(b.dataset.revokeInvite);
+      if (estateSyncState.invite && estateSyncState.invite.invite_id === b.dataset.revokeInvite)
+        estateSyncState.invite = null;
+      await refreshEstatePanel();
+    });
+  if (b.dataset.approveRequest)
+    return runEstateAction(async () => {
+      const roleControl = Array.from(document.querySelectorAll("[data-request-role]")).find(
+        (control) => control.dataset.requestRole === b.dataset.approveRequest,
+      );
+      if (!roleControl) throw new Error(t("sync_role_denied"));
+      const role = roleControl.value;
+      await ESTATE_SYNC.reviewRequest(b.dataset.approveRequest, true, role);
+      await refreshEstatePanel();
+    });
+  if (b.dataset.rejectRequest)
+    return runEstateAction(async () => {
+      await ESTATE_SYNC.reviewRequest(b.dataset.rejectRequest, false, "viewer");
+      await refreshEstatePanel();
+    });
+  if (b.dataset.removeMember)
+    return runEstateAction(async () => {
+      if (
+        !(await confirmBox(
+          t("sync_remove_member"),
+          t("sync_remove_member_confirm"),
+          t("sync_remove_member"),
+        ))
+      )
+        return;
+      await ESTATE_SYNC.removeMember(activeEstateId, b.dataset.removeMember);
+      await refreshEstatePanel();
+    });
+  if (b.dataset.resolveLocal)
+    return runEstateAction(() => resolveEstateConflict(b.dataset.resolveLocal, true));
+  if (b.dataset.resolveCloud)
+    return runEstateAction(() => resolveEstateConflict(b.dataset.resolveCloud, false));
   if (b.id === "fcScenarioRun") {
     const date = $("#fcScenarioDate").value,
       nuts = $("#fcScenarioNuts").value.trim(),
@@ -3850,7 +4529,7 @@ document.addEventListener("click", async (e) => {
     };
     if (old) state.deductionPresets[state.deductionPresets.indexOf(old)] = preset;
     else state.deductionPresets.push(preset);
-    persist();
+    if (!persist()) return;
     renderPresetOptions(preset.id);
     toast(t("preset_saved"));
     return;
@@ -3873,7 +4552,7 @@ document.addEventListener("click", async (e) => {
     const id = $("#presetSelect").value;
     if (!id) return toast(t("preset_required"));
     state.deductionPresets = state.deductionPresets.filter((preset) => preset.id !== id);
-    persist();
+    if (!persist()) return;
     renderPresetOptions();
     return toast(t("preset_deleted"));
   }
@@ -3912,7 +4591,7 @@ document.addEventListener("click", async (e) => {
       index = state.reviewedMonths.indexOf(key);
     if (index >= 0) state.reviewedMonths.splice(index, 1);
     else state.reviewedMonths.push(key);
-    persist();
+    if (!persist()) return render();
     return render();
   }
   if (b.dataset.savePayout) {
@@ -3921,7 +4600,7 @@ document.addEventListener("click", async (e) => {
       amounts = inputs.map((input) => (input.value.trim() === "" ? 0 : Number(input.value)));
     if (amounts.some((amount) => !Number.isFinite(amount) || amount < 0)) return toast(t("e_custom_amount"));
     state.monthPayouts[key] = amounts;
-    persist();
+    if (!persist()) return;
     render();
     return toast(t("payouts_saved"));
   }
@@ -3942,7 +4621,7 @@ document.addEventListener("click", async (e) => {
       state.monthPayouts = {};
       state.reviewedMonths = [];
       state.sample = false;
-      persist();
+      if (!persist()) return;
       render();
     }
     return;
@@ -3955,7 +4634,7 @@ document.addEventListener("click", async (e) => {
       state.reviewedMonths = [];
       state.deductionPresets = [];
       state.sample = false;
-      persist();
+      if (!persist()) return;
       go("overview");
     }
     return;
@@ -3980,7 +4659,7 @@ document.addEventListener("click", async (e) => {
     state.shares = Math.max(1, Math.round(val("s-shares")) || 1);
     state.shareName = $("#s-sname").value.trim() || "share";
     state.transRate = Math.max(0, val("s-trans"));
-    persist();
+    if (!persist()) return;
     render();
     return toast(t("t_details"));
   }
@@ -4011,7 +4690,13 @@ document.addEventListener("change", (e) => {
     r.onload = () => doImport(String(r.result));
     r.readAsText(e.target.files[0]);
     e.target.value = "";
+    return;
   }
+  if (e.target.matches("[data-member-role]"))
+    runEstateAction(async () => {
+      await ESTATE_SYNC.changeRole(activeEstateId, e.target.dataset.memberRole, e.target.value);
+      await refreshEstatePanel();
+    });
 });
 
 if (LS.get("coconut-ledger-skin") === "light") setSkin("light");
@@ -4053,6 +4738,10 @@ readShell();
     setTimeout(() => loader.remove(), 450);
   }
   initCloud();
+  initializeEstateSync();
+  setInterval(() => {
+    if (document.visibilityState === "visible") syncEstateNow(false);
+  }, 30000);
   mirror();
   syncNativeReminders();
   showPendingNote();

@@ -3,9 +3,9 @@ Coconut Ledger: build the single-file page the phones run.
 
     python tools/build_page.py
 
-You edit three files in web/ (index.html, styles.css, app.js). The phone app needs them as ONE file, because an
+You edit files in web/ (index.html, styles.css, sync.js, app.js). The phone app needs them as ONE file, because an
 update downloads exactly one index.html. This script:
-  1. puts styles.css and app.js inside a copy of index.html,
+  1. puts styles.css, sync.js and app.js inside a copy of index.html,
   2. leaves out the online Google Fonts lines (the phone app works offline and uses its built-in fonts),
   3. writes the result to android/app/src/main/assets/index.html (used when you build the Android app).
 make_release.py uses the same function for the published index.html.
@@ -27,14 +27,19 @@ def build():
     html = (WEB / "index.html").read_text(encoding="utf-8")
     css = (WEB / "styles.css").read_text(encoding="utf-8")
     js = (WEB / "app.js").read_text(encoding="utf-8")
-    if "</script" in js.lower():
-        raise SystemExit("app.js contains the text </script, which would break the page. Write it as <\\/script instead.")
+    sync_js = (WEB / "sync.js").read_text(encoding="utf-8")
+    for name, script_text in (("app.js", js), ("sync.js", sync_js)):
+        if "</script" in script_text.lower():
+            raise SystemExit(f"{name} contains the text </script, which would break the page. Write it as <\\/script instead.")
 
     link = re.search(r'<link\b[^>]*href="styles\.css"[^>]*>', html)
+    sync_script = re.search(r'<script\b[^>]*src="sync\.js"[^>]*>\s*</script>', html)
     script = re.search(r'<script\b[^>]*src="app\.js"[^>]*>\s*</script>', html)
-    if not link or not script:
-        raise SystemExit('web/index.html must keep <link rel="stylesheet" href="styles.css" /> and <script src="app.js"></script>')
+    if not link or not sync_script or not script or sync_script.start() > script.start():
+        raise SystemExit('web/index.html must keep styles.css and load sync.js before app.js')
     html = html[: link.start()] + "<style>\n" + css + "</style>" + html[link.end():]
+    sync_script = re.search(r'<script\b[^>]*src="sync\.js"[^>]*>\s*</script>', html)
+    html = html[: sync_script.start()] + "<script>\n" + sync_js + "</script>" + html[sync_script.end():]
     script = re.search(r'<script\b[^>]*src="app\.js"[^>]*>\s*</script>', html)
     html = html[: script.start()] + "<script>\n" + js + "</script>" + html[script.end():]
 

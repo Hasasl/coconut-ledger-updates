@@ -25,9 +25,37 @@ You edit web/  ->  python tools/make_release.py  ->  GitHub Desktop: Commit + Pu
 
 - A **page update** needs no install. Phones switch to it by themselves.
 - An **Android shell update** shows "Install" in the app. The person taps it once.
-- Records never leave the phone. GitHub only holds the app, never anyone's data.
+- Records stay on the phone unless optional estate sync is configured. GitHub only holds the app, never anyone's data.
 - The 1.8.5 page update displays a one-time in-app security notice after it applies. Update checks run
   when the app is opened or resumed; this is not a push notification while the app is closed.
+
+### Optional multi-device estate sync
+
+Estate sync is local-first and disabled until a Supabase project is configured. When enabled, each
+person signs in with an individual account. The app uploads ledger records to that project's private
+database; an invitation only creates a join request, and an estate owner must approve every request
+before the account can read or sync records.
+
+Before using real estate data:
+
+1. Create a Supabase project and configure email/password authentication and email confirmation.
+2. In the Supabase SQL Editor, run `supabase/migrations/202611170001_estate_sync.sql` once.
+3. In the app, open **Data > Estate sharing and sync > Supabase connection settings** and enter the
+   project's `https://<project-ref>.supabase.co` URL and its public publishable/anon key. Never use
+   or distribute a `service_role` key in the app.
+4. Create an account and estate on the first device. The owner creates a one-time, 24-hour invite
+   and can revoke any unused invite.
+   The other person signs in, submits the invite code and a display name, then waits for owner
+   approval. Approval is required for every join request.
+5. Test with separate owner and member accounts before migrating production records. Verify that
+   each intended role can only perform its allowed actions and test conflicting edits on two devices.
+
+Owners can approve members as manager, data-entry, or view-only. Managers can edit estate records;
+data-entry members can add or edit harvest and other-income records; view-only members cannot write.
+Concurrent changes to the same record are presented for a manual choice rather than silently
+overwritten. Local copies remain on each device, including after access is revoked; revocation blocks
+future cloud access but cannot remotely erase data already downloaded to a device. Back up devices
+and only invite people authorized to see the estate's ledger.
 
 ---
 
@@ -77,8 +105,8 @@ That push also publishes page version 1.6.1, which looks the same as 1.6.0. When
 2. **Preview.** Right-click `web/index.html` and choose **Show Preview** (Live Preview), or open it in
    Chrome. In Chrome press **F12**, then the phone icon, to see it at phone size. The preview saves its
    own sample records in the browser, so nothing touches real data.
-3. **Edit** `web/app.js` (logic and screens), `web/styles.css` (looks) or `web/index.html` (the outer
-   frame and the harvest form).
+3. **Edit** `web/app.js` (ledger logic and screens), `web/sync.js` (Supabase auth and requests),
+   `web/styles.css` (looks) or `web/index.html` (the outer frame and harvest form).
 4. **Raise the version.** Near the top of `web/app.js`, change `const VER = "1.6.1";` to the next
    number, for example `"1.6.2"`. The release tool stops you if you forget.
 5. **Publish.** Choose **Terminal > Run Task > Release: publish an update**, or run
@@ -148,6 +176,12 @@ Press **Ctrl+Shift+O** in VS Code to jump to a function by name.
 - The top `:root { ... }` block holds the **neon colours**. `:root[data-skin="light"]` holds the light ones.
   Change a colour there and it changes everywhere.
 - After that, styles go roughly in screen order: header, cards, charts, months, dialog, report, animations.
+
+### Estate sync
+- `web/sync.js` contains the Supabase Auth and PostgREST client. It uses only the public publishable key
+  and the signed-in user's session.
+- `supabase/migrations/202611170001_estate_sync.sql` contains the schema, row-level security policies
+  and owner-gated RPCs. Apply it to the Supabase project before configuring the app.
 
 ### `android/app/src/main/java/com/estateledger/coconut/`
 - `MainActivity.java`: shows the page full screen (hides the status and navigation bars, uses the area
