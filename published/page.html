@@ -1322,6 +1322,25 @@ dialog::backdrop {
 .fields .wide {
   grid-column: 1/-1;
 }
+.custom-ded-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 8px;
+  color: var(--ink-2);
+  font-size: 13px;
+}
+.custom-ded-list {
+  display: grid;
+  gap: 8px;
+}
+.custom-ded-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.7fr) auto;
+  align-items: end;
+  gap: 8px;
+}
 label.fld {
   display: flex;
   flex-direction: column;
@@ -1944,6 +1963,15 @@ label.fld select {
   dialog {
     border-radius: 20px;
     margin: auto;
+  }
+}
+@media (max-width: 420px) {
+  .custom-ded-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.7fr);
+  }
+  .custom-ded-row .custom-remove {
+    grid-column: 2;
+    justify-self: end;
   }
 }
 @media (min-width: 920px) {
@@ -2641,6 +2669,11 @@ html:not([lang="si"]) .ld-tag .si {
           ><button type="button" class="btn small" id="copyLast" data-t="copy_prev"></button>
         </div>
         <div class="fields ded" id="dedFields"></div>
+        <div class="custom-ded-head">
+          <b data-t="custom_ded"></b>
+          <button type="button" class="btn small" id="addCustomDed" data-t="add_custom_ded"></button>
+        </div>
+        <div class="custom-ded-list" id="customDedFields"></div>
         <label class="fld"
           ><span data-t="f_othernote"></span><input id="f-othernote" type="text" maxlength="80" data-tp="othernote_ph"
         /></label>
@@ -2851,6 +2884,13 @@ const L = {
     f_bcontact: "Buyer's contact",
     phone_ph: "Phone number",
     copy_prev: "Use previous charges",
+    custom_ded: "Custom deductions",
+    add_custom_ded: "+ Add custom deduction",
+    custom_name: "Name / person",
+    custom_amount: "Amount ({0})",
+    remove_custom_ded: "Remove",
+    e_custom_name: "Enter a name/person for each custom deduction amount.",
+    e_custom_amount: "Custom deduction amounts cannot be negative.",
     f_othernote: "What is the Other amount for?",
     othernote_ph: "Example: loan deducted from son",
     by_ph: "Your name",
@@ -3177,6 +3217,13 @@ const L = {
     f_bcontact: "ගැනුම්කරුගේ දුරකථනය",
     phone_ph: "දුරකථන අංකය",
     copy_prev: "පෙර වියදම් යොදන්න",
+    custom_ded: "අභිරුචි අඩු කිරීම්",
+    add_custom_ded: "+ අඩු කිරීමක් එක් කරන්න",
+    custom_name: "නම / පුද්ගලයා",
+    custom_amount: "මුදල ({0})",
+    remove_custom_ded: "ඉවත් කරන්න",
+    e_custom_name: "අභිරුචි අඩු කිරීමේ සෑම මුදලකටම නමක් / පුද්ගලයෙක් ඇතුළත් කරන්න.",
+    e_custom_amount: "අභිරුචි අඩු කිරීමේ මුදල ඍණ විය නොහැක.",
     f_othernote: "වෙනත් මුදල කුමක් සඳහාද?",
     othernote_ph: "උදා: පුතාගෙන් අඩු කළ ණය",
     by_ph: "ඔබේ නම",
@@ -3395,7 +3442,7 @@ const t = (k, ...a) => {
   return s;
 };
 
-const VER = "1.8.1";
+const VER = "1.8.2";
 /* Your company, shown at the bottom of the Data tab. Leave it empty to show the app name instead. */
 const COMPANY = "CyberTech Lanka";
 const FIRST_YEAR = 2026;
@@ -3655,6 +3702,33 @@ const catName = (k, h) => t("cat_" + k) + (k === "other" && h && h.otherNote ? "
    Transport cart = harvested × rate unless typed in. */
 const blank = (v) => v == null || v === "";
 const dedVal = (h, c) => (c === "transport" && blank(h.ded[c]) ? (+h.total || 0) * state.transRate : +h.ded[c] || 0);
+const customDedEntries = (h) =>
+  Array.isArray(h && h.customDeds)
+    ? h.customDeds
+        .map((d) => {
+          const amount = Number(d && d.amount);
+          return {
+            name: String((d && d.name) || "")
+              .trim()
+              .slice(0, 60),
+            amount: Number.isFinite(amount) ? Math.max(0, amount) : 0,
+          };
+        })
+        .filter((d) => d.name)
+    : [];
+const customDedTotal = (h) => sum(customDedEntries(h).map((d) => d.amount));
+function customDedSummary(hs) {
+  const rows = new Map();
+  hs.forEach((h) =>
+    customDedEntries(h).forEach((d) => {
+      const key = d.name.toLowerCase(),
+        row = rows.get(key) || { name: d.name, amount: 0 };
+      row.amount += d.amount;
+      rows.set(key, row);
+    }),
+  );
+  return Array.from(rows.values()).filter((d) => d.amount > 0);
+}
 function calc() {
   const hs = state.harvests.slice().sort((a, b) => pd(a.date) - pd(b.date));
   return hs.map((h, i) => {
@@ -3669,7 +3743,8 @@ function calc() {
       inc = paid * h.price,
       dv = {};
     CATS.forEach((c) => (dv[c] = dedVal(h, c)));
-    const ded = sum(CATS.map((c) => dv[c])),
+    const customDeds = customDedEntries(h),
+      ded = sum(CATS.map((c) => dv[c])) + sum(customDeds.map((d) => d.amount)),
       net = inc - ded,
       rest = 0;
     return Object.assign({}, h, {
@@ -3683,6 +3758,7 @@ function calc() {
       paid,
       rest,
       dv,
+      customDeds,
       inc,
       dedT: ded,
       net,
@@ -3920,7 +3996,9 @@ function forecast(hs) {
       hs.slice(-6).map((h) => (h.total ? h.loaded / h.total : 0)),
       0.4,
     ),
-    dedT = sum(CATS.map((c) => mean(hs.slice(-6).map((h) => h.dv[c])))),
+    dedT =
+      sum(CATS.map((c) => mean(hs.slice(-6).map((h) => h.dv[c])))) +
+      mean(hs.slice(-6).map((h) => customDedTotal(h))),
     transNow = mean(hs.slice(-6).map((h) => h.dv.transport)),
     last = pd(hs[n - 1].date);
   const step = (from, to, k) => {
@@ -4272,15 +4350,16 @@ const LEG = () =>
   `<div class="legend"><span><i class="k1"></i>${t("loaded")}</span><span><i class="k3"></i>${t("rejected")}</span><span><i class="k4"></i>${t("home")}</span></div>`;
 function flowRows(h) {
   const rows = CATS.map((c) => [catName(c, h), h.dv[c]])
-      .filter((r) => r[1] > 0)
-      .sort((a, b) => b[1] - a[1]),
+    .concat(customDedEntries(h).map((d) => [d.name, d.amount]))
+    .filter((r) => r[1] > 0)
+    .sort((a, b) => b[1] - a[1]),
     base = Math.max(h.inc, h.dedT, 1);
   return (
     `<div class="flow"><div class="row in"><span>${t("income_row", N(h.paid), price(h.price))}</span><div class="bar"><i style="width:${(h.inc / base) * 100}%"></i></div><span class="v num">${money(h.inc)}</span></div>` +
     rows
       .map(
         (r, i) =>
-          `<div class="row"><span>${esc(r[0])}</span><div class="bar"><i style="width:${(r[1] / base) * 100}%;animation-delay:${i * 50}ms"></i></div><span class="v num">− ${N(r[1])}<span class="pct">${h.inc ? Math.round((r[1] / h.inc) * 100) : 0}%</span></span></div>`,
+        `<div class="row"><span>${esc(r[0])}</span><div class="bar"><i style="width:${(r[1] / base) * 100}%;animation-delay:${i * 50}ms"></i></div><span class="v num">− ${N(r[1])}<span class="pct">${h.inc ? Math.round((r[1] / h.inc) * 100) : 0}%</span></span></div>`,
       )
       .join("") +
     `<div class="row net"><span>${t("balance")}</span><div class="bar"><i style="width:${(Math.max(0, h.net) / base) * 100}%"></i></div><span class="v num ${h.net < 0 ? "neg-t" : ""}">${money(h.net)}</span></div>` +
@@ -4392,12 +4471,15 @@ function vMonths(hs) {
             .slice()
             .reverse()
             .map((h, i) => {
-              const dl = CATS.filter((c) => h.dv[c] > 0);
+              const dl = CATS.filter((c) => h.dv[c] > 0)
+                .map((c) => [catName(c, h), h.dv[c]])
+                .concat(customDedEntries(h).map((d) => [d.name, d.amount]))
+                .filter((d) => d[1] > 0);
               return `<div class="card hrow" style="animation-delay:${Math.min(i, 10) * 30}ms">
     <div class="when"><b>${fd(h.date)}</b>${h.gap != null ? `<span class="chip">${t("days_after", h.gap)}</span>` : `<span class="chip">${t("first_rec")}</span>`}<span style="flex:1"></span><button class="btn small" data-edit="${esc(h.id)}">${t("edit")}</button></div>
     <div class="hgrid">${F(t("price"), price(h.price), "key")}${F(t("loaded"), N(h.loaded), "key")}${F(t("harvested"), N(h.total))}${F(t("free"), N(h.free))}${F(t("rejected"), N(h.rejected))}${F(t("home"), N(h.home))}
       ${F(t("income"), money(h.inc))}${F(t("deductions"), "− " + N(h.dedT))}<div class="f"><span>${t("balance")}</span><b class="num ${h.net < 0 ? "neg-t" : "pos-t"}">${money(h.net)}</b></div>${state.shares > 1 ? F(esc(shareLab()), money(h.share)) : ""}</div>
-    ${dl.length ? `<details class="dd"><summary>${t("ded_break")}</summary><ul class="num">${dl.map((c) => `<li><span>${esc(catName(c, h))}</span><b>${N(h.dv[c])}</b></li>`).join("")}</ul></details>` : ""}
+    ${dl.length ? `<details class="dd"><summary>${t("ded_break")}</summary><ul class="num">${dl.map((d) => `<li><span>${esc(d[0])}</span><b>${N(d[1])}</b></li>`).join("")}</ul></details>` : ""}
     <div class="who"><span>${t("buyer")}: <b>${h.buyer ? esc(h.buyer) : t("not_rec")}</b></span>${h.contact ? `<span>${t("contact")}: <a href="tel:${esc(String(h.contact).replace(/[^\d+]/g, ""))}">${esc(h.contact)}</a></span>` : ""}<span>${t("entered_by")}: <b>${h.by ? esc(h.by) : t("not_rec")}</b></span></div>
     ${h.note ? `<p class="note">${esc(h.note)}</p>` : ""}</div>`;
             })
@@ -4419,6 +4501,7 @@ function vInsights(all) {
     net = inc - ded;
   const gaps = hs.map((h) => h.gap).filter((g) => g > 0);
   const cats = CATS.map((c) => [t("cat_" + c), sum(hs.map((h) => h.dv[c]))])
+      .concat(customDedSummary(hs).map((d) => [d.name, d.amount]))
       .filter((c) => c[1] > 0)
       .sort((a, b) => b[1] - a[1]),
     base = Math.max(inc, ded, 1);
@@ -4462,7 +4545,7 @@ function vInsights(all) {
     <tbody>${ms.map((m) => `<tr><td>${m.label}</td><td class="pr">${price(m.price)}</td><td>${N(m.total)}</td><td>${N(m.loaded)}</td><td>${N(m.free)}</td><td>${N(m.rej)}</td><td>${N(m.home)}</td><td>${N(m.inc)}</td><td>${N(m.ded)}</td><td class="${m.net < 0 ? "neg-t" : ""}"><b>${N(m.net)}</b></td>${state.shares > 1 ? `<td>${N(m.share)}</td>` : ""}</tr>`).join("")}</tbody></table></div></div>
   <div class="grid two">
     <div class="card"><h2>${t("where_goes")}</h2><p class="hint">${t("where_hint", money(inc))}</p><div class="flow">
-      ${cats.map((c, i) => `<div class="row"><span>${c[0]}</span><div class="bar"><i style="width:${(c[1] / base) * 100}%;animation-delay:${i * 50}ms"></i></div><span class="v num">${N(c[1])}<span class="pct">${inc ? Math.round((c[1] / inc) * 100) : 0}%</span></span></div>`).join("")}
+      ${cats.map((c, i) => `<div class="row"><span>${esc(c[0])}</span><div class="bar"><i style="width:${(c[1] / base) * 100}%;animation-delay:${i * 50}ms"></i></div><span class="v num">${N(c[1])}<span class="pct">${inc ? Math.round((c[1] / inc) * 100) : 0}%</span></span></div>`).join("")}
       <div class="row net"><span>${t("balance")}</span><div class="bar"><i style="width:${(Math.max(0, net) / base) * 100}%"></i></div><span class="v num ${net < 0 ? "neg-t" : ""}">${money(net)}<span class="pct">${inc ? Math.round((net / inc) * 100) : 0}%</span></span></div>
       ${state.shares > 1 ? `<div class="row share"><span>${esc(shareLab())} (÷ ${state.shares})</span><div class="bar"><i style="width:${(Math.max(0, net / state.shares) / base) * 100}%"></i></div><span class="v num">${money(net / state.shares)}</span></div>` : ""}</div></div>
     <div class="card"><h2>${t("bal_per_h")}</h2><p class="hint">${best ? t("best", fd(best.date), money(best.net)) : ""}</p><div class="chart" id="i-net"></div></div>
@@ -4605,7 +4688,7 @@ function vData() {
     <label class="fld wide">${t("trans_rate")} (${esc(state.cur)})<input id="s-trans" type="number" inputmode="decimal" min="0" step="0.01" value="${esc(state.transRate)}"></label></div>
     <div class="btnrow" style="margin-top:12px"><button class="btn primary" id="s-save">${t("save_details")}</button></div></div>
   <div class="card" style="grid-column:1/-1"><h2>${t("imp_h")}</h2><p class="hint">${t("imp_hint")}</p>
-    <p style="margin:0 0 10px"><code>date, harvested, rejected, home use, price, harvesting, cart, transport, church, my money, fertilizer, power, other, buyer name, buyer contact, entered by, note, other note, free to buyer, loaded</code></p>
+    <p style="margin:0 0 10px"><code>date, harvested, rejected, home use, price, harvesting, cart, transport, church, my money, fertilizer, power, other, buyer name, buyer contact, entered by, note, other note, free to buyer, loaded, custom deductions JSON</code></p>
     <p class="hint">${t("imp_ex")}</p>
     <textarea class="box" id="imp" rows="5" placeholder="${esc(t("imp_ph"))}" aria-label="${esc(t("imp_h"))}"></textarea>
     <div class="btnrow" style="margin-top:10px"><button class="btn primary" id="impGo">${t("imp_go")}</button><label class="btn">${t("choose_file")}<input type="file" id="impFile" accept=".csv,.json,.txt,text/csv,text/comma-separated-values,application/json,text/plain" hidden></label></div>
@@ -4888,6 +4971,27 @@ $("#dedFields").innerHTML = CATS.map(
   (c) =>
     `<label class="fld"><span data-t="cat_${c}"></span><input id="d-${c}" type="number" inputmode="decimal" min="0" step="1" placeholder="0"></label>`,
 ).join("");
+function readCustomDedFields() {
+  const box = $("#customDedFields");
+  return Array.from(box.querySelectorAll("[data-custom-name]"))
+    .map((nameInput) => {
+      const amountInput = nameInput.closest(".custom-ded-row").querySelector("[data-custom-amount]"),
+        amount = amountInput.value.trim() === "" ? 0 : parseFloat(amountInput.value);
+      return { name: nameInput.value.trim(), amount: isFinite(amount) ? amount : 0 };
+    })
+    .filter((d) => d.name || d.amount !== 0);
+}
+function renderCustomDedFields(rows) {
+  $("#customDedFields").innerHTML = (rows || [])
+    .map(
+      (d) => `<div class="custom-ded-row">
+        <label class="fld"><span>${t("custom_name")}</span><input type="text" data-custom-name maxlength="60" value="${esc(d.name || "")}"></label>
+        <label class="fld"><span>${t("custom_amount", esc(state.cur))}</span><input type="number" inputmode="decimal" data-custom-amount min="0" step="1" value="${esc(d.amount || "")}"></label>
+        <button type="button" class="btn small custom-remove" data-remove-custom>${t("remove_custom_ded")}</button>
+      </div>`,
+    )
+    .join("");
+}
 const val = (id) => {
   const v = parseFloat($("#" + id).value);
   return isFinite(v) ? v : 0;
@@ -4903,7 +5007,9 @@ function liveCalc() {
     inc = loaded * val("f-price"),
     autoT = total * state.transRate,
     net =
-      inc - sum(CATS.map((c) => (c === "transport" && $("#d-transport").value.trim() === "" ? autoT : val("d-" + c))));
+      inc -
+      sum(CATS.map((c) => (c === "transport" && $("#d-transport").value.trim() === "" ? autoT : val("d-" + c)))) -
+      sum(readCustomDedFields().map((d) => d.amount));
   return { taken: loaded, rej, autoT, auto, free, paid: loaded, inc, net };
 }
 function live() {
@@ -4952,6 +5058,7 @@ function openForm(id) {
   $("#f-contact").value = h ? h.contact || "" : prev ? prev.contact || "" : "";
   $("#f-by").value = h ? h.by || "" : me;
   CATS.forEach((c) => ($("#d-" + c).value = h && h.ded[c] ? h.ded[c] : ""));
+  renderCustomDedFields(h ? customDedEntries(h) : []);
   $("#copyLast").style.display = prevOf(editId) ? "" : "none";
   live();
   openD(dlg);
@@ -4960,6 +5067,7 @@ $("#copyLast").onclick = () => {
   const l = prevOf(editId);
   if (!l) return toast(t("t_noprev"));
   CATS.forEach((c) => ($("#d-" + c).value = blank(l.ded[c]) ? "" : l.ded[c] || ""));
+  renderCustomDedFields(customDedEntries(l));
   $("#f-othernote").value = l.otherNote || "";
   live();
 };
@@ -4972,12 +5080,15 @@ $("#hform").addEventListener("submit", (e) => {
     err = $("#f-err"),
     fv = $("#f-free").value.trim(),
     lv = $("#f-loaded").value.trim();
+  const customDeds = readCustomDedFields();
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return (err.textContent = t("e_date"));
   if (pr <= 0) return (err.textContent = t("e_price"));
   if (total <= 0) return (err.textContent = t("e_total"));
   if (lv === "" || val("f-loaded") <= 0) return (err.textContent = t("e_loadreq"));
   if (val("f-loaded") + home > total) return (err.textContent = t("e_loaded"));
   if (fv !== "" && val("f-free") > liveCalc().taken) return (err.textContent = t("e_free"));
+  if (customDeds.some((d) => d.amount < 0)) return (err.textContent = t("e_custom_amount"));
+  if (customDeds.some((d) => d.amount > 0 && !d.name)) return (err.textContent = t("e_custom_name"));
   if (state.harvests.some((h) => h.date === date && h.id !== editId) && !state.sample)
     return (err.textContent = t("e_dup"));
   if (state.sample) {
@@ -4999,6 +5110,7 @@ $("#hform").addEventListener("submit", (e) => {
     free: fv === "" ? null : Math.round(val("f-free")),
     price: pr,
     ded,
+    customDeds: customDedEntries({ customDeds }),
     otherNote: $("#f-othernote").value.trim(),
     buyer: $("#f-buyer").value.trim(),
     contact: $("#f-contact").value.trim(),
@@ -5047,6 +5159,7 @@ function toCSV() {
                 q(h.otherNote),
                 h.freeSet == null ? "" : h.freeSet,
                 h.loaded,
+                q(JSON.stringify(h.customDeds)),
               ],
             )
             .join(","),
@@ -5165,6 +5278,16 @@ function importText(txt) {
     };
     if (n(1) <= 0) throw t("i_count", ln + 1);
     if (n(2) + n(3) > n(1)) throw t("i_sum", ln + 1);
+    let customDeds = [];
+    if ((c[20] || "").trim()) {
+      try {
+        const parsed = JSON.parse(c[20]);
+        if (!Array.isArray(parsed)) throw new Error("Custom deductions must be an array.");
+        customDeds = customDedEntries({ customDeds: parsed });
+      } catch (e) {
+        throw t("i_bad");
+      }
+    }
     const ded = {};
     CATS.forEach((k, i) => (ded[k] = k === "transport" && (c[5 + i] || "") === "" ? null : n(5 + i)));
     out.push({
@@ -5177,6 +5300,7 @@ function importText(txt) {
       loaded: (c[19] || "") === "" ? null : Math.round(n(19)),
       price: n(4),
       ded,
+      customDeds,
       buyer: c[13] || "",
       contact: c[14] || "",
       by: c[15] || "",
@@ -5236,9 +5360,11 @@ function openReport() {
     ded = S((h) => h.dedT),
     net = inc - ded,
     base = Math.max(inc, ded, 1);
-  const cats = CATS.map((c) => [t("cat_" + c), S((h) => h.dv[c])])
-    .filter((c) => c[1] > 0)
-    .sort((a, b) => b[1] - a[1]);
+  const customCats = customDedSummary(hs),
+    cats = CATS.map((c) => [t("cat_" + c), S((h) => h.dv[c])])
+      .concat(customCats.map((d) => [d.name, d.amount]))
+      .filter((c) => c[1] > 0)
+      .sort((a, b) => b[1] - a[1]);
   const T = (l, v) => `<div class="rt"><span>${l}</span><b>${v}</b></div>`,
     sh = state.shares > 1;
   $("#report").innerHTML =
@@ -5251,14 +5377,14 @@ function openReport() {
   <div class="card"><h2>${t("per_harvest_h")}</h2>${LEG()}<div class="chart" id="r-nuts"></div></div>
   <div class="card"><h2>${t("mbm")}</h2><div class="tbl"><table class="num"><thead><tr><th>${t("th_month")}</th><th>${t("price")}</th><th>${t("harvested")}</th><th>${t("th_loaded")}</th><th>${t("th_free")}</th><th>${t("th_rej")}</th><th>${t("th_home")}</th><th>${t("income")}</th><th>${t("deductions")}</th><th>${t("balance")}</th>${sh ? `<th>${esc(shareLab())}</th>` : ""}</tr></thead>
     <tbody>${ms.map((m) => `<tr><td>${m.label}</td><td class="pr">${price(m.price)}</td><td>${N(m.total)}</td><td>${N(m.loaded)}</td><td>${N(m.free)}</td><td>${N(m.rej)}</td><td>${N(m.home)}</td><td>${N(m.inc)}</td><td>${N(m.ded)}</td><td><b>${N(m.net)}</b></td>${sh ? `<td>${N(m.share)}</td>` : ""}</tr>`).join("")}</tbody></table></div></div>
-  <div class="card"><h2>${t("where_goes")}</h2><div class="flow">${cats.map((c) => `<div class="row"><span>${c[0]}</span><div class="bar"><i style="width:${(c[1] / base) * 100}%"></i></div><span class="v num">${N(c[1])}<span class="pct">${inc ? Math.round((c[1] / inc) * 100) : 0}%</span></span></div>`).join("")}
+  <div class="card"><h2>${t("where_goes")}</h2><div class="flow">${cats.map((c) => `<div class="row"><span>${esc(c[0])}</span><div class="bar"><i style="width:${(c[1] / base) * 100}%"></i></div><span class="v num">${N(c[1])}<span class="pct">${inc ? Math.round((c[1] / inc) * 100) : 0}%</span></span></div>`).join("")}
     <div class="row net"><span>${t("balance")}</span><div class="bar"><i style="width:${(Math.max(0, net) / base) * 100}%"></i></div><span class="v num">${money(net)}<span class="pct">${inc ? Math.round((net / inc) * 100) : 0}%</span></span></div>
     ${sh ? `<div class="row share"><span>${esc(shareLab())} (÷ ${state.shares})</span><div class="bar"><i style="width:${(Math.max(0, net / state.shares) / base) * 100}%"></i></div><span class="v num">${money(net / state.shares)}</span></div>` : ""}</div></div>
-  <div class="card"><h2>${t("rep_dedm")}</h2><div class="tbl"><table class="num"><thead><tr><th>${t("th_month")}</th>${CATS.map((c) => `<th>${t("cat_" + c)}</th>`).join("")}<th>${t("th_total")}</th></tr></thead>
+  <div class="card"><h2>${t("rep_dedm")}</h2><div class="tbl"><table class="num"><thead><tr><th>${t("th_month")}</th>${CATS.map((c) => `<th>${t("cat_" + c)}</th>`).join("")}${customCats.map((d) => `<th>${esc(d.name)}</th>`).join("")}<th>${t("th_total")}</th></tr></thead>
     <tbody>${ms
       .map((m) => {
         const o = agg(m.list);
-        return `<tr><td>${m.label}</td>${CATS.map((c) => `<td>${N(o.dv[c])}</td>`).join("")}<td><b>${N(o.dedT)}</b></td></tr>`;
+        return `<tr><td>${m.label}</td>${CATS.map((c) => `<td>${N(o.dv[c])}</td>`).join("")}${customCats.map((d) => `<td>${N((o.customDeds.find((x) => x.name.toLowerCase() === d.name.toLowerCase()) || {}).amount || 0)}</td>`).join("")}<td><b>${N(o.dedT)}</b></td></tr>`;
       })
       .join("")}</tbody></table></div></div>
   <div class="card"><h2>${t("bal_per_h")}</h2><div class="chart" id="r-net"></div></div>
@@ -5313,6 +5439,7 @@ function agg(l) {
     free: S((h) => h.free),
     inc,
     dv,
+    customDeds: customDedSummary(l),
     dedT,
     net: inc - dedT,
     share: (inc - dedT) / state.shares,
@@ -5335,6 +5462,7 @@ function moneyTable(o) {
   return `<table class="st num"><thead><tr><th>${t("rep_item")}</th><th>${t("rep_note")}</th><th>${t("rep_amount", esc(state.cur))}</th><th>${t("rep_pct")}</th></tr></thead><tbody>
   <tr class="sub"><td>${t("income")}</td><td>${N(o.loaded)} × ${price(o.price)}</td><td>${N(o.inc)}</td><td>100%</td></tr>
   ${CATS.map((c) => `<tr><td>${t("cat_" + c)}</td><td>${c === "transport" && o.transAuto ? t("per_harv_x", N(o.total), price(state.transRate)) : c === "other" ? esc(o.otherNote) : ""}</td><td>${o.dv[c] ? "− " + N(o.dv[c]) : "0"}</td><td>${bar(o.dv[c])}${pc(o.dv[c])}</td></tr>`).join("")}
+  ${o.customDeds.map((d) => `<tr><td>${esc(d.name)}</td><td></td><td>− ${N(d.amount)}</td><td>${bar(d.amount)}${pc(d.amount)}</td></tr>`).join("")}
   <tr class="sub"><td>${t("rep_totded")}</td><td></td><td>− ${N(o.dedT)}</td><td>${pc(o.dedT)}</td></tr>
   <tr class="tot"><td>${t("balance")}</td><td></td><td>${money(o.net)}</td><td>${pc(o.net)}</td></tr>
   ${state.shares > 1 ? `<tr class="shr"><td>${esc(shareLab())} (÷ ${state.shares})</td><td></td><td>${money(o.share)}</td><td></td></tr>` : ""}</tbody></table>`;
@@ -5416,6 +5544,15 @@ document.addEventListener("click", async (e) => {
     return render({ dir: still() ? "" : "fade" });
   }
   if (b.id === "skinBtn") return toggleSkin(e);
+  if (b.id === "addCustomDed") {
+    renderCustomDedFields(readCustomDedFields().concat({ name: "", amount: "" }));
+    return;
+  }
+  if (b.hasAttribute("data-remove-custom")) {
+    b.closest(".custom-ded-row").remove();
+    live();
+    return;
+  }
   if (b.dataset.upd && UPD) {
     const k = b.dataset.upd,
       inp = $("#u-link");

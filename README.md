@@ -15,6 +15,17 @@ The app updates itself after that.
 Everything needed to change, build and publish the app is in this repository.
 Start with **[docs/DEVELOPING.md](docs/DEVELOPING.md)**.
 
+### Preview a page change in Android Studio before publishing
+
+1. From the repository folder, run `python tools/build_page.py`. This puts the latest web page into
+   `android/app/src/main/assets/index.html`; publishing is not required.
+2. Open the `android/` folder in Android Studio, wait for Gradle sync, then choose **Run** and an
+   emulator to build and preview the bundled page.
+3. If Android Studio was already open, rebuild and run again after each page change.
+
+The debug build may not install over a release-signed app already on a physical phone. Use an emulator
+for this preview so you do not need to uninstall the app or risk its local records.
+
 | Folder or file | What it is |
 |---|---|
 | `web/` | The app's screens and logic. Almost all changes happen here. |

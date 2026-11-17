@@ -183,6 +183,8 @@ compare against a hand calculation.
   need a default in `norm()`.
 - Adding a deduction type to `CATS` also moves the CSV columns. Add it at the end and update
   `toCSV()` and `importText()` together.
+- Per-harvest custom deductions are stored in `customDeds`; keep their trailing JSON column in
+  `toCSV()` and `importText()` so CSV backups round-trip.
 
 ### 7b. How the forecast works
 

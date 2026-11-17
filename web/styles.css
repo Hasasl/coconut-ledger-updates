@@ -1315,6 +1315,25 @@ dialog::backdrop {
 .fields .wide {
   grid-column: 1/-1;
 }
+.custom-ded-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 8px;
+  color: var(--ink-2);
+  font-size: 13px;
+}
+.custom-ded-list {
+  display: grid;
+  gap: 8px;
+}
+.custom-ded-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.7fr) auto;
+  align-items: end;
+  gap: 8px;
+}
 label.fld {
   display: flex;
   flex-direction: column;
@@ -1937,6 +1956,15 @@ label.fld select {
   dialog {
     border-radius: 20px;
     margin: auto;
+  }
+}
+@media (max-width: 420px) {
+  .custom-ded-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.7fr);
+  }
+  .custom-ded-row .custom-remove {
+    grid-column: 2;
+    justify-self: end;
   }
 }
 @media (min-width: 920px) {
