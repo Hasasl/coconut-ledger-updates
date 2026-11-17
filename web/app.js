@@ -4241,6 +4241,50 @@ function validateFullBackup(backup) {
     !Array.isArray(deductionPresets)
   )
     throw t("i_bad");
+  for (const [month, amounts] of Object.entries(monthPayouts)) {
+    if (
+      !validMonth(month) ||
+      !Array.isArray(amounts) ||
+      amounts.some((amount) => !Number.isFinite(Number(amount)) || Number(amount) < 0)
+    )
+      throw t("i_bad");
+  }
+  if (reviewedMonths.some((month) => !validMonth(month))) throw t("i_bad");
+  for (const preset of deductionPresets) {
+    if (
+      !preset ||
+      typeof preset !== "object" ||
+      typeof preset.name !== "string" ||
+      !preset.name.trim() ||
+      !preset.ded ||
+      typeof preset.ded !== "object" ||
+      Array.isArray(preset.ded) ||
+      (preset.customDeds != null &&
+        (!Array.isArray(preset.customDeds) ||
+          preset.customDeds.some(
+            (deduction) =>
+              !deduction ||
+              !String(deduction.name || "").trim() ||
+              !Number.isFinite(Number(deduction.amount)) ||
+              Number(deduction.amount) < 0,
+          ))) ||
+      (preset.shareDeds != null &&
+        (!Array.isArray(preset.shareDeds) ||
+          preset.shareDeds.some((amount) => !Number.isFinite(Number(amount)) || Number(amount) < 0))) ||
+      !Number.isFinite(Number(preset.roundingAdjustment || 0)) ||
+      Number(preset.roundingAdjustment || 0) < 0
+    )
+      throw t("i_bad");
+    if (
+      CATS.some(
+        (category) =>
+          !blank(preset.ded[category]) &&
+          (!Number.isFinite(Number(preset.ded[category])) || Number(preset.ded[category]) < 0),
+      )
+    )
+      throw t("i_bad");
+    preset.id = String(preset.id || uid());
+  }
   for (const harvest of backup.harvests) {
     if (
       !harvest ||
@@ -4265,50 +4309,6 @@ function validateFullBackup(backup) {
           Number(payment.amount) <= 0
         )
           throw t("i_bad");
-      }
-      for (const [month, amounts] of Object.entries(monthPayouts)) {
-        if (
-          !validMonth(month) ||
-          !Array.isArray(amounts) ||
-          amounts.some((amount) => !Number.isFinite(Number(amount)) || Number(amount) < 0)
-        )
-          throw t("i_bad");
-      }
-      if (reviewedMonths.some((month) => !validMonth(month))) throw t("i_bad");
-      for (const preset of deductionPresets) {
-        if (
-          !preset ||
-          typeof preset !== "object" ||
-          typeof preset.name !== "string" ||
-          !preset.name.trim() ||
-          !preset.ded ||
-          typeof preset.ded !== "object" ||
-          Array.isArray(preset.ded) ||
-          (preset.customDeds != null &&
-            (!Array.isArray(preset.customDeds) ||
-              preset.customDeds.some(
-                (deduction) =>
-                  !deduction ||
-                  !String(deduction.name || "").trim() ||
-                  !Number.isFinite(Number(deduction.amount)) ||
-                  Number(deduction.amount) < 0,
-              ))) ||
-          (preset.shareDeds != null &&
-            (!Array.isArray(preset.shareDeds) ||
-              preset.shareDeds.some((amount) => !Number.isFinite(Number(amount)) || Number(amount) < 0))) ||
-          !Number.isFinite(Number(preset.roundingAdjustment || 0)) ||
-          Number(preset.roundingAdjustment || 0) < 0
-        )
-          throw t("i_bad");
-        if (
-          CATS.some(
-            (category) =>
-              !blank(preset.ded[category]) &&
-              (!Number.isFinite(Number(preset.ded[category])) || Number(preset.ded[category]) < 0),
-          )
-        )
-          throw t("i_bad");
-        preset.id = String(preset.id || uid());
       }
     }
   }
