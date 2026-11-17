@@ -3036,7 +3036,8 @@ html:not([lang="si"]) .ld-tag .si {
     return rows && rows[0];
   }
   async function listRequests(estateId) {
-    return rpc("list_estate_join_requests", { p_estate_id: estateId });
+    const rows = await rpc("list_estate_join_requests", { p_estate_id: estateId });
+    return rows.map((request) => ({ ...request, id: request.request_id }));
   }
   async function reviewRequest(requestId, approve, role) {
     return rpc("review_estate_request", {
@@ -4247,7 +4248,7 @@ const t = (k, ...a) => {
   return s;
 };
 
-const VER = "1.8.8";
+const VER = "1.8.9";
 const SECURITY_NOTICE_VERSION = "1.8.5";
 /* Your company, shown at the bottom of the Data tab. Leave it empty to show the app name instead. */
 const COMPANY = "CyberTech Lanka";

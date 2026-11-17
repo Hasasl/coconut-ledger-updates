@@ -65,6 +65,126 @@ test("developer reset restores the bundled connection and clears the local sessi
   assert.equal(values.has("coconut-ledger-sync-config-v1"), false);
 });
 
+test("saved estate selection restores only for the signed-in member", async () => {
+  const { client } = createClient(async (url) =>
+    url.endsWith("/auth/v1/token?grant_type=password")
+      ? response({
+          access_token: "access",
+          refresh_token: "refresh",
+          expires_in: 3600,
+          user: { id: "user-1" },
+        })
+      : response({}),
+  );
+  client.setConfig({ url: "https://estate.supabase.co", anonKey: "public" });
+  await client.signIn("user@example.test", "long-password");
+
+  assert.equal(client.restoreEstateSelection("estate-1", "user-1", [{ estate_id: "estate-1" }]), "estate-1");
+  assert.equal(client.restoreEstateSelection("estate-1", "", [{ estate_id: "estate-1" }]), "estate-1");
+  assert.equal(client.restoreEstateSelection("estate-1", "other-user", [{ estate_id: "estate-1" }]), "");
+  assert.equal(client.restoreEstateSelection("estate-1", "", []), "");
+});
+
+test("join request listing provides the id field used by approve and reject controls", async () => {
+  const reviewCalls = [],
+    { client } = createClient(async (url, options) => {
+      if (url.endsWith("/auth/v1/token?grant_type=password"))
+        return response({
+          access_token: "access",
+          refresh_token: "refresh",
+          expires_in: 3600,
+          user: { id: "owner-1" },
+        });
+      if (url.endsWith("/rest/v1/rpc/list_estate_join_requests"))
+        return response([
+          {
+            request_id: "request-1",
+            user_id: "member-1",
+            email: "member@example.test",
+            display_name: "Member",
+            requested_at: "2026-11-17T00:00:00Z",
+          },
+        ]);
+      if (url.endsWith("/rest/v1/rpc/review_estate_request")) reviewCalls.push(JSON.parse(options.body));
+      return response(null);
+    });
+  client.setConfig({ url: "https://estate.supabase.co", anonKey: "public" });
+  await client.signIn("owner@example.test", "long-password");
+  const [request] = await client.listRequests("estate-1");
+  assert.equal(request.id, "request-1");
+  assert.equal(request.request_id, "request-1");
+  await client.reviewRequest(request.id, true, "member_2");
+  await client.reviewRequest(request.id, false);
+  assert.deepEqual(reviewCalls, [
+    { p_request_id: "request-1", p_approve: true, p_role: "member_2" },
+    { p_request_id: "request-1", p_approve: false, p_role: "member_1" },
+  ]);
+});
+
+test("role controls use the authorized RPCs for memberships, features, and status changes", async () => {
+  const calls = [],
+    { client } = createClient(async (url, options) => {
+      if (url.endsWith("/auth/v1/token?grant_type=password"))
+        return response({
+          access_token: "access",
+          refresh_token: "refresh",
+          expires_in: 3600,
+          user: { id: "owner-1" },
+        });
+      calls.push({ name: url.split("/").pop(), body: JSON.parse(options.body) });
+      if (url.endsWith("/rpc/get_estate_features")) return response(["months"]);
+      if (url.endsWith("/rpc/list_estate_members"))
+        return response([{ user_id: "member-1", role: "member_1", access_status: "active" }]);
+      return response([]);
+    });
+  client.setConfig({ url: "https://estate.supabase.co", anonKey: "public" });
+  await client.signIn("owner@example.test", "long-password");
+  const members = await client.listMembers("estate-1");
+  assert.equal(members[0].user_id, "member-1");
+  assert.equal(members[0].role, "member_1");
+  assert.deepEqual(Array.from(await client.getFeatures("estate-1")), ["months"]);
+  await client.setMemberStatus("estate-1", "member-1", "suspended");
+  await client.setRoleFeatures("estate-1", "member_1", ["months", "insights"]);
+  assert.deepEqual(calls, [
+    { name: "list_estate_members", body: { p_estate_id: "estate-1" } },
+    { name: "get_estate_features", body: { p_estate_id: "estate-1" } },
+    {
+      name: "set_estate_member_status",
+      body: { p_estate_id: "estate-1", p_user_id: "member-1", p_status: "suspended" },
+    },
+    {
+      name: "set_estate_role_features",
+      body: { p_estate_id: "estate-1", p_role: "member_1", p_features: ["months", "insights"] },
+    },
+  ]);
+});
+
+test("global account actions call the owner-authenticated Edge Function", async () => {
+  let captured;
+  const { client } = createClient(async (url, options) => {
+    if (url.endsWith("/auth/v1/token?grant_type=password"))
+      return response({
+        access_token: "access",
+        refresh_token: "refresh",
+        expires_in: 3600,
+        user: { id: "owner-1" },
+      });
+    captured = { url, options };
+    return response({ ok: true });
+  });
+  client.setConfig({ url: "https://estate.supabase.co", anonKey: "public" });
+  await client.signIn("owner@example.test", "long-password");
+  await client.manageAccount("ban", "estate-1", "member-1");
+  assert.match(captured.url, /\/functions\/v1\/manage-account$/);
+  assert.equal(captured.options.method, "POST");
+  assert.deepEqual(JSON.parse(captured.options.body), {
+    action: "ban",
+    estate_id: "estate-1",
+    user_id: "member-1",
+  });
+  assert.equal(captured.options.headers.Authorization, "Bearer access");
+});
+
 test("sign-up without an auth session does not mark the device signed in", async () => {
   const { client } = createClient(async () => response({ user: { id: "user-1" } }));
   client.setConfig({ url: "https://estate.supabase.co", anonKey: "public" });
@@ -151,6 +271,9 @@ test("remote record reads paginate past the PostgREST row limit", async () => {
           user: { id: "user-1" },
         });
       const [start, end] = options.headers.Range.split("-").map(Number);
+      assert.match(url, /\/rest\/v1\/rpc\/list_estate_records$/);
+      assert.equal(options.method, "POST");
+      assert.deepEqual(JSON.parse(options.body), { p_estate_id: "estate-1" });
       pageOffsets.push(start);
       const page = rows.slice(start, end + 1);
       return response(page, 200, {

@@ -64,12 +64,37 @@ const L = {
     sync_reject: "Reject",
     sync_role_owner: "Owner",
     sync_role_manager: "Manager",
-    sync_role_data_entry: "Data entry",
-    sync_role_viewer: "View only",
+    sync_role_member_1: "Member 1",
+    sync_role_member_2: "Member 2",
+    sync_role_member_3: "Member 3",
+    sync_role_member_4: "Member 4",
+    sync_role_member_5: "Member 5",
     sync_members: "Approved members",
     sync_change_role: "Change role",
     sync_remove_member: "Revoke access",
     sync_remove_member_confirm: "Remove this member? Future access will stop, but data already downloaded may remain on their device.",
+    sync_suspend: "Suspend",
+    sync_activate: "Restore access",
+    sync_suspended: "Suspended",
+    sync_member_active: "Active",
+    sync_global_account: "Global account control",
+    sync_global_ban: "Global ban",
+    sync_global_unban: "Remove global ban",
+    sync_global_delete: "Delete account",
+    sync_global_ban_confirm: "Block this account from signing in or accessing any estate?",
+    sync_global_unban_confirm: "Restore this account's sign-in and estate access?",
+    sync_global_delete_confirm: "Permanently delete this account? This cannot be undone. Accounts that own an estate cannot be deleted.",
+    sync_member_readonly: "Members can view only. Their default view shows harvest dates and coconut counts.",
+    sync_feature_access: "Member feature visibility",
+    sync_feature_hint: "Choose which tabs each member role can open. The monthly coconut-count view is always available.",
+    sync_feature_overview: "Overview",
+    sync_feature_months: "Monthly coconut counts",
+    sync_feature_insights: "Insights",
+    sync_feature_forecast: "Forecast",
+    sync_save_features: "Save visibility",
+    sync_month_count: "Coconuts",
+    sync_readonly_account: "This account is read-only in the active estate.",
+    sync_global_action_failed: "The account action could not be completed. Check that the manage-account Edge Function is deployed.",
     sync_no_estates: "No approved estate yet. Create one or request access with an invite code.",
     sync_local_migration:
       "This device already has local records. Copy them into this estate? Existing cloud records will be compared; conflicts require your choice. Your local backup remains on this device.",
@@ -574,12 +599,34 @@ const L = {
     sync_reject: "ප්‍රතික්ෂේප කරන්න",
     sync_role_owner: "හිමිකරු",
     sync_role_manager: "කළමනාකරු",
-    sync_role_data_entry: "දත්ත ඇතුළත් කිරීම",
-    sync_role_viewer: "බැලීම පමණි",
+    sync_role_member_1: "සාමාජික 1",
+    sync_role_member_2: "සාමාජික 2",
+    sync_role_member_3: "සාමාජික 3",
+    sync_role_member_4: "සාමාජික 4",
+    sync_role_member_5: "සාමාජික 5",
     sync_members: "අනුමත සාමාජිකයන්",
     sync_change_role: "භූමිකාව වෙනස් කරන්න",
     sync_remove_member: "ප්‍රවේශය අවලංගු කරන්න",
     sync_remove_member_confirm: "මෙම සාමාජිකයා ඉවත් කරන්නද? ඉදිරි ප්‍රවේශය නවතින නමුත් දැනටමත් බාගත කළ දත්ත ඔවුන්ගේ උපාංගයේ තිබිය හැක.",
+    sync_suspend: "අත්හිටුවන්න",
+    sync_activate: "ප්‍රවේශය නැවත ලබාදෙන්න",
+    sync_suspended: "අත්හිටුවා ඇත",
+    sync_member_active: "සක්‍රියයි",
+    sync_global_account: "ගෝලීය ගිණුම් පාලනය",
+    sync_global_ban: "සියලු වතුවලින් තහනම් කරන්න",
+    sync_global_unban: "ගෝලීය තහනම ඉවත් කරන්න",
+    sync_global_delete: "ගිණුම මකන්න",
+    sync_member_readonly: "සාමාජිකයන්ට බැලීමට පමණක් හැකිය. පෙරනිමි දැක්ම අස්වනු දින සහ පොල් ගණන පෙන්වයි.",
+    sync_feature_access: "සාමාජික විශේෂාංග දෘශ්‍යතාව",
+    sync_feature_hint: "එක් එක් සාමාජික භූමිකාවට විවෘත කළ හැකි පිටු තෝරන්න. මාසික පොල් ගණන දැක්ම සැමවිටම ලබාගත හැක.",
+    sync_feature_overview: "සාරාංශය",
+    sync_feature_months: "මාසික පොල් ගණන",
+    sync_feature_insights: "විශ්ලේෂණ",
+    sync_feature_forecast: "පුරෝකථනය",
+    sync_save_features: "දෘශ්‍යතාව සුරකින්න",
+    sync_month_count: "පොල් ගණන",
+    sync_readonly_account: "දැනට භාවිත වත්තේ මෙම ගිණුමට බැලීමට පමණක් හැකිය.",
+    sync_global_action_failed: "ගිණුම් ක්‍රියාව සම්පූර්ණ කළ නොහැකි විය. manage-account Edge Function යොදවා ඇතිදැයි පරීක්ෂා කරන්න.",
     sync_no_estates: "තවම අනුමත වත්තක් නැත. එකක් සාදන්න හෝ ආරාධනා කේතයකින් ප්‍රවේශය ඉල්ලන්න.",
     sync_local_migration:
       "මෙම උපාංගයේ දැනටමත් දේශීය දත්ත ඇත. ඒවා මෙම වත්තට පිටපත් කරන්නද? Cloud දත්ත සමඟ ගැටුම් ඇති නම් ඔබෙන් තෝරාගැනීමක් අසනු ඇත. දේශීය උපස්ථය මෙම උපාංගයේ පවතී.",
@@ -1081,7 +1128,7 @@ const t = (k, ...a) => {
   return s;
 };
 
-const VER = "1.8.8";
+const VER = "1.9.0";
 const SECURITY_NOTICE_VERSION = "1.8.5";
 /* Your company, shown at the bottom of the Data tab. Leave it empty to show the app name instead. */
 const COMPANY = "CyberTech Lanka";
@@ -1090,6 +1137,7 @@ const MIN_SHELL = 11; /* the oldest Android app (version code) this page works w
 const CATS = ["harvest", "cart", "transport", "church", "personal", "fertilizer", "power", "other"];
 const KEY = "coconut-ledger-v1",
   ESTATE_ACTIVE_KEY = "coconut-ledger-active-estate-v1",
+  ESTATE_ACTIVE_USER_KEY = "coconut-ledger-active-user-v1",
   ESTATE_LOCAL_PREFIX = "coconut-ledger-estate-v1:",
   ME = "coconut-ledger-me",
   $ = (s) => document.querySelector(s),
@@ -1163,8 +1211,9 @@ function sample() {
     deductionPresets: [],
   };
 }
-let activeEstateId = LS.get(ESTATE_ACTIVE_KEY) || "",
-  stateStorageKey = activeEstateId ? ESTATE_LOCAL_PREFIX + activeEstateId : KEY,
+let activeEstateId = "",
+  accessReady = true,
+  stateStorageKey = KEY,
   state;
 try {
   state = JSON.parse(localStorage.getItem(stateStorageKey));
@@ -1246,27 +1295,11 @@ function norm() {
 norm();
 let lastLocalSnapshot = JSON.stringify(state);
 function persist(touch) {
-  if (touch !== false && activeEstateId && estateSyncState.active?.role === "viewer") {
+  if (touch !== false && activeEstateId && readOnlyEstateRole(estateSyncState.active?.role)) {
     state = JSON.parse(lastLocalSnapshot);
-    toast(t("sync_read_only"));
+    toast(t("sync_readonly_account"));
     render();
     return false;
-  }
-  if (touch !== false && activeEstateId && estateSyncState.active?.role === "data_entry") {
-    const before = estateRecords(JSON.parse(lastLocalSnapshot)),
-      after = estateRecords(state),
-      keys = new Set([...before.keys(), ...after.keys()]),
-      forbidden = Array.from(keys).some((key) => {
-        if (stableJson(before.get(key)?.payload) === stableJson(after.get(key)?.payload)) return false;
-        const type = key.slice(0, key.indexOf(":"));
-        return !["harvest", "other_income"].includes(type) || !after.has(key);
-      });
-    if (forbidden) {
-      state = JSON.parse(lastLocalSnapshot);
-      toast(t("sync_role_denied"));
-      render();
-      return false;
-    }
   }
   invalidate();
   if (touch !== false) {
@@ -1289,31 +1322,81 @@ let estateSyncState = {
   requests: [],
   invites: [],
   members: [],
+  features: [],
+  roleFeatures: [],
   invite: null,
   error: "",
   busy: false,
 };
 let estateSyncTimer = 0,
   estateSyncRunning = false;
+const MEMBER_ROLES = ["member_1", "member_2", "member_3", "member_4", "member_5"],
+  MEMBER_FEATURES = ["overview", "months", "insights", "forecast"],
+  FEATURE_LABELS = {
+    overview: "sync_feature_overview",
+    months: "sync_feature_months",
+    insights: "sync_feature_insights",
+    forecast: "sync_feature_forecast",
+  };
+function readOnlyEstateRole(role) {
+  return role === "manager" || MEMBER_ROLES.includes(role);
+}
+function checkedEstateFeatures(features) {
+  if (!Array.isArray(features) || features.some((feature) => !MEMBER_FEATURES.includes(feature)))
+    throw new Error("The estate service returned invalid feature permissions.");
+  return features.slice().sort();
+}
+function canViewEstateRoute(routeName) {
+  if (!activeEstateId) return true;
+  if (!estateSyncState.active || !accessReady) return routeName === "months";
+  if (estateSyncState.active.role === "owner" || estateSyncState.active.role === "manager") return true;
+  return routeName === "months" || estateSyncState.features.includes(routeName);
+}
+function defaultEstateRoute() {
+  return activeEstateId ? "months" : "overview";
+}
 function estateErrorText(error) {
   const message = error && error.message ? error.message : String(error);
   return message === "sync_change_too_large" ? t("sync_change_too_large") : message;
 }
-const stableJson = (value) => JSON.stringify(value === undefined ? null : value);
+function canonicalValue(value) {
+  if (Array.isArray(value)) return value.map(canonicalValue);
+  if (!value || typeof value !== "object") return value;
+  return Object.keys(value)
+    .sort()
+    .reduce((sorted, key) => {
+      sorted[key] = canonicalValue(value[key]);
+      return sorted;
+    }, {});
+}
+const stableJson = (value) => JSON.stringify(canonicalValue(value === undefined ? null : value));
 function estateRecords(local) {
   const records = new Map(),
-    add = (type, id, payload) => records.set(type + ":" + id, { record_type: type, record_id: String(id), payload });
-  add("settings", "settings", {
-    estate: local.estate,
-    cur: local.cur,
-    freePer: local.freePer,
-    shares: local.shares,
-    shareName: local.shareName,
-    transRate: local.transRate,
-    rejInLoaded: local.rejInLoaded,
-  });
+    add = (type, id, payload) => records.set(type + ":" + id, { record_type: type, record_id: String(id), payload }),
+    monthOnlyMember =
+      accessReady &&
+      MEMBER_ROLES.includes(estateSyncState.active?.role) &&
+      estateSyncState.features.length === 1 &&
+      estateSyncState.features[0] === "months";
+  if (!monthOnlyMember)
+    add("settings", "settings", {
+      estate: local.estate,
+      cur: local.cur,
+      freePer: local.freePer,
+      shares: local.shares,
+      shareName: local.shareName,
+      transRate: local.transRate,
+      rejInLoaded: local.rejInLoaded,
+    });
   if (local.sample) return records;
-  (local.harvests || []).forEach((row) => add("harvest", row.id, row));
+  (local.harvests || []).forEach((row) =>
+    add(
+      "harvest",
+      row.id,
+      monthOnlyMember ? { id: String(row.id), date: String(row.date || ""), total: Number(row.total) || 0 } : row,
+    ),
+  );
+  if (monthOnlyMember) return records;
   (local.otherIncome || []).forEach((row) => add("other_income", row.id, row));
   (local.deductionPresets || []).forEach((row) => add("deduction_preset", row.id, row));
   Object.entries(local.monthPayouts || {}).forEach(([month, amounts]) => add("month_payout", month, { month, amounts }));
@@ -1352,8 +1435,121 @@ function applyEstateRecord(target, type, id, payload) {
 function estatePayload(row) {
   return row && !row.deleted_at ? row.payload : null;
 }
+function sanitizeMemberLedger() {
+  const previous = state,
+    harvests = previous.sample ? [] : previous.harvests || [];
+  state = {
+    v: 4,
+    sample: false,
+    updatedAt: previous.updatedAt || 0,
+    estate: estateSyncState.active?.estates?.name || "My coconut estate",
+    cur: "Rs",
+    freePer: 0,
+    shares: 1,
+    shareName: "Share",
+    transRate: 0,
+    rejInLoaded: false,
+    harvests: harvests.map((harvest) => ({
+      id: String(harvest.id),
+      date: String(harvest.date || ""),
+      total: Number(harvest.total) || 0,
+    })),
+    otherIncome: [],
+    monthPayouts: {},
+    reviewedMonths: [],
+    deductionPresets: [],
+  };
+  norm();
+}
+function sanitizeAnalyticsLedger() {
+  const previous = state;
+  state = {
+    v: 4,
+    sample: false,
+    updatedAt: previous.updatedAt || 0,
+    estate: estateSyncState.active?.estates?.name || "My coconut estate",
+    cur: typeof previous.cur === "string" && previous.cur.trim() ? previous.cur.slice(0, 6) : "Rs",
+    freePer: Number(previous.freePer) || 0,
+    shares: Math.max(1, Math.round(Number(previous.shares) || 1)),
+    shareName: "Share",
+    transRate: Number(previous.transRate) || 0,
+    rejInLoaded: !!previous.rejInLoaded,
+    harvests: (previous.sample ? [] : previous.harvests || []).map((harvest) => {
+    const ded = {};
+    CATS.forEach((category) => {
+      const value = harvest.ded && harvest.ded[category];
+      ded[category] = category === "transport" && (value == null || value === "") ? null : Number(value) || 0;
+    });
+    return {
+      id: String(harvest.id),
+      date: String(harvest.date || ""),
+      total: Number(harvest.total) || 0,
+      rejected: Number(harvest.rejected) || 0,
+      home: Number(harvest.home) || 0,
+      loaded: Number(harvest.loaded) || 0,
+      free: harvest.free == null ? null : Number(harvest.free) || 0,
+      price: Number(harvest.price) || 0,
+      ded,
+      customDeds: (Array.isArray(harvest.customDeds) ? harvest.customDeds : []).map((item) => ({
+        name: "Custom deduction",
+        amount: Number(item && item.amount) || 0,
+        kind: item && item.kind ? item.kind : null,
+      })),
+      shareDeds: (Array.isArray(harvest.shareDeds) ? harvest.shareDeds : []).map((amount) => Number(amount) || 0),
+      shareAdds: (Array.isArray(harvest.shareAdds) ? harvest.shareAdds : []).map((amount) => Number(amount) || 0),
+      payments: (Array.isArray(harvest.payments) ? harvest.payments : []).map((payment) => ({
+        date: String((payment && payment.date) || ""),
+        amount: Number(payment && payment.amount) || 0,
+      })),
+      otherNote: "",
+      buyer: "",
+      contact: "",
+      by: "",
+      note: "",
+    };
+    }),
+    otherIncome: (previous.otherIncome || []).map((income) => ({
+      id: String(income.id),
+      date: String(income.date || ""),
+      amount: Number(income.amount) || 0,
+      note: "Other income",
+    })),
+    monthPayouts: {},
+    reviewedMonths: [],
+    deductionPresets: [],
+  };
+  norm();
+}
+function stateFromEstateRecords(rows) {
+  const next = sample();
+  next.sample = false;
+  next.harvests = [];
+  next.otherIncome = [];
+  next.monthPayouts = {};
+  next.reviewedMonths = [];
+  next.deductionPresets = [];
+  rows.forEach((row) => applyEstateRecord(next, row.record_type, row.record_id, estatePayload(row)));
+  state = next;
+  norm();
+  lastLocalSnapshot = JSON.stringify(state);
+  persist(false);
+}
 function saveEstateSyncStore(estateId, next) {
   ESTATE_SYNC.saveStore(estateId, next);
+}
+function prepareMemberAccess(estateId, role, features) {
+  if (!MEMBER_ROLES.includes(role)) return role + ":" + features.slice().sort().join(",");
+  const scope = role + ":" + features.slice().sort().join(","),
+    saved = ESTATE_SYNC.storeFor(estateId),
+    before = stableJson(state),
+    hasLocalName = !!LS.get(ME);
+  if (features.length === 1 && features[0] === "months") sanitizeMemberLedger();
+  else sanitizeAnalyticsLedger();
+  LS.remove(ME);
+  if (stableJson(state) !== before || hasLocalName) persist(false);
+  if (!saved.accessScope || saved.accessScope !== scope)
+    saveEstateSyncStore(estateId, { base: {}, conflicts: [], accessScope: "" });
+  return scope;
 }
 function scheduleEstateSync() {
   if (!ESTATE_SYNC || !activeEstateId || !ESTATE_SYNC.publicStatus().signedIn) return;
@@ -1370,20 +1566,77 @@ async function syncEstateNow(showToast) {
   try {
     const estateId = activeEstateId,
       storageKey = stateStorageKey,
-      saved = ESTATE_SYNC.storeFor(estateId),
-      base = saved.base || {},
-      conflictMap = new Map((saved.conflicts || []).map((item) => [item.key, item])),
-      local = estateRecords(state),
-      remoteRows = await ESTATE_SYNC.listRecords(estateId),
+      estates = await ESTATE_SYNC.listEstates(),
+      membership = estates.find((item) => item.estate_id === estateId);
+    if (!membership) {
+      estateSyncState.estates = estates;
+      estateSyncState.active = null;
+      estateSyncState.features = [];
+      estateSyncState.roleFeatures = [];
+      await useLocalLedger();
+      return;
+    }
+    const previousScope = estateSyncState.active
+      ? estateSyncState.active.role + ":" + estateSyncState.features.slice().sort().join(",")
+      : "";
+    estateSyncState.estates = estates;
+    estateSyncState.active = membership;
+    const role = membership.role,
+      features = ["owner", "manager"].includes(role) ? MEMBER_FEATURES.slice() : await ESTATE_SYNC.getFeatures(estateId);
+    if (!Array.isArray(features) || features.some((feature) => !MEMBER_FEATURES.includes(feature)))
+      throw new Error("The estate service returned invalid feature permissions.");
+    estateSyncState.features = checkedEstateFeatures(features);
+    estateSyncState.roleFeatures = role === "owner" ? await ESTATE_SYNC.listRoleFeatures(estateId) : [];
+    accessReady = true;
+    const scope = role + ":" + estateSyncState.features.join(",");
+    if (previousScope && previousScope !== scope) invalidateAllViews();
+    header();
+    if (!canViewEstateRoute(route)) go(defaultEstateRoute());
+
+    prepareMemberAccess(estateId, role, estateSyncState.features);
+    const monthOnlyMember =
+      MEMBER_ROLES.includes(role) &&
+      estateSyncState.features.length === 1 &&
+      estateSyncState.features[0] === "months";
+
+    const remoteRows = await ESTATE_SYNC.listRecords(estateId),
       remote = new Map(
         remoteRows.map((row) => [
           row.record_type + ":" + row.record_id,
           { revision: Number(row.revision), payload: estatePayload(row) },
         ]),
-      ),
+      );
+    if (activeEstateId !== estateId || stateStorageKey !== storageKey) return;
+    const currentStore = ESTATE_SYNC.storeFor(estateId);
+    const scopeChanged = !!currentStore.accessScope && currentStore.accessScope !== scope,
+      firstReadOnlySync = role !== "owner" && !currentStore.accessScope;
+    if (scopeChanged || firstReadOnlySync) {
+      stateFromEstateRecords(remoteRows);
+      if (monthOnlyMember) sanitizeMemberLedger();
+      const nextBase = {};
+      remoteRows.forEach((row) => {
+        nextBase[row.record_type + ":" + row.record_id] = {
+          revision: Number(row.revision),
+          payload: estatePayload(row),
+        };
+      });
+      saveEstateSyncStore(estateId, {
+        base: nextBase,
+        conflicts: [],
+        accessScope: scope,
+      });
+      header();
+      setSync("ok", "sync_ok");
+      render();
+      if (showToast) toast(t("sync_ok"));
+      return;
+    }
+
+    const base = currentStore.base || {},
+      conflictMap = new Map((currentStore.conflicts || []).map((item) => [item.key, item])),
+      local = estateRecords(state),
       apply = [],
       changes = [];
-    if (activeEstateId !== estateId || stateStorageKey !== storageKey) return;
     const keys = new Set([...Object.keys(base), ...local.keys(), ...remote.keys(), ...conflictMap.keys()]);
     for (const key of keys) {
       const previous = base[key],
@@ -1427,6 +1680,21 @@ async function syncEstateNow(showToast) {
         apply.push({ recordType, recordId: idParts.join(":"), payload: remotePayload });
       }
     }
+    if (role !== "owner" && changes.length) {
+      stateFromEstateRecords(remoteRows);
+      if (monthOnlyMember) sanitizeMemberLedger();
+      const nextBase = {};
+      remoteRows.forEach((row) => {
+        nextBase[row.record_type + ":" + row.record_id] = {
+          revision: Number(row.revision),
+          payload: estatePayload(row),
+        };
+      });
+      saveEstateSyncStore(estateId, { base: nextBase, conflicts: [], accessScope: scope });
+      render();
+      setSync("ok", "sync_ok");
+      return;
+    }
     if (apply.length) {
       apply.forEach((item) => applyEstateRecord(state, item.recordType, item.recordId, item.payload));
       state.updatedAt = Date.now();
@@ -1461,8 +1729,13 @@ async function syncEstateNow(showToast) {
         payload: estatePayload(row),
       };
     });
-    saveEstateSyncStore(estateId, { base: nextBase, conflicts: Array.from(conflictMap.values()) });
+    saveEstateSyncStore(estateId, {
+      base: nextBase,
+      conflicts: Array.from(conflictMap.values()),
+      accessScope: scope,
+    });
     estateSyncState.error = "";
+    header();
     setSync("ok", "sync_ok");
     if (route === "data") {
       await refreshEstatePanel();
@@ -1471,6 +1744,10 @@ async function syncEstateNow(showToast) {
     if (showToast) toast(t("sync_ok"));
   } catch (error) {
     estateSyncState.error = estateErrorText(error);
+    accessReady = false;
+    invalidateAllViews();
+    header();
+    go(canViewEstateRoute(route) ? route : "months");
     setSync("", "sync_fail");
     if (route === "data") render();
     if (showToast) toast(estateSyncState.error);
@@ -1479,7 +1756,7 @@ async function syncEstateNow(showToast) {
     estateSyncState.busy = false;
   }
 }
-async function activateEstate(estateId) {
+async function activateEstate(estateId, migrateLocal = true) {
   if (!estateId) return;
   const oldKey = stateStorageKey,
     targetKey = ESTATE_LOCAL_PREFIX + estateId,
@@ -1501,6 +1778,7 @@ async function activateEstate(estateId) {
           (state.otherIncome || []).length > 0 ||
           Object.keys(state.monthPayouts || {}).length > 0);
     const copyLocal =
+      migrateLocal &&
       oldKey === KEY &&
       hasRecords &&
       (await confirmBox(t("sync_create_estate"), t("sync_local_migration"), t("sync_set_active")));
@@ -1518,9 +1796,31 @@ async function activateEstate(estateId) {
         };
     nextState.sample = false;
   }
+  if (NBX) {
+    try {
+      const native = JSON.parse(NB.loadState() || "null");
+      if (
+        native &&
+        native.state &&
+        Array.isArray(native.state.harvests) &&
+        native.activeEstateId === estateId &&
+        (!existingText || (native.state.updatedAt || 0) > (nextState.updatedAt || 0))
+      )
+        nextState = native.state;
+    } catch (error) {}
+  }
   activeEstateId = estateId;
+  accessReady = false;
+  estateSyncState.active = null;
+  estateSyncState.features = [];
+  invalidateAllViews();
+  header();
+  if (route !== "months") go("months");
   stateStorageKey = targetKey;
   LS.set(ESTATE_ACTIVE_KEY, estateId);
+  const userId = ESTATE_SYNC.publicStatus().user?.id;
+  if (userId) LS.set(ESTATE_ACTIVE_USER_KEY, userId);
+  else LS.remove(ESTATE_ACTIVE_USER_KEY);
   state = nextState;
   norm();
   lastLocalSnapshot = JSON.stringify(state);
@@ -1532,8 +1832,14 @@ async function activateEstate(estateId) {
 async function useLocalLedger() {
   if (activeEstateId) LS.set(stateStorageKey, JSON.stringify(state));
   activeEstateId = "";
+  accessReady = true;
+  estateSyncState.active = null;
+  estateSyncState.features = [];
+  estateSyncState.roleFeatures = [];
+  invalidateAllViews();
   stateStorageKey = KEY;
   localStorage.removeItem(ESTATE_ACTIVE_KEY);
+  localStorage.removeItem(ESTATE_ACTIVE_USER_KEY);
   try {
     state = JSON.parse(LS.get(KEY) || "null") || sample();
   } catch (error) {
@@ -1547,9 +1853,23 @@ async function useLocalLedger() {
 }
 async function refreshEstatePanel() {
   if (!ESTATE_SYNC || !ESTATE_SYNC.publicStatus().signedIn) return;
+  const previousScope = estateSyncState.active
+    ? estateSyncState.active.role + ":" + estateSyncState.features.slice().sort().join(",")
+    : "";
   estateSyncState.estates = await ESTATE_SYNC.listEstates();
   const active = estateSyncState.estates.find((item) => item.estate_id === activeEstateId);
   estateSyncState.active = active || null;
+  const features = active
+    ? ["owner", "manager"].includes(active.role)
+      ? MEMBER_FEATURES.slice()
+      : await ESTATE_SYNC.getFeatures(activeEstateId)
+    : [];
+  estateSyncState.features = active ? checkedEstateFeatures(features) : [];
+  estateSyncState.roleFeatures =
+    active && active.role === "owner" ? await ESTATE_SYNC.listRoleFeatures(activeEstateId) : [];
+  const nextScope = active ? active.role + ":" + estateSyncState.features.slice().sort().join(",") : "";
+  if (previousScope && previousScope !== nextScope) invalidateAllViews();
+  if (active) prepareMemberAccess(activeEstateId, active.role, estateSyncState.features);
   estateSyncState.requests = active && active.role === "owner" ? await ESTATE_SYNC.listRequests(activeEstateId) : [];
   estateSyncState.invites = active && active.role === "owner" ? await ESTATE_SYNC.listInvites(activeEstateId) : [];
   if (
@@ -1557,7 +1877,12 @@ async function refreshEstatePanel() {
     !estateSyncState.invites.some((invite) => invite.invite_id === estateSyncState.invite.invite_id)
   )
     estateSyncState.invite = null;
-  estateSyncState.members = active ? await ESTATE_SYNC.listMembers(activeEstateId) : [];
+  estateSyncState.members =
+    active && ["owner", "manager"].includes(active.role) ? await ESTATE_SYNC.listMembers(activeEstateId) : [];
+  accessReady = true;
+  header();
+  if (!canViewEstateRoute(route)) go(defaultEstateRoute());
+  else if (previousScope && previousScope !== nextScope) render();
 }
 function recordLabel(type, id) {
   const local = estateRecords(state).get(type + ":" + id);
@@ -1569,7 +1894,22 @@ function estateSyncCard() {
   if (!ESTATE_SYNC) return "";
   const config = ESTATE_SYNC.getConfig(),
     status = ESTATE_SYNC.publicStatus(),
-    roles = ["manager", "data_entry", "viewer"];
+    roles = ["manager", ...MEMBER_ROLES],
+    visibleRoles = (role) => (role === "manager" ? MEMBER_ROLES : roles),
+    featureEditor = (role) => {
+      const enabled = new Set(
+        estateSyncState.roleFeatures
+          .filter((item) => item.role === role && item.enabled)
+          .map((item) => item.feature_key),
+      );
+      return `<div class="card"><h3>${t("sync_role_" + role)}</h3><div class="fields">
+        ${MEMBER_FEATURES.map(
+          (feature) => `<label class="fld"><span><input type="checkbox" data-role-feature="${role}" value="${feature}" ${
+            enabled.has(feature) || feature === "months" ? "checked" : ""
+          } ${feature === "months" ? "disabled" : ""}> ${t(FEATURE_LABELS[feature])}</span></label>`,
+        ).join("")}
+        <button class="btn small" data-save-role-features="${role}">${t("sync_save_features")}</button></div></div>`;
+    };
   return `<div class="card estate-sync">
     <h2>${t("estate_sync_title")}</h2><p class="hint">${t("estate_sync_hint")}</p>
     ${config.url && !status.signedIn ? `<p>${t("sync_not_signed_in")}</p><div class="fields">
@@ -1602,11 +1942,27 @@ function estateSyncCard() {
             <label class="fld"><span>${t("sync_approve")}</span><select data-request-role="${esc(request.id)}">${roles.map((role) => `<option value="${role}">${t("sync_role_" + role)}</option>`).join("")}</select></label>
             <div class="btnrow"><button class="btn primary" data-approve-request="${esc(request.id)}">${t("sync_approve")}</button><button class="btn danger" data-reject-request="${esc(request.id)}">${t("sync_reject")}</button></div></div>`).join("") || `<p class="hint">—</p>`}` : ""}
         <h3>${t("sync_members")}</h3>
-        ${estateSyncState.members.map((member) => `<div class="fields member-row"><span>${esc(member.display_name || member.user_id)} · ${t("sync_role_" + member.role)}</span>
-          ${estateSyncState.active.role === "owner" && member.role !== "owner" ? `<select data-member-role="${esc(member.user_id)}">${roles.map((role) => `<option value="${role}" ${role === member.role ? "selected" : ""}>${t("sync_role_" + role)}</option>`).join("")}</select><button class="btn small danger" data-remove-member="${esc(member.user_id)}">${t("sync_remove_member")}</button>` : ""}</div>`).join("")}
+        ${["owner", "manager"].includes(estateSyncState.active.role) ? `<p class="hint">${t("sync_member_readonly")}</p>` : ""}
+        ${estateSyncState.members.map((member) => {
+          const owner = estateSyncState.active.role === "owner",
+            manager = estateSyncState.active.role === "manager",
+            canManage = member.role !== "owner" && (owner || (manager && MEMBER_ROLES.includes(member.role))),
+            options = visibleRoles(estateSyncState.active.role);
+          return `<div class="card member-row"><div><b>${esc(member.display_name || member.email || member.user_id)}</b>
+            <p class="hint">${esc(member.email || member.user_id)} · ${t("sync_role_" + member.role)} · ${
+              member.access_status === "suspended" ? t("sync_suspended") : t("sync_member_active")
+            }${member.global_banned ? " · " + t("sync_global_ban") : ""}</p></div>
+            ${canManage ? `<div class="btnrow"><select data-member-role="${esc(member.user_id)}">${options.map((role) => `<option value="${role}" ${role === member.role ? "selected" : ""}>${t("sync_role_" + role)}</option>`).join("")}</select>
+              <button class="btn small" data-member-status="${esc(member.user_id)}" data-status="${member.access_status === "suspended" ? "active" : "suspended"}">${t(member.access_status === "suspended" ? "sync_activate" : "sync_suspend")}</button>
+              <button class="btn small danger" data-remove-member="${esc(member.user_id)}">${t("sync_remove_member")}</button>
+              ${owner ? `<button class="btn small danger" data-global-account="${esc(member.user_id)}" data-account-action="${member.global_banned ? "unban" : "ban"}">${t(member.global_banned ? "sync_global_unban" : "sync_global_ban")}</button>
+                <button class="btn small danger" data-global-account="${esc(member.user_id)}" data-account-action="delete">${t("sync_global_delete")}</button>` : ""}</div>` : ""}
+          </div>`;
+        }).join("")}
+        ${estateSyncState.active.role === "owner" ? `<h3>${t("sync_feature_access")}</h3><p class="hint">${t("sync_feature_hint")}</p>${MEMBER_ROLES.map(featureEditor).join("")}` : ""}
         ${(() => {
           const conflicts = ESTATE_SYNC.storeFor(activeEstateId).conflicts || [];
-          return conflicts.length ? `<h3>${t("sync_conflicts")}</h3><p class="hint">${t("sync_conflict_hint")}</p>${conflicts.map((item) => `<div class="card"><b>${esc(item.recordType)} · ${recordLabel(item.recordType, item.recordId)}</b>
+          return conflicts.length && estateSyncState.active.role === "owner" ? `<h3>${t("sync_conflicts")}</h3><p class="hint">${t("sync_conflict_hint")}</p>${conflicts.map((item) => `<div class="card"><b>${esc(item.recordType)} · ${recordLabel(item.recordType, item.recordId)}</b>
             <div class="btnrow"><button class="btn" data-resolve-local="${esc(item.key)}">${t("sync_keep_local")}</button><button class="btn primary" data-resolve-cloud="${esc(item.key)}">${t("sync_use_cloud")}</button></div></div>`).join("")}` : "";
         })()}
       </div>` : ""}
@@ -1625,19 +1981,30 @@ async function runEstateAction(action, successMessage) {
 }
 async function initializeEstateSync() {
     if (!ESTATE_SYNC) return;
-    if (!ESTATE_SYNC.publicStatus().configured || !ESTATE_SYNC.publicStatus().signedIn) {
+    const status = ESTATE_SYNC.publicStatus();
+    if (!status.configured || !status.signedIn) {
       if (activeEstateId) await useLocalLedger();
       setSync("", "sync_device");
       return;
     }
     try {
       estateSyncState.estates = await ESTATE_SYNC.listEstates();
-      estateSyncState.active = estateSyncState.estates.find((item) => item.estate_id === activeEstateId) || null;
-      if (estateSyncState.active) {
-        await refreshEstatePanel();
-        await syncEstateNow(false);
+      const savedEstateId = LS.get(ESTATE_ACTIVE_KEY) || "",
+        savedUserId = LS.get(ESTATE_ACTIVE_USER_KEY) || "",
+        estateToRestore = ESTATE_SYNC.restoreEstateSelection(savedEstateId, savedUserId, estateSyncState.estates);
+      if (!activeEstateId && estateToRestore) {
+        await activateEstate(estateToRestore, false);
+      } else if (activeEstateId) {
+        estateSyncState.active = estateSyncState.estates.find((item) => item.estate_id === activeEstateId) || null;
+        if (estateSyncState.active) {
+          await refreshEstatePanel();
+          await syncEstateNow(false);
+        } else {
+          await useLocalLedger();
+          setSync("", "sync_device");
+        }
       } else {
-        if (activeEstateId) await useLocalLedger();
+        estateSyncState.active = null;
         setSync("", "sync_device");
       }
       if (route === "data") render();
@@ -2759,7 +3126,31 @@ function vOverview(hs) {
   </div>`
   );
 }
+function vMemberMonths() {
+  const rows = state.harvests
+      .filter((harvest) => harvest && typeof harvest.date === "string")
+      .slice()
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .reverse(),
+    totals = new Map();
+  rows.forEach((harvest) => {
+    const month = harvest.date.slice(0, 7);
+    totals.set(month, (totals.get(month) || 0) + (Number(harvest.total) || 0));
+  });
+  return (
+    `<div class="grid stag"><p class="hint">${t("sync_member_readonly")}</p>` +
+    (rows.length
+      ? Array.from(totals, ([month, total]) => {
+          const monthRows = rows.filter((harvest) => harvest.date.slice(0, 7) === month);
+          return `<div class="card"><h2>${esc(month)}</h2><p><b>${N(total)}</b> ${t("sync_month_count")}</p>
+            ${monthRows.map((harvest) => `<div class="fields member-row"><span>${fd(harvest.date)}</span><b>${N(harvest.total)}</b></div>`).join("")}</div>`;
+        }).join("")
+      : `<div class="card empty">${t("empty_h")}</div>`) +
+    `</div>`
+  );
+}
 function vMonths(hs) {
+  if (!accessReady || MEMBER_ROLES.includes(estateSyncState.active?.role)) return vMemberMonths();
   if (!hs.length && !state.otherIncome.length) return banner() + emptyState();
   const F = (l, v, c) => `<div class="f ${c || ""}"><span>${l}</span><b class="num">${v}</b></div>`;
   const rows = monthly(hs)
@@ -3129,6 +3520,13 @@ function invalidate() {
   }
   tips.clear();
 }
+function invalidateAllViews() {
+  for (const k in pages) {
+    if (pages[k].parentNode) pages[k].remove();
+    delete pages[k];
+  }
+  tips.clear();
+}
 /* Every kept page stays in the document. Pages not on screen use content-visibility: hidden, so the
    browser keeps their layout ready and skips drawing them; showing one again is quick. */
 function showPage(el) {
@@ -3142,9 +3540,11 @@ function header() {
   $("#viewSub").textContent = t("sub_" + route);
   document
     .querySelectorAll(".rail [data-go]")
-    .forEach((b) =>
-      b.dataset.go === route ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current"),
-    );
+    .forEach((b) => {
+      b.hidden = !canViewEstateRoute(b.dataset.go);
+      if (b.dataset.go === route) b.setAttribute("aria-current", "page");
+      else b.removeAttribute("aria-current");
+    });
 }
 /* Builds tab r and puts it on screen (it must be on screen so the charts can measure their width). */
 function build(r, intro) {
@@ -3250,6 +3650,7 @@ function moveInd() {
 }
 function go(r) {
   if (ROUTES.indexOf(r) < 0) r = "overview";
+  if (!canViewEstateRoute(r)) r = defaultEstateRoute();
   if (r === route && pages[r] && pages[r].classList.contains("on")) return scrollTo(0, 0);
   const dir = r === route ? "" : ROUTES.indexOf(r) > ROUTES.indexOf(route) ? "fwd" : "back";
   route = r;
@@ -4474,6 +4875,38 @@ document.addEventListener("click", async (e) => {
       await ESTATE_SYNC.removeMember(activeEstateId, b.dataset.removeMember);
       await refreshEstatePanel();
     });
+  if (b.dataset.memberStatus)
+    return runEstateAction(async () => {
+      await ESTATE_SYNC.setMemberStatus(activeEstateId, b.dataset.memberStatus, b.dataset.status);
+      await refreshEstatePanel();
+    });
+  if (b.dataset.globalAccount)
+    return runEstateAction(async () => {
+      const action = b.dataset.accountAction,
+        message =
+          action === "delete"
+            ? t("sync_global_delete_confirm")
+            : action === "ban"
+              ? t("sync_global_ban_confirm")
+              : t("sync_global_unban_confirm");
+      if (!(await confirmBox(t("sync_global_account"), message, t("sync_global_account")))) return;
+      try {
+        await ESTATE_SYNC.manageAccount(action, activeEstateId, b.dataset.globalAccount);
+      } catch (error) {
+        const message = estateErrorText(error);
+        throw new Error(/404|function.*not found/i.test(message) ? t("sync_global_action_failed") : message);
+      }
+      await refreshEstatePanel();
+    });
+  if (b.dataset.saveRoleFeatures)
+    return runEstateAction(async () => {
+      const role = b.dataset.saveRoleFeatures,
+        selected = Array.from(document.querySelectorAll(`[data-role-feature="${role}"]`))
+          .filter((control) => control.checked)
+          .map((control) => control.value);
+      await ESTATE_SYNC.setRoleFeatures(activeEstateId, role, selected);
+      await refreshEstatePanel();
+    });
   if (b.dataset.resolveLocal)
     return runEstateAction(() => resolveEstateConflict(b.dataset.resolveLocal, true));
   if (b.dataset.resolveCloud)
@@ -4710,14 +5143,14 @@ document.addEventListener("change", (e) => {
 });
 
 if (LS.get("coconut-ledger-skin") === "light") setSkin("light");
-route = ROUTES.indexOf(location.hash.slice(1)) >= 0 ? location.hash.slice(1) : "overview";
+route = activeEstateId ? "months" : ROUTES.indexOf(location.hash.slice(1)) >= 0 ? location.hash.slice(1) : "overview";
 readShell();
 /* Start-up: the loading screen plays while every tab is built and kept in memory. */
 (async function boot() {
   const loader = $("#loader"),
     bar = $("#ldBar"),
     t0 = performance.now(),
-    order = ROUTES.filter((r) => r !== route),
+    order = ROUTES.filter((r) => r !== route && canViewEstateRoute(r)),
     tick = () => new Promise((res) => setTimeout(res, 0));
   header();
   for (let i = 0; i < order.length; i++) {
@@ -4779,7 +5212,10 @@ window.onAppResume = () => {
   }
 };
 document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible") window.onAppResume();
+  if (document.visibilityState === "visible") {
+    window.onAppResume();
+    syncEstateNow(false);
+  }
 });
 /* The Android app asks this before swapping in a new version in the background. */
 window.canReload = () => {

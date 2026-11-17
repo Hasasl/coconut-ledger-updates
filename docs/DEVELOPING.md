@@ -35,11 +35,16 @@ Estate sync is local-first. The app is preconfigured with the estate's Supabase 
 publishable key, so users do not need to configure every device. Each person signs in with an individual
 account. The app uploads ledger records to that project's private database; an invitation only creates
 a join request, and an estate owner must approve every request before the account can read or sync records.
+Users without an active estate membership keep full local app access and can create an estate; its creator
+becomes the owner. A previously selected estate is restored only after the signed-in account's membership
+is confirmed.
 
 Before using real estate data:
 
 1. Create a Supabase project and configure email/password authentication and email confirmation.
-2. In the Supabase SQL Editor, run `supabase/migrations/202611170001_estate_sync.sql` once.
+2. In the Supabase SQL Editor, run these migrations in order, once each:
+   `202611170001_estate_sync.sql`, `202611172001_add_member_roles.sql`, and
+   `202611172002_role_access_controls.sql`. Do not rerun an already-applied migration.
 3. The project's URL and public publishable/anon key are bundled into `web/sync.js`. They are public
    client settings, not secrets; never bundle a `service_role` or `sb_secret` key. To inspect or change
    these settings on a device, open **Data > App updates** and tap the app version line seven times.
@@ -49,15 +54,26 @@ Before using real estate data:
    and can revoke any unused invite.
    The other person signs in, submits the invite code and a display name, then waits for owner
    approval. Approval is required for every join request.
-5. Test with separate owner and member accounts before migrating production records. Verify that
-   each intended role can only perform its allowed actions and test conflicting edits on two devices.
+5. Deploy the owner-only global account function after the migrations. Store the Supabase service-role
+   key only as a server-side Edge Function secret; never add it to the app or repository:
+   `supabase functions deploy manage-account`. Set or verify the `SUPABASE_SERVICE_ROLE_KEY` secret
+   through the Supabase dashboard or CLI before enabling global account actions.
+6. Test with separate owner, manager, and member accounts before migrating production records. Verify
+   that member roles can only see enabled tabs, that restricted members receive only harvest dates and
+   coconut counts, that managers cannot change ledger records or elevate users, and that role changes
+   take effect on other devices.
 
-Owners can approve members as manager, data-entry, or view-only. Managers can edit estate records;
-data-entry members can add or edit harvest and other-income records; view-only members cannot write.
-Concurrent changes to the same record are presented for a manual choice rather than silently
-overwritten. Local copies remain on each device, including after access is revoked; revocation blocks
-future cloud access but cannot remotely erase data already downloaded to a device. Back up devices
-and only invite people authorized to see the estate's ledger.
+Owners can approve requests as Manager or Member 1–5. Owners control each Member role's analytical
+tabs; the monthly harvest-date and coconut-count view is always available. Members cannot open the
+Data management tab. Managers can view every tab and
+manage, suspend, or remove Member 1–5 accounts, but cannot edit ledger records, promote anyone to
+Manager/Owner, approve join requests, or change feature visibility. Member 1–5 accounts are read-only.
+The database denies direct record reads and exposes only an authorized, role-filtered read function.
+Global ban/delete actions are owner-only and require the deployed Edge Function. Accounts that own an
+estate cannot be globally banned or deleted; transfer ownership first. Visibility reductions purge the
+restricted local ledger fields on the next successful sync. Removing estate access blocks future cloud
+access but cannot remotely erase data already downloaded to a device. Back up devices and invite only
+people authorized to see the estate's records.
 
 ---
 
@@ -183,7 +199,10 @@ Press **Ctrl+Shift+O** in VS Code to jump to a function by name.
 - `web/sync.js` contains the Supabase Auth and PostgREST client. It uses only the public publishable key
   and the signed-in user's session.
 - `supabase/migrations/202611170001_estate_sync.sql` contains the schema, row-level security policies
-  and owner-gated RPCs. Apply it to the Supabase project before configuring the app.
+  and initial owner-gated RPCs. Apply the incremental migrations in timestamp order; the role-access
+  migration removes direct authenticated record reads and adds the filtered record RPC.
+- `supabase/functions/manage-account/index.ts` performs owner-verified global account actions. Its
+  service-role key must remain a server-side Supabase secret and must never be bundled into the app.
 
 ### `android/app/src/main/java/com/estateledger/coconut/`
 - `MainActivity.java`: shows the page full screen (hides the status and navigation bars, uses the area

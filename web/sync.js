@@ -194,6 +194,12 @@
   async function listEstates() {
     return api("/rest/v1/estate_members?select=estate_id,user_id,role,approved_at,estates(id,name)&order=approved_at.asc");
   }
+  function restoreEstateSelection(estateId, savedUserId, memberships) {
+    const user = publicStatus().user,
+      userId = user && user.id;
+    if (!userId || !estateId || (savedUserId && savedUserId !== userId)) return "";
+    return memberships.some((membership) => membership.estate_id === estateId) ? estateId : "";
+  }
   async function createEstate(name) {
     return rpc("create_estate", { p_name: name });
   }
@@ -212,13 +218,14 @@
     return rows && rows[0];
   }
   async function listRequests(estateId) {
-    return rpc("list_estate_join_requests", { p_estate_id: estateId });
+    const rows = await rpc("list_estate_join_requests", { p_estate_id: estateId });
+    return rows.map((request) => ({ ...request, id: request.request_id }));
   }
   async function reviewRequest(requestId, approve, role) {
     return rpc("review_estate_request", {
       p_request_id: requestId,
       p_approve: !!approve,
-      p_role: role || "viewer",
+      p_role: role || "member_1",
     });
   }
   async function changeRole(estateId, userId, role) {
@@ -231,18 +238,37 @@
   async function removeMember(estateId, userId) {
     return rpc("remove_estate_member", { p_estate_id: estateId, p_user_id: userId });
   }
+  async function setMemberStatus(estateId, userId, status) {
+    return rpc("set_estate_member_status", {
+      p_estate_id: estateId,
+      p_user_id: userId,
+      p_status: status,
+    });
+  }
   async function listMembers(estateId) {
-    return api(
-      "/rest/v1/estate_members?select=estate_id,user_id,role,display_name,approved_at&estate_id=eq." +
-        encodeURIComponent(estateId) +
-        "&order=approved_at.asc",
-    );
+    return rpc("list_estate_members", { p_estate_id: estateId });
+  }
+  async function getFeatures(estateId) {
+    return rpc("get_estate_features", { p_estate_id: estateId });
+  }
+  async function listRoleFeatures(estateId) {
+    return rpc("list_estate_role_features", { p_estate_id: estateId });
+  }
+  async function setRoleFeatures(estateId, role, features) {
+    return rpc("set_estate_role_features", {
+      p_estate_id: estateId,
+      p_role: role,
+      p_features: features,
+    });
+  }
+  async function manageAccount(action, estateId, userId) {
+    return api("/functions/v1/manage-account", {
+      method: "POST",
+      body: JSON.stringify({ action, estate_id: estateId, user_id: userId }),
+    });
   }
   async function listRecords(estateId) {
-    const path =
-        "/rest/v1/estate_records?select=record_type,record_id,payload,revision,deleted_at,updated_at&estate_id=eq." +
-        encodeURIComponent(estateId) +
-        "&order=record_type.asc,record_id.asc",
+    const path = "/rest/v1/rpc/list_estate_records",
       pageSize = 500;
     for (let attempt = 0; attempt < 3; attempt++) {
       const records = new Map();
@@ -253,6 +279,8 @@
         const page = await api(
           path,
           {
+            method: "POST",
+            body: JSON.stringify({ p_estate_id: estateId }),
             headers: {
               Range: `${offset}-${offset + pageSize - 1}`,
               Prefer: "count=exact",
@@ -321,6 +349,7 @@
     signIn,
     signOut,
     listEstates,
+    restoreEstateSelection,
     createEstate,
     createInvite,
     listInvites,
@@ -330,7 +359,12 @@
     reviewRequest,
     changeRole,
     removeMember,
+    setMemberStatus,
     listMembers,
+    getFeatures,
+    listRoleFeatures,
+    setRoleFeatures,
+    manageAccount,
     listRecords,
     submitChanges,
     storeFor,

@@ -193,6 +193,9 @@ h3 {
   position: relative;
   transition: color 0.2s;
 }
+.rail button[hidden] {
+  display: none;
+}
 .rail-ind {
   position: absolute;
   left: 0;
