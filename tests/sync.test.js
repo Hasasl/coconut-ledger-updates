@@ -86,6 +86,32 @@ test("saved estate selection restores only for the signed-in member", async () =
   assert.equal(client.restoreEstateSelection("estate-1", "", []), "");
 });
 
+test("estate listing only returns the signed-in user's membership and role", async () => {
+  let membershipUrl = "";
+  const { client } = createClient(async (url) => {
+    if (url.endsWith("/auth/v1/token?grant_type=password"))
+      return response({
+        access_token: "access",
+        refresh_token: "refresh",
+        expires_in: 3600,
+        user: { id: "member-1" },
+      });
+    membershipUrl = url;
+    return response([
+      { estate_id: "estate-1", user_id: "owner-1", role: "owner" },
+      { estate_id: "estate-1", user_id: "member-1", role: "member_1" },
+    ]);
+  });
+  client.setConfig({ url: "https://estate.supabase.co", anonKey: "public" });
+  await client.signIn("member@example.test", "long-password");
+
+  const estates = await client.listEstates();
+  assert.match(membershipUrl, /user_id=eq\.member-1&/);
+  assert.equal(estates.length, 1);
+  assert.equal(estates[0].user_id, "member-1");
+  assert.equal(estates[0].role, "member_1");
+});
+
 test("join request listing provides the id field used by approve and reject controls", async () => {
   const reviewCalls = [],
     { client } = createClient(async (url, options) => {

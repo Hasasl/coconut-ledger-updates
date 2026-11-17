@@ -47,7 +47,8 @@ Before using real estate data:
 1. Create a Supabase project and configure email/password authentication and email confirmation.
 2. In the Supabase SQL Editor, run these migrations in order, once each:
    `202611170001_estate_sync.sql`, `202611172001_add_member_roles.sql`, and
-   `202611172002_role_access_controls.sql`. Do not rerun an already-applied migration.
+   `202611172002_role_access_controls.sql`, and
+   `202611180001_restrict_estate_membership_visibility.sql`. Do not rerun an already-applied migration.
 3. The project's URL and public publishable/anon key are bundled into `web/sync.js`. They are public
    client settings, not secrets; never bundle a `service_role` or `sb_secret` key. To inspect or change
    these settings on a device, open **Data > App updates** and tap the app version line seven times.
@@ -203,7 +204,8 @@ Press **Ctrl+Shift+O** in VS Code to jump to a function by name.
   and the signed-in user's session.
 - `supabase/migrations/202611170001_estate_sync.sql` contains the schema, row-level security policies
   and initial owner-gated RPCs. Apply the incremental migrations in timestamp order; the role-access
-  migration removes direct authenticated record reads and adds the filtered record RPC.
+  migration removes direct authenticated record reads and adds the filtered record RPC. The latest
+  migration limits direct membership reads to the signed-in user's own active role.
 - `supabase/functions/manage-account/index.ts` performs owner-verified global account actions. Its
   service-role key must remain a server-side Supabase secret and must never be bundled into the app.
 

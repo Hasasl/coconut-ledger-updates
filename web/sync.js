@@ -192,7 +192,17 @@
     write(STORE_KEY, syncStore);
   }
   async function listEstates() {
-    return api("/rest/v1/estate_members?select=estate_id,user_id,role,approved_at,estates(id,name)&order=approved_at.asc");
+    const user = publicStatus().user,
+      userId = user && user.id;
+    if (!userId) throw new Error("Sign in to sync this estate.");
+    const rows = await api(
+      "/rest/v1/estate_members?select=estate_id,user_id,role,approved_at,estates(id,name)" +
+        "&user_id=eq." +
+        encodeURIComponent(userId) +
+        "&order=approved_at.asc",
+    );
+    if (!Array.isArray(rows)) throw new Error("The estate service returned invalid membership data.");
+    return rows.filter((membership) => membership.user_id === userId);
   }
   function restoreEstateSelection(estateId, savedUserId, memberships) {
     const user = publicStatus().user,
