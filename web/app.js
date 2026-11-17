@@ -46,17 +46,39 @@ const L = {
     n_harvests: "{0} harvests",
     k_paid_foot: "{0} free · {1} rejected · {2} home",
     income: "Income",
+    total_income: "Total income",
+    other_income: "Other income",
+    add_income: "+ Add other income",
+    edit_income: "Edit other income",
+    income_month: "Month",
+    income_amount: "Amount",
+    income_note: "What is this money for?",
+    income_hint: "Choose the month. This income is added to that month's total before deductions and the share split.",
+    income_required: "Enter a positive amount and a note for this income.",
+    income_saved: "Other income saved",
+    income_deleted: "Other income deleted",
+    income_record: "Additional income",
+    rep_income: "Additional income records",
+    income_records: "{0} additional income entries",
+    no_income: "No additional income",
+    c_del_income_h: "Delete this other income?",
+    c_del_income_p: "This removes the income record for good.",
     deducted: "{0} deducted",
     balance: "Balance left",
     deductions: "Deductions",
+    daughter: "Daughter",
+    son: "Son",
     share_child: "Each child gets",
     share_custom: "Each {0} gets",
     share_child_n: "Child {0}",
     share_custom_n: "{0} {1}",
     share_deductions: "Deductions from each share",
     share_ded_amount: "Deduction for {0}",
-    share_after_ded: "Each share after deduction",
-    share_ded_result: "{0}: {1} share − {2} deduction = {3}",
+    share_additions: "Add to each share (optional)",
+    share_add_amount: "Add to {0}'s share",
+    share_add_hint: "Optional top-up after splitting; it increases that person's payout without changing the harvest balance.",
+    share_after_ded: "Final share amounts",
+    share_result: "{0}: {1} share − {2} deduction + {3} added = {4}",
     latest_money: "Latest harvest, the money",
     latest_hint: "Income, each deduction, then the split.",
     bought_by: "Bought by {0}.",
@@ -165,7 +187,7 @@ const L = {
     imp_go: "Import pasted rows",
     choose_file: "Choose file",
     wipe_h: "Start over",
-    wipe_hint: "Removes every harvest from this app. Save a backup first.",
+    wipe_hint: "Removes every harvest and other income record from this app. Save a backup first.",
     wipe_btn: "Delete all records",
     f_add: "Add harvest",
     f_edit: "Edit harvest",
@@ -217,7 +239,7 @@ const L = {
     t_copied: "Backup text copied",
     t_copyblock: "Copy blocked. The text is in the import box, select and copy it.",
     t_loaded: "Loaded your latest records",
-    t_imported: "Imported {0} harvests",
+    t_imported: "Imported {0} records",
     t_savedl: "File saved. Upload it to Drive from your Files app.",
     t_noprev: "No earlier harvest to copy from",
     c_del_h: "Delete this harvest?",
@@ -225,12 +247,13 @@ const L = {
     c_clear_h: "Clear the sample records?",
     c_clear_p: "The app will be empty and ready for your own harvests.",
     c_wipe_h: "Delete all records?",
-    c_wipe_p: "Every harvest will be removed from this app. This cannot be undone.",
+    c_wipe_p: "Every harvest and other income record will be removed from this app. This cannot be undone.",
     i_none: "Nothing to import. Paste rows or choose a file.",
     i_bad: "That backup text is damaged and cannot be read.",
     i_notbk: "That file is not a backup from this app.",
     i_date: 'Line {0}: "{1}" is not a date. Use 2026-11-02 or 02/11/2026.',
     i_count: "Line {0}: the harvested count is missing.",
+    i_income: "Line {0}: an income entry needs a positive amount.",
     i_sum: "Line {0}: rejected and home use add up to more than harvested.",
     i_rows: "No harvest rows found.",
     i_fail: "Could not read that.",
@@ -393,17 +416,39 @@ const L = {
     n_harvests: "අස්වනු {0}ක්",
     k_paid_foot: "නොමිලේ {0} · අයින් කළ {1} · ගෙදරට {2}",
     income: "ආදායම",
+    total_income: "මුළු ආදායම",
+    other_income: "වෙනත් ආදායම",
+    add_income: "+ වෙනත් ආදායමක් එක් කරන්න",
+    edit_income: "වෙනත් ආදායම වෙනස් කරන්න",
+    income_month: "මාසය",
+    income_amount: "මුදල",
+    income_note: "මේ මුදල ලැබුණේ කුමකටද?",
+    income_hint: "මාසය තෝරන්න. මෙම ආදායම එම මාසයේ එකතුවට එකතු කර, අඩු කිරීම් සහ කොටස් බෙදීමට පෙර ගණනය වේ.",
+    income_required: "ධන මුදලක් සහ මෙම ආදායමට හේතුවක් ඇතුළත් කරන්න.",
+    income_saved: "වෙනත් ආදායම සුරැකුණා",
+    income_deleted: "වෙනත් ආදායම මැකුණා",
+    income_record: "අමතර ආදායම",
+    rep_income: "අමතර ආදායම් වාර්තා",
+    income_records: "අමතර ආදායම් සටහන් {0}ක්",
+    no_income: "අමතර ආදායම් නැත",
+    c_del_income_h: "මෙම වෙනත් ආදායම මකන්නද?",
+    c_del_income_p: "මෙම ආදායම් වාර්තාව ස්ථිරවම මැකේ.",
     deducted: "{0} අඩු කළා",
     balance: "ඉතිරි මුදල",
     deductions: "අඩු කිරීම්",
+    daughter: "දියණිය",
+    son: "පුතා",
     share_child: "එක් දරුවෙකුට",
     share_custom: "එක් {0} කොටසකට",
     share_child_n: "දරුවා {0}",
     share_custom_n: "{0} {1}",
     share_deductions: "එක් එක් කොටසෙන් අඩු කිරීම්",
     share_ded_amount: "{0} වෙතින් අඩු කිරීම",
-    share_after_ded: "අඩු කිරීමෙන් පසු එක් කොටසකට",
-    share_ded_result: "{0}: කොටස {1} − අඩු කිරීම {2} = {3}",
+    share_additions: "එක් එක් කොටසට මුදල් එකතු කරන්න (විකල්ප)",
+    share_add_amount: "{0}ගේ කොටසට එකතු කරන්න",
+    share_add_hint: "කොටස් බෙදූ පසු එක් කරන අමතර මුදලකි; එය එම පුද්ගලයාගේ ගෙවීම වැඩි කරයි.",
+    share_after_ded: "අඩු කිරීම් සහ එකතු කිරීම් පසු අවසන් කොටස් මුදල්",
+    share_result: "{0}: කොටස {1} − අඩු කිරීම {2} + එකතු කළ {3} = {4}",
     latest_money: "අවසන් අස්වැන්නේ මුදල්",
     latest_hint: "ආදායම, අඩු කිරීම්, ඉන්පසු බෙදීම.",
     bought_by: "ගත්තේ {0}.",
@@ -511,7 +556,7 @@ const L = {
     imp_go: "අලවපු පේළි ඇතුළත් කරන්න",
     choose_file: "ගොනුවක් තෝරන්න",
     wipe_h: "මුල සිට පටන් ගන්න",
-    wipe_hint: "යෙදුමේ සියලු අස්වනු මකා දමයි. මුලින් උපස්ථයක් සුරකින්න.",
+    wipe_hint: "යෙදුමේ සියලු අස්වනු සහ වෙනත් ආදායම් වාර්තා මකා දමයි. මුලින් උපස්ථයක් සුරකින්න.",
     wipe_btn: "සියලු දත්ත මකන්න",
     f_add: "අස්වැන්නක් එක් කරන්න",
     f_edit: "අස්වැන්න වෙනස් කරන්න",
@@ -563,7 +608,7 @@ const L = {
     t_copied: "උපස්ථ පෙළ පිටපත් වුණා",
     t_copyblock: "පිටපත් කළ නොහැකි විය. පෙළ ඇතුළත් කිරීමේ කොටුවේ ඇත, එතැනින් පිටපත් කරන්න.",
     t_loaded: "ඔබේ අලුත්ම දත්ත ලැබුණා",
-    t_imported: "අස්වනු {0}ක් ඇතුළත් කළා",
+    t_imported: "වාර්තා {0}ක් ඇතුළත් කළා",
     t_savedl: "ගොනුව සුරැකුණා. Files යෙදුමෙන් Drive වෙත උඩුගත කරන්න.",
     t_noprev: "පිටපත් කිරීමට පෙර අස්වැන්නක් නැත",
     c_del_h: "මේ අස්වැන්න මකන්නද?",
@@ -571,12 +616,13 @@ const L = {
     c_clear_h: "ආදර්ශ දත්ත ඉවත් කරන්නද?",
     c_clear_p: "යෙදුම හිස් වී ඔබේ දත්ත සඳහා සූදානම් වේ.",
     c_wipe_h: "සියලු දත්ත මකන්නද?",
-    c_wipe_p: "සියලු අස්වනු මැකී යයි. මෙය ආපසු ගත නොහැක.",
+    c_wipe_p: "සියලු අස්වනු සහ වෙනත් ආදායම් වාර්තා මැකී යයි. මෙය ආපසු ගත නොහැක.",
     i_none: "ඇතුළත් කිරීමට කිසිවක් නැත. පේළි අලවන්න හෝ ගොනුවක් තෝරන්න.",
     i_bad: "ඒ උපස්ථ පෙළ හානි වී ඇත, කියවිය නොහැක.",
     i_notbk: "ඒ ගොනුව මේ යෙදුමේ උපස්ථයක් නොවේ.",
     i_date: '{0} වන පේළිය: "{1}" දිනයක් නොවේ. 2026-11-02 හෝ 02/11/2026 ලෙස දෙන්න.',
     i_count: "{0} වන පේළිය: කැඩූ පොල් ගණන නැත.",
+    i_income: "{0} වන පේළිය: ආදායම් සටහනකට ධන මුදලක් ඇතුළත් කරන්න.",
     i_sum: "{0} වන පේළිය: අයින් කළ සහ ගෙදරට ගත් ගණන කැඩූ ගණනට වඩා වැඩියි.",
     i_rows: "අස්වනු පේළි හමු නොවීය.",
     i_fail: "එය කියවිය නොහැකි විය.",
@@ -830,6 +876,7 @@ function sample() {
         other: i === 9 ? 1000 : 0,
       },
     })),
+    otherIncome: [],
   };
 }
 let state;
@@ -875,6 +922,7 @@ function mirror() {
   } catch (e) {}
 }
 function norm() {
+  if (!Array.isArray(state.otherIncome)) state.otherIncome = [];
   if (state.freePer == null || !isFinite(state.freePer)) state.freePer = 100;
   if (!(state.shares >= 1)) state.shares = 2;
   if (!state.shareName) state.shareName = "child";
@@ -997,6 +1045,10 @@ const fd = (s, y) => {
   const d = new Date(typeof s === "number" ? s : pd(s));
   return d.getUTCDate() + " " + MONS[lang][d.getUTCMonth()] + (y === false ? "" : " " + d.getUTCFullYear());
 };
+const incomeMonthLabel = (s) => {
+  const m = String(s || "").match(/^(\d{4})-(\d{2})/);
+  return m ? MONLS[lang][Number(m[2]) - 1] + " " + m[1] : fd(s);
+};
 const todayMs = () => {
   const d = new Date();
   return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
@@ -1013,7 +1065,13 @@ const autoFree = (g) => (state.freePer > 0 ? Math.floor(g / state.freePer) : 0);
 const freeRule = () => t("free_rule", N(state.freePer));
 const shareLab = () => (state.shareName === "child" ? t("share_child") : t("share_custom", state.shareName));
 const shareNameAt = (i) =>
-  state.shareName === "child" ? t("share_child_n", i + 1) : t("share_custom_n", state.shareName, i + 1);
+  state.shareName === "child"
+    ? i === 0
+      ? t("daughter")
+      : i === 1
+        ? t("son")
+        : t("share_child_n", i + 1)
+    : t("share_custom_n", state.shareName, i + 1);
 const catName = (k, h) => t("cat_" + k) + (k === "other" && h && h.otherNote ? ": " + h.otherNote : "");
 /* Income = Loaded × price. Home use comes off the whole harvest first; what is left and not loaded is Rejected:
    rejected = harvested − home use − loaded. The buyer's free coconuts (1 per 100 loaded) are shown but do not reduce income.
@@ -1047,6 +1105,11 @@ const shareDedEntries = (h) =>
     const amount = Number(h && Array.isArray(h.shareDeds) ? h.shareDeds[i] : 0);
     return Number.isFinite(amount) ? Math.max(0, amount) : 0;
   });
+const shareAddEntries = (h) =>
+  Array.from({ length: Math.max(1, Math.round(state.shares) || 1) }, (_, i) => {
+    const amount = Number(h && Array.isArray(h.shareAdds) ? h.shareAdds[i] : 0);
+    return Number.isFinite(amount) ? Math.max(0, amount) : 0;
+  });
 function customDedSummary(hs) {
   const rows = new Map();
   hs.forEach((h) =>
@@ -1074,7 +1137,8 @@ function calc() {
       dv = {};
     CATS.forEach((c) => (dv[c] = dedVal(h, c)));
     const customDeds = customDedEntries(h),
-    shareDeds = shareDedEntries(h),
+      shareDeds = shareDedEntries(h),
+      shareAdds = shareAddEntries(h),
       ded = sum(CATS.map((c) => dv[c])) + sum(customDeds.map((d) => d.amount)),
       net = inc - ded,
       rest = 0;
@@ -1091,33 +1155,47 @@ function calc() {
       dv,
       customDeds,
       shareDeds,
+      shareAdds,
       inc,
       dedT: ded,
       net,
       share: net / state.shares,
-      shareNet: shareDeds.map((d) => net / state.shares - d),
+      shareNet: shareDeds.map((d, j) => net / state.shares - d + shareAdds[j]),
       gap: i ? Math.round((pd(h.date) - pd(hs[i - 1].date)) / DAY) : null,
     });
   });
 }
-function monthly(hs) {
+function monthly(hs, incomes) {
   const m = new Map();
+  const bucket = (key) => {
+    if (!m.has(key)) m.set(key, { list: [], incomes: [] });
+    return m.get(key);
+  };
   hs.forEach((h) => {
-    const k = h.date.slice(0, 7);
-    if (!m.has(k)) m.set(k, []);
-    m.get(k).push(h);
+    bucket(h.date.slice(0, 7)).list.push(h);
   });
-  return Array.from(m, ([k, l]) => {
-    const paid = sum(l.map((h) => h.paid)),
-      inc = sum(l.map((h) => h.inc)),
-      net = sum(l.map((h) => h.net));
+  (incomes || state.otherIncome).forEach((income) => {
+    bucket(income.date.slice(0, 7)).incomes.push(income);
+  });
+  return Array.from(m, ([k, group]) => {
+    const l = group.list,
+      extra = group.incomes,
+      paid = sum(l.map((h) => h.paid)),
+      harvestInc = sum(l.map((h) => h.inc)),
+      inc = harvestInc + sum(extra.map((income) => income.amount)),
+      ded = sum(l.map((h) => h.dedT)),
+      net = inc - ded;
     const shareDeds = Array.from({ length: state.shares }, (_, i) =>
-      sum(l.map((h) => (h.shareDeds || [])[i] || 0)),
-    );
+        sum(l.map((h) => (h.shareDeds || [])[i] || 0)),
+      ),
+      shareAdds = Array.from({ length: state.shares }, (_, i) =>
+        sum(l.map((h) => (h.shareAdds || [])[i] || 0)),
+      );
     return {
       key: k,
       label: MONLS[lang][+k.slice(5) - 1] + " " + k.slice(0, 4),
       list: l,
+      incomes: extra,
       total: sum(l.map((h) => h.total)),
       loaded: sum(l.map((h) => h.loaded)),
       paid,
@@ -1125,14 +1203,15 @@ function monthly(hs) {
       rej: sum(l.map((h) => h.rejected)),
       home: sum(l.map((h) => h.home)),
       inc,
-      ded: inc - net,
+      ded,
       net,
       share: net / state.shares,
       shareDeds,
-      shareNet: shareDeds.map((d) => net / state.shares - d),
-      price: paid ? inc / paid : mean(l.map((h) => h.price)),
+      shareAdds,
+      shareNet: shareDeds.map((d, i) => net / state.shares - d + shareAdds[i]),
+      price: paid ? harvestInc / paid : 0,
     };
-  });
+  }).sort((a, b) => a.key.localeCompare(b.key));
 }
 
 /* ---------- forecast models ----------
@@ -1340,6 +1419,9 @@ function forecast(hs) {
     shareDedT = Array.from({ length: state.shares }, (_, i) =>
       mean(hs.slice(-6).map((h) => (h.shareDeds || [])[i] || 0)),
     ),
+    shareAddT = Array.from({ length: state.shares }, (_, i) =>
+      mean(hs.slice(-6).map((h) => (h.shareAdds || [])[i] || 0)),
+    ),
     transNow = mean(hs.slice(-6).map((h) => h.dv.transport)),
     last = pd(hs[n - 1].date);
   const step = (from, to, k) => {
@@ -1365,7 +1447,8 @@ function forecast(hs) {
       net,
       share: net / state.shares,
       shareDeds: shareDedT,
-      shareNet: shareDedT.map((d) => net / state.shares - d),
+      shareAdds: shareAddT,
+      shareNet: shareDedT.map((d, i) => net / state.shares - d + shareAddT[i]),
     };
   };
   const steps = [];
@@ -1688,7 +1771,7 @@ const banner = () =>
     ? `<div class="banner"><p><b>${t("sample_b")}</b> ${t("sample_p")}</p><button class="btn small" data-clear>${t("sample_btn")}</button></div>`
     : "");
 const emptyState = () =>
-  `<div class="card empty"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="16" cy="18" r="10"/><path d="M16 8c0-3 2-5 5-5M16 8c0-2-2-4-5-4"/></svg><h2>${t("empty_h")}</h2><p>${t("empty_p")}</p><button class="btn primary" data-add>${t("add_harvest")}</button></div>`;
+  `<div class="card empty"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="16" cy="18" r="10"/><path d="M16 8c0-3 2-5 5-5M16 8c0-2-2-4-5-4"/></svg><h2>${t("empty_h")}</h2><p>${t("empty_p")}</p><button class="btn primary" data-add>${t("add_harvest")}</button><button class="btn" data-add-income>${t("add_income")}</button></div>`;
 const LEG = () =>
   `<div class="legend"><span><i class="k1"></i>${t("loaded")}</span><span><i class="k3"></i>${t("rejected")}</span><span><i class="k4"></i>${t("home")}</span></div>`;
 function flowRows(h) {
@@ -1706,8 +1789,13 @@ function flowRows(h) {
       )
       .join("") +
     `<div class="row net"><span>${t("balance")}</span><div class="bar"><i style="width:${(Math.max(0, h.net) / base) * 100}%"></i></div><span class="v num ${h.net < 0 ? "neg-t" : ""}">${money(h.net)}</span></div>` +
-    (state.shares > 1
-      ? `<div class="row share"><span>${esc(shareLab())} (÷ ${state.shares})</span><div class="bar"><i style="width:${(Math.max(0, h.share) / base) * 100}%"></i></div><span class="v num ${h.net < 0 ? "neg-t" : ""}">${money(h.share)}</span></div>${h.shareDeds.map((d, i) => (d > 0 ? `<div class="row share"><span>${esc(shareNameAt(i))} · ${money(d)} ${t("deductions")}</span><div class="bar"></div><span class="v num">${money(h.shareNet[i])}</span></div>` : "")).join("")}`
+    (state.shares > 1 || h.shareDeds.some((d) => d > 0) || h.shareAdds.some((a) => a > 0)
+      ? `<div class="row share"><span>${esc(shareLab())} (÷ ${state.shares})</span><div class="bar"><i style="width:${(Math.max(0, h.share) / base) * 100}%"></i></div><span class="v num ${h.net < 0 ? "neg-t" : ""}">${money(h.share)}</span></div>${h.shareDeds.map((d, i) => {
+          const add = h.shareAdds[i] || 0;
+          return d > 0 || add > 0
+            ? `<div class="row share"><span>${esc(t("share_result", esc(shareNameAt(i)), money(h.share), money(d), money(add), money(h.shareNet[i])))}</span><div class="bar"></div><span class="v num">${money(h.shareNet[i])}</span></div>`
+            : "";
+        }).join("")}`
       : "") +
     `</div>`
   );
@@ -1737,13 +1825,23 @@ function vOverview(hs) {
     prev = hs[hs.length - 2],
     cut = pd(last.date) - 365 * DAY,
     yr = hs.filter((h) => pd(h.date) > cut),
+    extraIncome = state.otherIncome.filter((income) => pd(income.date) > cut),
+    harvestInc = sum(yr.map((h) => h.inc)),
     fc = forecast(hs);
   const tot = sum(yr.map((h) => h.total)),
     paid = sum(yr.map((h) => h.paid)),
-    inc = sum(yr.map((h) => h.inc)),
-    net = sum(yr.map((h) => h.net)),
+    inc = harvestInc + sum(extraIncome.map((income) => income.amount)),
+    net = sum(yr.map((h) => h.net)) + sum(extraIncome.map((income) => income.amount)),
     shareNets = Array.from({ length: state.shares }, (_, i) =>
-      sum(yr.map((h) => h.net / state.shares - ((h.shareDeds || [])[i] || 0))),
+      sum(
+        yr.map(
+          (h) =>
+            h.net / state.shares -
+            ((h.shareDeds || [])[i] || 0) +
+            ((h.shareAdds || [])[i] || 0),
+        ),
+      ) +
+      sum(extraIncome.map((income) => income.amount)) / state.shares,
     ),
     prs = yr.map((h) => h.price);
   const since = Math.round((todayMs() - pd(last.date)) / DAY);
@@ -1782,7 +1880,7 @@ function vOverview(hs) {
       <div class="pval num"><small>${esc(state.cur)}</small><span data-count="${last.price}">${N(last.price)}</span><span class="per">${t("per_coconut")}</span></div>
       <div class="cmp">${prev ? `${delta(last.price, prev.price)} <span>${t("from_prev", price(prev.price))}</span>` : t("first_price")}</div>
       <div class="spark" id="c-spark"></div>
-      <div class="mini num"><div><b>${price(paid ? inc / paid : last.price)}</b>${t("avg12")}</div><div><b>${price(Math.max.apply(0, prs))}</b>${t("highest")}</div><div><b>${price(Math.min.apply(0, prs))}</b>${t("lowest")}</div>${fc ? `<div><b>≈ ${price(Math.round(fc.steps[0].price))}</b>${t("exp_next")}</div>` : ""}</div></div>
+      <div class="mini num"><div><b>${price(paid ? harvestInc / paid : last.price)}</b>${t("avg12")}</div><div><b>${price(Math.max.apply(0, prs))}</b>${t("highest")}</div><div><b>${price(Math.min.apply(0, prs))}</b>${t("lowest")}</div>${fc ? `<div><b>≈ ${price(Math.round(fc.steps[0].price))}</b>${t("exp_next")}</div>` : ""}</div></div>
     <div class="card tothero"><div class="lab">${t("loaded_lab")} · ${fd(last.date)}</div>
       <div class="pval num"><span data-count="${last.loaded}">${N(last.loaded)}</span>${prev ? delta(last.loaded, prev.loaded) : ""}<span class="per">${t("harv_n", N(last.total))}</span></div>
       <div class="split" role="img" aria-label="${esc(t("split_aria"))}">${parts.map((p, i) => (p[2] > 0 ? `<i class="${p[0]}" style="flex:${p[2]};animation-delay:${i * 80}ms"></i>` : "")).join("")}</div>
@@ -1795,7 +1893,7 @@ function vOverview(hs) {
     ${kpi(t("balance"), cnt(net, state.cur), shareNets.map((v, i) => `${esc(shareNameAt(i))} ${money(v)}`).join(" · "))}
   </div>
   <div class="grid two">
-    <div class="card"><h2>${t("latest_money")}</h2><p class="hint">${last.buyer ? t("bought_by", esc(last.buyer)) + " " : ""}${t("latest_hint")}</p>${flowRows(last)}</div>
+    <div class="card"><h2>${t("latest_money")}</h2><p class="hint">${last.buyer ? t("bought_by", esc(last.buyer)) + " " : ""}${t("latest_hint")}</p>${flowRows(last)}${extraIncome.length ? `<details class="dd"><summary>${t("other_income")}</summary><ul class="num">${extraIncome.map((income) => `<li><span>${incomeMonthLabel(income.date)} · ${esc(income.note)}</span><b>${money(income.amount)}</b></li>`).join("")}</ul></details>` : ""}</div>
     ${hero}
   </div>
   <div class="card"><h2>${t("per_harvest_h")}</h2><p class="hint">${t("per_harvest_hint", Math.min(12, hs.length))}</p>${LEG()}<div class="chart" id="c-nuts"></div></div>
@@ -1803,15 +1901,16 @@ function vOverview(hs) {
   );
 }
 function vMonths(hs) {
-  if (!hs.length) return banner() + emptyState();
+  if (!hs.length && !state.otherIncome.length) return banner() + emptyState();
   const F = (l, v, c) => `<div class="f ${c || ""}"><span>${l}</span><b class="num">${v}</b></div>`;
   return (
     banner() +
+    `<div class="btnrow" style="margin-bottom:14px"><button class="btn primary" data-add-income>${t("add_income")}</button></div>` +
     monthly(hs)
       .reverse()
       .map(
         (m) =>
-          `<div class="mhead"><h2>${m.label}</h2><button class="btn small" data-mpdf="${m.key}">${t("btn_mpdf")}</button><div class="msum num"><b>${price(m.price)}</b> ${t("per_coconut")} · <b>${N(m.loaded)}</b> ${t("bought_s")} · ${N(m.total)} ${t("harvested")} · ${t("balance")} <b>${money(m.net)}</b>${state.shares > 1 ? ` · ${m.shareNet.map((v, i) => `${esc(shareNameAt(i))}: <b>${money(v)}</b>`).join(" · ")}` : ` · ${esc(shareNameAt(0))}: <b>${money(m.shareNet[0])}</b>`}</div></div>
+          `<div class="mhead"><h2>${m.label}</h2><button class="btn small" data-mpdf="${m.key}">${t("btn_mpdf")}</button><div class="msum num">${m.list.length ? `<b>${price(m.price)}</b> ${t("per_coconut")} · <b>${N(m.loaded)}</b> ${t("bought_s")} · ${N(m.total)} ${t("harvested")} · ` : ""}${t("total_income")} <b>${money(m.inc)}</b> · ${t("deductions")} <b>${money(m.ded)}</b> · ${t("balance")} <b>${money(m.net)}</b>${state.shares > 1 ? ` · ${m.shareNet.map((v, i) => `${esc(shareNameAt(i))}: <b>${money(v)}</b>`).join(" · ")}` : ` · ${esc(shareNameAt(0))}: <b>${money(m.shareNet[0])}</b>`}</div></div>
   <div class="rows">` +
           m.list
             .slice()
@@ -1826,10 +1925,20 @@ function vMonths(hs) {
     <div class="hgrid">${F(t("price"), price(h.price), "key")}${F(t("loaded"), N(h.loaded), "key")}${F(t("harvested"), N(h.total))}${F(t("free"), N(h.free))}${F(t("rejected"), N(h.rejected))}${F(t("home"), N(h.home))}
       ${F(t("income"), money(h.inc))}${F(t("deductions"), "− " + N(h.dedT))}<div class="f"><span>${t("balance")}</span><b class="num ${h.net < 0 ? "neg-t" : "pos-t"}">${money(h.net)}</b></div></div>
     ${dl.length ? `<details class="dd"><summary>${t("ded_break")}</summary><ul class="num">${dl.map((d) => `<li><span>${esc(d[0])}</span><b>${N(d[1])}</b></li>`).join("")}</ul></details>` : ""}
-    ${h.shareDeds.some((d) => d > 0) ? `<details class="dd"><summary>${t("share_after_ded")}</summary><ul class="num">${h.shareDeds.map((d, j) => `<li><span>${esc(shareNameAt(j))}: ${money(h.share)} − ${money(d)}</span><b>${money(h.shareNet[j])}</b></li>`).join("")}</ul></details>` : ""}
+    ${h.shareDeds.some((d) => d > 0) || h.shareAdds.some((a) => a > 0) ? `<details class="dd"><summary>${t("share_after_ded")}</summary><ul class="num">${h.shareDeds.map((d, j) => `<li><span>${esc(t("share_result", esc(shareNameAt(j)), money(h.share), money(d), money(h.shareAdds[j]), money(h.shareNet[j])))}</span><b>${money(h.shareNet[j])}</b></li>`).join("")}</ul></details>` : ""}
     <div class="who"><span>${t("buyer")}: <b>${h.buyer ? esc(h.buyer) : t("not_rec")}</b></span>${h.contact ? `<span>${t("contact")}: <a href="tel:${esc(String(h.contact).replace(/[^\d+]/g, ""))}">${esc(h.contact)}</a></span>` : ""}<span>${t("entered_by")}: <b>${h.by ? esc(h.by) : t("not_rec")}</b></span></div>
     ${h.note ? `<p class="note">${esc(h.note)}</p>` : ""}</div>`;
             })
+            .join("") +
+          m.incomes
+            .slice()
+            .sort((a, b) => b.date.localeCompare(a.date))
+            .map(
+              (income) => `<div class="card hrow">
+    <div class="when"><b>${incomeMonthLabel(income.date)}</b><span class="chip">${t("other_income")}</span><span style="flex:1"></span><button class="btn small" data-edit-income="${esc(income.id)}">${t("edit")}</button></div>
+    <div class="hgrid">${F(t("income_amount"), money(income.amount), "key")}${F(t("income_note"), esc(income.note))}</div>
+  </div>`,
+            )
             .join("") +
           `</div>`,
       )
@@ -1839,11 +1948,16 @@ function vMonths(hs) {
 function vInsights(all) {
   if (!all.length) return banner() + emptyState();
   const lastMs = pd(all[all.length - 1].date),
-    hs = range === "all" ? all : all.filter((h) => pd(h.date) > lastMs - +range * 30.5 * DAY);
+    hs = range === "all" ? all : all.filter((h) => pd(h.date) > lastMs - +range * 30.5 * DAY),
+    extraIncome =
+      range === "all"
+        ? state.otherIncome
+        : state.otherIncome.filter((income) => pd(income.date) > lastMs - +range * 30.5 * DAY);
   const tot = sum(hs.map((h) => h.total)),
     rej = sum(hs.map((h) => h.rejected)),
     paid = sum(hs.map((h) => h.paid)),
-    inc = sum(hs.map((h) => h.inc)),
+    harvestInc = sum(hs.map((h) => h.inc)),
+    inc = harvestInc + sum(extraIncome.map((income) => income.amount)),
     ded = sum(hs.map((h) => h.dedT)),
     net = inc - ded;
   const gaps = hs.map((h) => h.gap).filter((g) => g > 0);
@@ -1853,7 +1967,7 @@ function vInsights(all) {
       .sort((a, b) => b[1] - a[1]),
     base = Math.max(inc, ded, 1);
   const best = hs.slice().sort((a, b) => b.net - a.net)[0],
-    ms = monthly(hs).reverse();
+    ms = monthly(hs, extraIncome).reverse();
   drawFns.push(() => {
     lineChart($("#i-price"), priceData(hs), [], { label: t("price_chart_h") });
     barChart($("#i-nuts"), nutsData(hs), { label: t("per_harvest_h") });
@@ -1878,7 +1992,7 @@ function vInsights(all) {
     .map((r) => `<button data-range="${r[0]}" aria-pressed="${range === r[0]}">${r[1]}</button>`)
     .join("")}</div>
   <div class="grid kpis sm">
-    ${kpi(t("avg_price"), cnt(paid ? inc / paid : 0, state.cur), t("per_paid"))}
+    ${kpi(t("avg_price"), cnt(paid ? harvestInc / paid : 0, state.cur), t("per_paid"))}
     ${kpi(t("loaded"), cnt(sum(hs.map((h) => h.loaded))), t("n_harv", N(tot)))}
     ${kpi(t("rej_rate"), `${tot ? ((rej / tot) * 100).toFixed(1) : 0}%`, t("of_picked", N(rej), N(tot)))}
     ${kpi(t("gap_days"), gaps.length ? cnt(mean(gaps)) : "–", gaps.length ? t("short_long", Math.min.apply(0, gaps), Math.max.apply(0, gaps)) : t("need2"))}
@@ -2035,7 +2149,7 @@ function vData() {
     <label class="fld wide">${t("trans_rate")} (${esc(state.cur)})<input id="s-trans" type="number" inputmode="decimal" min="0" step="0.01" value="${esc(state.transRate)}"></label></div>
     <div class="btnrow" style="margin-top:12px"><button class="btn primary" id="s-save">${t("save_details")}</button></div></div>
   <div class="card" style="grid-column:1/-1"><h2>${t("imp_h")}</h2><p class="hint">${t("imp_hint")}</p>
-    <p style="margin:0 0 10px"><code>date, harvested, rejected, home use, price, harvesting, cart, transport, church, my money, fertilizer, power, other, buyer name, buyer contact, entered by, note, other note, free to buyer, loaded, custom deductions JSON, per-share deductions JSON</code></p>
+    <p style="margin:0 0 10px"><code>date, harvested, rejected, home use, price, harvesting, cart, transport, church, my money, fertilizer, power, other, buyer name, buyer contact, entered by, note, other note, free to buyer, loaded, custom deductions JSON, per-share deductions JSON, record type, income amount, income note, income ID, per-share additions JSON</code></p>
     <p class="hint">${t("imp_ex")}</p>
     <textarea class="box" id="imp" rows="5" placeholder="${esc(t("imp_ph"))}" aria-label="${esc(t("imp_h"))}"></textarea>
     <div class="btnrow" style="margin-top:10px"><button class="btn primary" id="impGo">${t("imp_go")}</button><label class="btn">${t("choose_file")}<input type="file" id="impFile" accept=".csv,.json,.txt,text/csv,text/comma-separated-values,application/json,text/plain" hidden></label></div>
@@ -2269,8 +2383,10 @@ function toast(m) {
   toast.t = setTimeout(() => el.classList.remove("on"), 2600);
 }
 const dlg = $("#dlg"),
-  ask = $("#ask");
+  ask = $("#ask"),
+  incomeDlg = $("#incomeDlg");
 let editId = null,
+  incomeEditId = null,
   roundingAdjustment = 0;
 function openD(d) {
   if (d.showModal) d.showModal();
@@ -2347,11 +2463,24 @@ function readShareDedFields() {
     return isFinite(amount) ? amount : 0;
   });
 }
+function readShareAddFields() {
+  return Array.from($("#shareAddFields").querySelectorAll("[data-share-add]"), (input) => {
+    const amount = input.value.trim() === "" ? 0 : parseFloat(input.value);
+    return isFinite(amount) ? amount : 0;
+  });
+}
 function renderShareDedFields(rows) {
   $("#shareDedFields").innerHTML = Array.from({ length: Math.max(1, state.shares) }, (_, i) => {
     const name = shareNameAt(i),
       amount = rows && rows[i] ? rows[i] : "";
     return `<label class="fld"><span>${t("share_ded_amount", esc(name))}</span><input type="number" inputmode="decimal" data-share-ded min="0" step="1" value="${esc(amount || "")}"></label>`;
+  }).join("");
+}
+function renderShareAddFields(rows) {
+  $("#shareAddFields").innerHTML = Array.from({ length: Math.max(1, state.shares) }, (_, i) => {
+    const name = shareNameAt(i),
+      amount = rows && rows[i] ? rows[i] : "";
+    return `<label class="fld"><span>${t("share_add_amount", esc(name))}</span><input type="number" inputmode="decimal" data-share-add min="0" step="1" value="${esc(amount || "")}"></label>`;
   }).join("");
 }
 const dedInputValue = (h, c) => {
@@ -2404,11 +2533,14 @@ function live() {
   n.textContent = money(c.net);
   n.className = "num " + (c.net < 0 ? "neg-t" : "");
   $("#l-share").textContent = money(c.net / state.shares);
-  $("#shareDedLive").innerHTML = readShareDedFields()
+  const shareDeds = readShareDedFields(),
+    shareAdds = readShareAddFields();
+  $("#shareDedLive").innerHTML = shareDeds
     .map((ded, i) => {
       const share = c.net / state.shares,
-        after = share - ded;
-      return `<li>${esc(t("share_ded_result", esc(shareNameAt(i)), money(share), money(ded), money(after)))}</li>`;
+        added = shareAdds[i] || 0,
+        after = share - ded + added;
+      return `<li>${esc(t("share_result", esc(shareNameAt(i)), money(share), money(ded), money(added), money(after)))}</li>`;
     })
     .join("");
 }
@@ -2462,6 +2594,7 @@ function openForm(id) {
   CATS.forEach((c) => ($("#d-" + c).value = dedInputValue(h, c)));
   renderCustomDedFields(h ? customDedEntries(h) : []);
   renderShareDedFields(h ? shareDedEntries(h) : []);
+  renderShareAddFields(h ? shareAddEntries(h) : []);
   $("#f-ded-target").value = h ? roundingBaseDeduction() + roundingAdjustment : "";
   $("#copyLast").style.display = prevOf(editId) ? "" : "none";
   live();
@@ -2473,6 +2606,7 @@ $("#copyLast").onclick = () => {
   CATS.forEach((c) => ($("#d-" + c).value = dedInputValue(l, c)));
   renderCustomDedFields(customDedEntries(l));
   renderShareDedFields(shareDedEntries(l));
+  renderShareAddFields(shareAddEntries(l));
   roundingAdjustment = roundingDedAmount(l);
   $("#f-ded-target").value = roundingBaseDeduction() + roundingAdjustment;
   $("#f-othernote").value = l.otherNote || "";
@@ -2488,7 +2622,8 @@ $("#hform").addEventListener("submit", (e) => {
     fv = $("#f-free").value.trim(),
     lv = $("#f-loaded").value.trim();
   const customDeds = readCustomDedFields();
-  const shareDeds = readShareDedFields();
+  const shareDeds = readShareDedFields(),
+    shareAdds = readShareAddFields();
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return (err.textContent = t("e_date"));
   if (pr <= 0) return (err.textContent = t("e_price"));
   if (total <= 0) return (err.textContent = t("e_total"));
@@ -2498,6 +2633,7 @@ $("#hform").addEventListener("submit", (e) => {
   if (customDeds.some((d) => d.amount < 0)) return (err.textContent = t("e_custom_amount"));
   if (customDeds.some((d) => d.amount > 0 && !d.name)) return (err.textContent = t("e_custom_name"));
   if (shareDeds.some((d) => d < 0)) return (err.textContent = t("e_custom_amount"));
+  if (shareAdds.some((a) => a < 0)) return (err.textContent = t("e_custom_amount"));
   if (state.harvests.some((h) => h.date === date && h.id !== editId) && !state.sample)
     return (err.textContent = t("e_dup"));
   if (state.sample) {
@@ -2527,6 +2663,7 @@ $("#hform").addEventListener("submit", (e) => {
       ),
     }),
     shareDeds,
+    shareAdds,
     otherNote: $("#f-othernote").value.trim(),
     buyer: $("#f-buyer").value.trim(),
     contact: $("#f-contact").value.trim(),
@@ -2551,39 +2688,93 @@ $("#delBtn").onclick = async () => {
     toast(t("t_deleted"));
   }
 };
+function openIncomeForm(id) {
+  const entry = id && state.otherIncome.find((income) => income.id === id);
+  incomeEditId = entry ? entry.id : null;
+  applyStatic();
+  $("#incomeDlgTitle").textContent = t(entry ? "edit_income" : "other_income");
+  $("#incomeDel").textContent = t("delete");
+  $("#incomeDel").style.display = entry ? "" : "none";
+  $("#incomeErr").textContent = "";
+  $("#incomeDate").value = entry ? entry.date.slice(0, 7) : iso(todayMs()).slice(0, 7);
+  $("#incomeAmount").value = entry ? entry.amount : "";
+  $("#incomeNote").value = entry ? entry.note : "";
+  openD(incomeDlg);
+}
+$("#incomeForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const month = $("#incomeDate").value,
+    amount = Number($("#incomeAmount").value),
+    note = $("#incomeNote").value.trim(),
+    error = $("#incomeErr");
+  if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(month)) {
+    error.textContent = t("e_date");
+    return;
+  }
+  if (!Number.isFinite(amount) || amount <= 0 || !note) {
+    error.textContent = t("income_required");
+    return;
+  }
+  if (state.sample) {
+    state.harvests = [];
+    state.sample = false;
+  }
+  const entry = { id: incomeEditId || uid(), date: month + "-01", amount, note },
+    index = state.otherIncome.findIndex((income) => income.id === entry.id);
+  if (index >= 0) state.otherIncome[index] = entry;
+  else state.otherIncome.push(entry);
+  persist();
+  closeD(incomeDlg);
+  render();
+  toast(t("income_saved"));
+});
+$("#incomeDel").onclick = async () => {
+  if (!incomeEditId) return;
+  closeD(incomeDlg);
+  if (await confirmBox(t("c_del_income_h"), t("c_del_income_p"), t("delete"))) {
+    state.otherIncome = state.otherIncome.filter((income) => income.id !== incomeEditId);
+    persist();
+    render();
+    toast(t("income_deleted"));
+  }
+};
 
 /* ---------- share, save, import ---------- */
 const q = (s) => '"' + String(s || "").replace(/"/g, '""') + '"';
 function toCSV() {
-  return (
-    "﻿" +
-    [
+  const header =
       "date,harvested,rejected,home_use,price," +
-        CATS.join(",") +
-        ",buyer_name,buyer_contact,entered_by,note,other_note,free_to_buyer,loaded",
-    ]
-      .concat(
-        calc().map((h) =>
-          [h.date, h.total, h.rejected, h.home, h.price]
-            .concat(
-              CATS.map((c) => h.dv[c] || 0),
-              [
-                q(h.buyer),
-                q(h.contact),
-                q(h.by),
-                q(h.note),
-                q(h.otherNote),
-                h.freeSet == null ? "" : h.freeSet,
-                h.loaded,
-                q(JSON.stringify(h.customDeds)),
-                q(JSON.stringify(h.shareDeds)),
-              ],
-            )
-            .join(","),
-        ),
-      )
-      .join("\n")
-  );
+      CATS.join(",") +
+      ",buyer_name,buyer_contact,entered_by,note,other_note,free_to_buyer,loaded,custom_deductions,share_deductions,record_type,income_amount,income_note,income_id,share_additions",
+    harvestRows = calc().map((h) =>
+      [h.date, h.total, h.rejected, h.home, h.price]
+        .concat(
+          CATS.map((c) => h.dv[c] || 0),
+          [
+            q(h.buyer),
+            q(h.contact),
+            q(h.by),
+            q(h.note),
+            q(h.otherNote),
+            h.freeSet == null ? "" : h.freeSet,
+            h.loaded,
+            q(JSON.stringify(h.customDeds)),
+            q(JSON.stringify(h.shareDeds)),
+            "harvest",
+            "",
+            "",
+            "",
+            q(JSON.stringify(h.shareAdds)),
+          ],
+        )
+        .join(","),
+    ),
+    incomeRows = state.otherIncome.map((income) => {
+      const row = Array(22).fill("");
+      row[0] = income.date;
+      return row.concat("income", income.amount, q(income.note), q(income.id), "").join(",");
+    });
+  return "﻿" + [header].concat(harvestRows, incomeRows).join("\n");
 }
 window.onNativeResult = (ok) => toast(t(ok ? "t_file" : "t_nofile"));
 async function saveFile(name, text, quiet) {
@@ -2677,10 +2868,11 @@ function importText(txt) {
     if (!o || !Array.isArray(o.harvests)) throw t("i_notbk");
     return {
       replace: Object.assign(o, { sample: false }),
-      count: o.harvests.length,
+      count: o.harvests.length + (Array.isArray(o.otherIncome) ? o.otherIncome.length : 0),
     };
   }
-  const out = [];
+  const out = [],
+    otherIncome = [];
   txt.split(/\r?\n/).forEach((line, ln) => {
     if (!line.trim()) return;
     const c = splitRow(line),
@@ -2693,6 +2885,18 @@ function importText(txt) {
       const v = parseFloat((c[i] || "").replace(/[^\d.\-]/g, ""));
       return isFinite(v) ? v : 0;
     };
+    const recordType = (c[22] || "harvest").toLowerCase();
+    if (recordType === "income") {
+      if (n(23) <= 0) throw t("i_income", ln + 1);
+      otherIncome.push({
+        id: c[25] || uid(),
+        date,
+        amount: n(23),
+        note: c[24] || "",
+      });
+      return;
+    }
+    if (recordType !== "harvest") throw t("i_bad");
     if (n(1) <= 0) throw t("i_count", ln + 1);
     if (n(2) + n(3) > n(1)) throw t("i_sum", ln + 1);
     let customDeds = [];
@@ -2716,6 +2920,17 @@ function importText(txt) {
         throw t("i_bad");
       }
     }
+    let shareAdds = [];
+    if ((c[26] || "").trim()) {
+      try {
+        const parsed = JSON.parse(c[26]);
+        if (!Array.isArray(parsed) || parsed.some((amount) => !Number.isFinite(Number(amount)) || Number(amount) < 0))
+          throw new Error("Per-share additions must be non-negative amounts.");
+        shareAdds = parsed.map(Number);
+      } catch (e) {
+        throw t("i_bad");
+      }
+    }
     const ded = {};
     CATS.forEach((k, i) => (ded[k] = k === "transport" && (c[5 + i] || "") === "" ? null : n(5 + i)));
     out.push({
@@ -2730,6 +2945,7 @@ function importText(txt) {
       ded,
       customDeds,
       shareDeds,
+      shareAdds,
       buyer: c[13] || "",
       contact: c[14] || "",
       by: c[15] || "",
@@ -2737,8 +2953,8 @@ function importText(txt) {
       otherNote: c[17] || "",
     });
   });
-  if (!out.length) throw t("i_rows");
-  return { rows: out, count: out.length };
+  if (!out.length && !otherIncome.length) throw t("i_rows");
+  return { rows: out, otherIncome, count: out.length + otherIncome.length };
 }
 function doImport(txt) {
   const er = $("#impErr");
@@ -2758,6 +2974,7 @@ function doImport(txt) {
   } else {
     if (state.sample) {
       state.harvests = [];
+      state.otherIncome = [];
       state.sample = false;
     }
     r.rows.forEach((x) => {
@@ -2766,6 +2983,11 @@ function doImport(txt) {
         x.id = state.harvests[i].id;
         state.harvests[i] = x;
       } else state.harvests.push(x);
+    });
+    (r.otherIncome || []).forEach((income) => {
+      const i = state.otherIncome.findIndex((entry) => entry.id === income.id);
+      if (i >= 0) state.otherIncome[i] = income;
+      else state.otherIncome.push(income);
     });
   }
   persist();
@@ -2776,16 +2998,17 @@ function doImport(txt) {
 /* ---------- PDF report: a print-ready page; the print screen saves it as PDF ---------- */
 function openReport() {
   const hs = calc();
-  if (!hs.length) return toast(t("empty_h"));
+  if (!hs.length && !state.otherIncome.length) return toast(t("empty_h"));
   const fc = forecast(hs),
     ms = monthly(hs).reverse(),
-    first = hs[0],
+    dates = hs.map((h) => h.date).concat(state.otherIncome.map((income) => income.date)).sort(),
     last = hs[hs.length - 1],
     S = (f) => sum(hs.map(f));
   const tot = S((h) => h.total),
     loaded = S((h) => h.loaded),
     paid = S((h) => h.paid),
-    inc = S((h) => h.inc),
+    harvestInc = S((h) => h.inc),
+    inc = harvestInc + sum(state.otherIncome.map((income) => income.amount)),
     ded = S((h) => h.dedT),
     net = inc - ded,
     base = Math.max(inc, ded, 1);
@@ -2795,25 +3018,27 @@ function openReport() {
       .filter((c) => c[1] > 0)
       .sort((a, b) => b[1] - a[1]);
   const shareDeds = Array.from({ length: state.shares }, (_, i) =>
-    sum(hs.map((h) => (h.shareDeds || [])[i] || 0)),
-  ),
-    shareNets = shareDeds.map((d) => net / state.shares - d);
+      sum(hs.map((h) => (h.shareDeds || [])[i] || 0)),
+    ),
+    shareAdds = Array.from({ length: state.shares }, (_, i) =>
+      sum(hs.map((h) => (h.shareAdds || [])[i] || 0)),
+    ),
+    shareNets = shareDeds.map((d, i) => net / state.shares - d + shareAdds[i]);
   const T = (l, v) => `<div class="rt"><span>${l}</span><b>${v}</b></div>`,
     sh = state.shares > 1;
   $("#report").innerHTML =
     `<div class="rbar noprint"><button class="btn primary" id="repPrint">${t("rep_save")}</button><button class="btn" id="repClose">${t("rep_close")}</button><span>${t("rep_hint")}</span></div>
-  <div class="page"><div class="rhead"><div><h1>${esc(state.estate)}</h1><p>${t("rep_title")} · ${fd(first.date)} – ${fd(last.date)} · ${t("n_harvests", hs.length)}</p></div><p class="rmeta">${t("rep_made", fd(todayMs()))}<br>${t("version", VER)}</p></div>
-  <div class="rk num">${T(t("rep_latest"), price(last.price))}${T(t("avg_price"), price(paid ? inc / paid : 0))}${T(t("loaded"), N(loaded))}${T(t("harvested"), N(tot))}
+  <div class="page"><div class="rhead"><div><h1>${esc(state.estate)}</h1><p>${t("rep_title")} · ${fd(dates[0])} – ${fd(dates[dates.length - 1])} · ${t("n_harvests", hs.length)}</p></div><p class="rmeta">${t("rep_made", fd(todayMs()))}<br>${t("version", VER)}</p></div>
+  <div class="rk num">${last ? T(t("rep_latest"), price(last.price)) : ""}${T(t("avg_price"), price(paid ? harvestInc / paid : 0))}${T(t("loaded"), N(loaded))}${T(t("harvested"), N(tot))}
     ${T(t("free"), N(S((h) => h.free)))}${T(t("rejected"), N(S((h) => h.rejected)))}${T(t("home"), N(S((h) => h.home)))}
     ${T(t("income"), money(inc))}${T(t("deductions"), money(ded))}${T(t("balance"), money(net))}${shareNets.map((v, i) => T(esc(shareNameAt(i)), money(v))).join("")}</div>
-  <div class="card"><h2>${t("price_chart_h")}</h2><div class="chart" id="r-price"></div></div>
-  <div class="card"><h2>${t("per_harvest_h")}</h2>${LEG()}<div class="chart" id="r-nuts"></div></div>
+  ${hs.length ? `<div class="card"><h2>${t("price_chart_h")}</h2><div class="chart" id="r-price"></div></div><div class="card"><h2>${t("per_harvest_h")}</h2>${LEG()}<div class="chart" id="r-nuts"></div></div>` : ""}
   <div class="card"><h2>${t("mbm")}</h2><div class="tbl"><table class="num"><thead><tr><th>${t("th_month")}</th><th>${t("price")}</th><th>${t("harvested")}</th><th>${t("th_loaded")}</th><th>${t("th_free")}</th><th>${t("th_rej")}</th><th>${t("th_home")}</th><th>${t("income")}</th><th>${t("deductions")}</th><th>${t("balance")}</th>${shareNets.map((_, i) => `<th>${esc(shareNameAt(i))}</th>`).join("")}</tr></thead>
     <tbody>${ms.map((m) => `<tr><td>${m.label}</td><td class="pr">${price(m.price)}</td><td>${N(m.total)}</td><td>${N(m.loaded)}</td><td>${N(m.free)}</td><td>${N(m.rej)}</td><td>${N(m.home)}</td><td>${N(m.inc)}</td><td>${N(m.ded)}</td><td><b>${N(m.net)}</b></td>${m.shareNet.map((v) => `<td>${N(v)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div>
   <div class="card"><h2>${t("where_goes")}</h2><div class="flow">${cats.map((c) => `<div class="row"><span>${esc(c[0])}</span><div class="bar"><i style="width:${(c[1] / base) * 100}%"></i></div><span class="v num">${N(c[1])}<span class="pct">${inc ? Math.round((c[1] / inc) * 100) : 0}%</span></span></div>`).join("")}
     <div class="row net"><span>${t("balance")}</span><div class="bar"><i style="width:${(Math.max(0, net) / base) * 100}%"></i></div><span class="v num">${money(net)}<span class="pct">${inc ? Math.round((net / inc) * 100) : 0}%</span></span></div>
     ${sh ? `<div class="row share"><span>${esc(shareLab())} (÷ ${state.shares})</span><div class="bar"><i style="width:${(Math.max(0, net / state.shares) / base) * 100}%"></i></div><span class="v num">${money(net / state.shares)}</span></div>` : ""}</div></div>
-  <div class="card"><h2>${t("share_after_ded")}</h2><div class="tbl"><table class="num"><thead><tr><th>${t("rep_item")}</th><th>${esc(shareLab())}</th><th>${t("share_deductions")}</th><th>${t("balance")}</th></tr></thead><tbody>${shareDeds.map((d, i) => `<tr><td>${esc(shareNameAt(i))}</td><td>${money(net / state.shares)}</td><td>− ${N(d)}</td><td><b>${money(shareNets[i])}</b></td></tr>`).join("")}</tbody></table></div></div>
+  <div class="card"><h2>${t("share_after_ded")}</h2><div class="tbl"><table class="num"><thead><tr><th>${t("rep_item")}</th><th>${esc(shareLab())}</th><th>${t("share_deductions")}</th><th>${t("share_additions")}</th><th>${t("balance")}</th></tr></thead><tbody>${shareDeds.map((d, i) => `<tr><td>${esc(shareNameAt(i))}</td><td>${money(net / state.shares)}</td><td>− ${N(d)}</td><td>+ ${N(shareAdds[i])}</td><td><b>${money(shareNets[i])}</b></td></tr>`).join("")}</tbody></table></div></div>
   <div class="card"><h2>${t("rep_dedm")}</h2><div class="tbl"><table class="num"><thead><tr><th>${t("th_month")}</th>${CATS.map((c) => `<th>${t("cat_" + c)}</th>`).join("")}${customCats.map((d) => `<th>${esc(d.name)}</th>`).join("")}<th>${t("th_total")}</th></tr></thead>
     <tbody>${ms
       .map((m) => {
@@ -2821,7 +3046,7 @@ function openReport() {
         return `<tr><td>${m.label}</td>${CATS.map((c) => `<td>${N(o.dv[c])}</td>`).join("")}${customCats.map((d) => `<td>${N((o.customDeds.find((x) => x.name.toLowerCase() === d.name.toLowerCase()) || {}).amount || 0)}</td>`).join("")}<td><b>${N(o.dedT)}</b></td></tr>`;
       })
       .join("")}</tbody></table></div></div>
-  <div class="card"><h2>${t("bal_per_h")}</h2><div class="chart" id="r-net"></div></div>
+  ${hs.length ? `<div class="card"><h2>${t("bal_per_h")}</h2><div class="chart" id="r-net"></div></div>` : ""}
   <div class="card"><h2>${t("rep_all")}</h2><div class="tbl"><table class="num"><thead><tr><th>${t("f_date")}</th><th>${t("price")}</th><th>${t("harvested")}</th><th>${t("th_loaded")}</th><th>${t("th_rej")}</th><th>${t("th_home")}</th><th>${t("th_free")}</th><th>${t("income")}</th><th>${t("deductions")}</th><th>${t("balance")}</th>${shareNets.map((_, i) => `<th>${esc(shareNameAt(i))}</th>`).join("")}<th>${t("buyer")}</th></tr></thead>
     <tbody>${hs
       .slice()
@@ -2831,43 +3056,51 @@ function openReport() {
           `<tr><td>${fd(h.date)}</td><td class="pr">${price(h.price)}</td><td>${N(h.total)}</td><td>${N(h.loaded)}</td><td>${N(h.rejected)}</td><td>${N(h.home)}</td><td>${N(h.free)}</td><td>${N(h.inc)}</td><td>${N(h.dedT)}</td><td><b>${N(h.net)}</b></td>${h.shareNet.map((v) => `<td>${N(v)}</td>`).join("")}<td>${esc(h.buyer || "")}</td></tr>`,
       )
       .join("")}</tbody></table></div></div>
+  ${state.otherIncome.length ? `<div class="card"><h2>${t("rep_income")}</h2><div class="tbl"><table class="num"><thead><tr><th>${t("income_month")}</th><th>${t("income_note")}</th><th>${t("income_amount")}</th></tr></thead><tbody>${state.otherIncome.slice().sort((a, b) => a.date.localeCompare(b.date)).map((income) => `<tr><td>${incomeMonthLabel(income.date)}</td><td>${esc(income.note)}</td><td>${money(income.amount)}</td></tr>`).join("")}</tbody></table></div></div>` : ""}
   ${fc ? `<div class="card"><h2>${t("next3")}</h2><p class="hint">${t("rep_fc_note")}</p><div class="fc-list">${fc.steps.map((x) => `<div class="fc-item"><h3>${t("around", fd(x.date))}</h3><p class="num">≈ ${price(Math.round(x.price))} ${t("per_coconut")}</p><p class="num">≈ ${N(x.nuts)} ${t("harvested")} · ${t("n_loaded", N(x.loaded)).replace("≈ ", "")}</p><p class="num">≈ ${money(x.net)} · ${t("balance")}</p></div>`).join("")}</div></div>` : ""}
   </div>`;
   repName = "coconut-report-" + iso(todayMs());
   document.body.classList.add("rep");
   $("#report").scrollTop = 0;
-  lineChart($("#r-price"), priceData(hs), [], {
-    label: t("price_chart_h"),
-    w: 720,
-    h: 230,
-  });
-  barChart($("#r-nuts"), nutsData(hs), {
-    label: t("per_harvest_h"),
-    w: 720,
-    h: 230,
-  });
-  barChart(
-    $("#r-net"),
-    hs.map((h) => ({
-      label: fd(h.date, false),
-      segs: [{ v: h.net, cls: h.net < 0 ? "neg" : "s1" }],
-      tip: "",
-    })),
-    { label: t("bal_per_h"), w: 720, h: 200 },
-  );
+  if (hs.length) {
+    lineChart($("#r-price"), priceData(hs), [], {
+      label: t("price_chart_h"),
+      w: 720,
+      h: 230,
+    });
+    barChart($("#r-nuts"), nutsData(hs), {
+      label: t("per_harvest_h"),
+      w: 720,
+      h: 230,
+    });
+    barChart(
+      $("#r-net"),
+      hs.map((h) => ({
+        label: fd(h.date, false),
+        segs: [{ v: h.net, cls: h.net < 0 ? "neg" : "s1" }],
+        tip: "",
+      })),
+      { label: t("bal_per_h"), w: 720, h: 200 },
+    );
+  }
 }
 /* ---------- monthly report: one month as a statement, with the full deduction breakdown ---------- */
 let repName = "coconut-report";
-function agg(l) {
+function agg(l, otherIncome) {
+  otherIncome = otherIncome || [];
   const S = (f) => sum(l.map(f)),
     dv = {};
   CATS.forEach((c) => (dv[c] = S((h) => h.dv[c])));
   const loaded = S((h) => h.loaded),
-    inc = S((h) => h.inc),
-    dedT = S((h) => h.dedT);
+    harvestInc = S((h) => h.inc),
+    dedT = S((h) => h.dedT),
+    inc = harvestInc + sum(otherIncome.map((income) => income.amount));
   const shareDeds = Array.from({ length: state.shares }, (_, i) =>
-    S((h) => (h.shareDeds || [])[i] || 0),
-  ),
+      S((h) => (h.shareDeds || [])[i] || 0),
+    ),
+    shareAdds = Array.from({ length: state.shares }, (_, i) =>
+      S((h) => (h.shareAdds || [])[i] || 0),
+    ),
     net = inc - dedT,
     share = net / state.shares;
   return {
@@ -2877,14 +3110,17 @@ function agg(l) {
     home: S((h) => h.home),
     free: S((h) => h.free),
     inc,
+    harvestInc,
+    otherIncome,
     dv,
     customDeds: customDedSummary(l),
     dedT,
     net,
     share,
     shareDeds,
-    shareNet: shareDeds.map((d) => share - d),
-    price: loaded ? inc / loaded : mean(l.map((h) => h.price)),
+    shareAdds,
+    shareNet: shareDeds.map((d, i) => share - d + shareAdds[i]),
+    price: loaded ? harvestInc / loaded : 0,
     otherNote: l
       .map((h) => h.otherNote)
       .filter(Boolean)
@@ -2901,12 +3137,13 @@ function moneyTable(o) {
     bar = (v) =>
       `<span class="pb"><i style="width:${o.inc ? Math.min(100, Math.max(0, (v / o.inc) * 100)) : 0}%"></i></span>`;
   return `<table class="st num"><thead><tr><th>${t("rep_item")}</th><th>${t("rep_note")}</th><th>${t("rep_amount", esc(state.cur))}</th><th>${t("rep_pct")}</th></tr></thead><tbody>
-  <tr class="sub"><td>${t("income")}</td><td>${N(o.loaded)} × ${price(o.price)}</td><td>${N(o.inc)}</td><td>100%</td></tr>
+  <tr class="sub"><td>${t("income")}</td><td>${N(o.loaded)} × ${price(o.price)}</td><td>${N(o.harvestInc)}</td><td>${o.inc ? pc(o.harvestInc) : "–"}</td></tr>
+  ${o.otherIncome.length ? `<tr><td>${t("other_income")}</td><td>${o.otherIncome.map((income) => esc(income.note)).join("; ")}</td><td>${N(sum(o.otherIncome.map((income) => income.amount)))}</td><td>${pc(sum(o.otherIncome.map((income) => income.amount)))}</td></tr>` : ""}
   ${CATS.map((c) => `<tr><td>${t("cat_" + c)}</td><td>${c === "transport" && o.transAuto ? t("per_harv_x", N(o.total), price(state.transRate)) : c === "other" ? esc(o.otherNote) : ""}</td><td>${o.dv[c] ? "− " + N(o.dv[c]) : "0"}</td><td>${bar(o.dv[c])}${pc(o.dv[c])}</td></tr>`).join("")}
   ${o.customDeds.map((d) => `<tr><td>${esc(d.name)}</td><td></td><td>− ${N(d.amount)}</td><td>${bar(d.amount)}${pc(d.amount)}</td></tr>`).join("")}
   <tr class="sub"><td>${t("rep_totded")}</td><td></td><td>− ${N(o.dedT)}</td><td>${pc(o.dedT)}</td></tr>
   <tr class="tot"><td>${t("balance")}</td><td></td><td>${money(o.net)}</td><td>${pc(o.net)}</td></tr>
-  ${o.shareDeds.map((d, i) => `<tr class="shr"><td>${esc(shareNameAt(i))}</td><td>${money(o.share)} − ${money(d)}</td><td>${money(o.shareNet[i])}</td><td>${pc(o.shareNet[i])}</td></tr>`).join("")}</tbody></table>`;
+  ${o.shareDeds.map((d, i) => `<tr class="shr"><td>${esc(shareNameAt(i))}</td><td>${money(o.share)} − ${money(d)} + ${money(o.shareAdds[i])}</td><td>${money(o.shareNet[i])}</td><td>${pc(o.shareNet[i])}</td></tr>`).join("")}</tbody></table>`;
 }
 function openMonthReport(key) {
   const ms = monthly(calc()),
@@ -2914,22 +3151,24 @@ function openMonthReport(key) {
   if (i < 0) return toast(t("empty_h"));
   const m = ms[i],
     pm = ms[i - 1],
-    o = agg(m.list),
-    po = pm && agg(pm.list),
+    o = agg(m.list, m.incomes),
+    po = pm && agg(pm.list, pm.incomes),
     multi = m.list.length > 1;
   const T = (l, v) => `<div class="rt"><span>${l}</span><b>${v}</b></div>`;
   const det = (h) =>
     `<p class="rdet">${t("f_date")}: <b>${fd(h.date)}</b>${h.gap != null ? ` (${t("days_after", h.gap)})` : ""} · ${t("buyer")}: <b>${h.buyer ? esc(h.buyer) : t("not_rec")}</b>${h.contact ? ` · ${t("contact")}: <b>${esc(h.contact)}</b>` : ""} · ${t("entered_by")}: <b>${h.by ? esc(h.by) : t("not_rec")}</b>${h.note ? `<br>${esc(h.note)}` : ""}</p>`;
-  const block = (x) =>
-    `<div class="card"><h2>${t("rep_coco")}</h2>${cocoTable(x)}</div><div class="card"><h2>${t("rep_money")}</h2>${moneyTable(x)}</div>`;
+  const detIncome = (income) =>
+    `<p class="rdet">${t("income_month")}: <b>${incomeMonthLabel(income.date)}</b> · ${t("other_income")}: <b>${money(income.amount)}</b><br>${esc(income.note)}</p>`;
+  const block = (x, includeCoconuts) =>
+    `${includeCoconuts ? `<div class="card"><h2>${t("rep_coco")}</h2>${cocoTable(x)}</div>` : ""}<div class="card"><h2>${t("rep_money")}</h2>${moneyTable(x)}</div>`;
   $("#report").innerHTML =
     `<div class="rbar noprint"><button class="btn primary" id="repPrint">${t("rep_save")}</button><button class="btn" id="repClose">${t("rep_close")}</button><span>${t("rep_hint")}</span></div>
-  <div class="page"><div class="rhead"><div><h1>${esc(state.estate)}</h1><p>${t("rep_month")} · <b>${m.label}</b> · ${m.list.length === 1 && lang === "en" ? "1 harvest" : t("n_harvests", m.list.length)}</p></div><p class="rmeta">${t("rep_made", fd(todayMs()))}<br>${t("version", VER)}</p></div>
+  <div class="page"><div class="rhead"><div><h1>${esc(state.estate)}</h1><p>${t("rep_month")} · <b>${m.label}</b> · ${m.list.length ? t("n_harvests", m.list.length) : t("income_records", m.incomes.length)}</p></div><p class="rmeta">${t("rep_made", fd(todayMs()))}<br>${t("version", VER)}</p></div>
   <h3 class="sec">${t("rep_sum")}</h3>
-  <div class="rk num">${T(t("price_lab"), price(o.price))}${T(t("loaded"), N(o.loaded))}${T(t("harvested"), N(o.total))}${T(t("rejected"), N(o.rejected))}
+  <div class="rk num">${m.list.length ? `${T(t("price_lab"), price(o.price))}${T(t("loaded"), N(o.loaded))}${T(t("harvested"), N(o.total))}${T(t("rejected"), N(o.rejected))}` : ""}
     ${T(t("income"), money(o.inc))}${T(t("deductions"), money(o.dedT))}${T(t("balance"), money(o.net))}${o.shareNet.map((v, i) => T(esc(shareNameAt(i)), money(v))).join("")}</div>
   ${po ? `<div class="card rcmp"><b>${t("rep_cmp", pm.label)}</b><span>${t("price")} ${delta(o.price, po.price)}</span><span>${t("loaded")} ${delta(o.loaded, po.loaded)}</span><span>${t("income")} ${delta(o.inc, po.inc)}</span><span>${t("balance")} ${delta(o.net, po.net)}</span></div>` : ""}
-  ${multi ? `<h3 class="sec">${t("rep_mtotal")}</h3>${block(o)}` + m.list.map((h) => `<h3 class="sec">${t("rep_harv_on", fd(h.date))}</h3>${det(h)}${block(agg([h]))}`).join("") : `<h3 class="sec">${t("rep_details")}</h3>${det(m.list[0])}${block(o)}`}
+  ${m.list.length === 0 ? `${m.incomes.map(detIncome).join("")}${block(o, false)}` : multi ? `<h3 class="sec">${t("rep_mtotal")}</h3>${block(o, true)}` + m.list.map((h) => `<h3 class="sec">${t("rep_harv_on", fd(h.date))}</h3>${det(h)}${block(agg([h]), true)}`).join("") : `<h3 class="sec">${t("rep_details")}</h3>${det(m.list[0])}${block(o, true)}`}
   <p class="rfoot">Coconut Estate Ledger · ${t("version", VER)} · ${t("rep_made", fd(todayMs()))}</p>
   </div>`;
   repName = "coconut-report-" + key;
@@ -3015,6 +3254,9 @@ document.addEventListener("click", async (e) => {
   if (b.hasAttribute("data-mpick")) return openMonthReport($("#mpick").value);
   if (b.id === "repPrint") return printReport();
   if (b.id === "repClose") return closeReport();
+  if (b.hasAttribute("data-add-income")) return openIncomeForm();
+  if (b.dataset.editIncome) return openIncomeForm(b.dataset.editIncome);
+  if (b.hasAttribute("data-close-income")) return closeD(incomeDlg);
   if (b.hasAttribute("data-add")) return openForm();
   if (b.dataset.edit) return openForm(b.dataset.edit);
   if (b.hasAttribute("data-close")) return closeD(dlg);
@@ -3025,6 +3267,7 @@ document.addEventListener("click", async (e) => {
   if (b.hasAttribute("data-clear")) {
     if (await confirmBox(t("c_clear_h"), t("c_clear_p"), t("clear"))) {
       state.harvests = [];
+      state.otherIncome = [];
       state.sample = false;
       persist();
       render();
@@ -3034,6 +3277,7 @@ document.addEventListener("click", async (e) => {
   if (b.hasAttribute("data-wipe")) {
     if (await confirmBox(t("c_wipe_h"), t("c_wipe_p"), t("delete_all"))) {
       state.harvests = [];
+      state.otherIncome = [];
       state.sample = false;
       persist();
       go("overview");

@@ -253,6 +253,9 @@
         </div>
         <div class="custom-ded-head"><b data-t="share_deductions"></b></div>
         <div class="custom-ded-list" id="shareDedFields"></div>
+        <div class="custom-ded-head"><b data-t="share_additions"></b></div>
+        <p class="hint" data-t="share_add_hint"></p>
+        <div class="custom-ded-list" id="shareAddFields"></div>
         <label class="fld"
           ><span data-t="f_othernote"></span><input id="f-othernote" type="text" maxlength="80" data-tp="othernote_ph"
         /></label>
@@ -274,6 +277,26 @@
           <button type="button" class="btn danger" id="delBtn" data-t="delete"></button><span style="flex: 1"></span
           ><button type="button" class="btn" data-close data-t="cancel"></button
           ><button type="submit" class="btn primary" data-t="save_h"></button>
+        </footer>
+      </form>
+    </dialog>
+    <dialog id="incomeDlg" aria-labelledby="incomeDlgTitle">
+      <form class="sheet" id="incomeForm" novalidate>
+        <header>
+          <h2 id="incomeDlgTitle"></h2>
+          <button type="button" class="x" data-close-income aria-label="Close">×</button>
+        </header>
+        <div class="fields">
+          <label class="fld"><span data-t="income_month"></span><input id="incomeDate" type="month" required /></label>
+          <label class="fld"><span><span data-t="income_amount"></span> (<span class="curlab"></span>)</span><input id="incomeAmount" type="number" inputmode="decimal" min="0.01" step="0.01" /></label>
+          <label class="fld wide"><span data-t="income_note"></span><input id="incomeNote" type="text" maxlength="140" /></label>
+        </div>
+        <p class="hint" data-t="income_hint"></p>
+        <p class="err" id="incomeErr"></p>
+        <footer>
+          <button type="button" class="btn danger" id="incomeDel"></button><span style="flex: 1"></span>
+          <button type="button" class="btn" data-close-income data-t="cancel"></button>
+          <button type="submit" class="btn primary" data-t="save_h"></button>
         </footer>
       </form>
     </dialog>

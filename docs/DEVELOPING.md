@@ -122,7 +122,7 @@ Press **Ctrl+Shift+O** in VS Code to jump to a function by name.
 | `sample()` | The sample records a new user sees |
 | `state`, `norm()`, `persist()`, `mirror()` | Saved data: loading, fixing older records, saving, and the backup copy kept inside the Android app |
 | `calc()` | **The money rules**: income = loaded × price; rejected = harvested − home use − loaded; free coconuts; transport cart = harvested × rate |
-| `monthly()` | Groups harvests into months |
+| `monthly()` | Groups harvests and separate income entries into months |
 | `yieldModel()`, `priceModel()`, `gapModel()`, `forecast()` | The forecast (see section 7b) |
 | `barChart()`, `lineChart()`, `spark()` | The charts (hand-drawn SVG, no library) |
 | Updates section (`UPD`, `readShell`, `updCard`) | The App updates card and messages from the Android shell |
@@ -186,9 +186,17 @@ compare against a hand calculation.
 - Per-harvest custom deductions are stored in `customDeds`; keep their trailing JSON column in
   `toCSV()` and `importText()` so CSV backups round-trip. Manual rounding is stored there as a
   tagged `rounding` deduction so it is included in totals and reports without changing the CSV schema.
-- Per-recipient deductions are stored in `shareDeds` and come out of each equal share after estate
-  deductions. Keep their CSV JSON column in sync, and include each recipient's resulting amount in
+- Per-recipient deductions and top-ups are stored in `shareDeds` and `shareAdds`. Deductions come
+  out of each equal share; optional top-ups are added after the split and do not change the estate
+  balance. Keep both CSV JSON columns in sync, and include each recipient's resulting amount in
   harvest and report breakdowns.
+- Separate income entries live in `state.otherIncome`. The user chooses a month; new entries store
+  the first day of that month in the existing date field. Monthly income is harvest income plus
+  other income; monthly balance is that combined income minus the month's harvest deductions, then
+  divided among shares before per-share deductions. This does not change any harvest calculation.
+  Older CSV entries with any date in the month continue to be grouped into that month.
+  Keep the `record_type`, `income_amount`, `income_note`, and `income_id` CSV columns in sync with
+  `toCSV()` and `importText()`. Per-share additions are appended as `share_additions`.
 
 ### 7b. How the forecast works
 
