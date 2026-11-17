@@ -34,12 +34,35 @@ function response(data, status = 200, headers = {}) {
 
 test("sync configuration accepts only an HTTPS Supabase project URL", () => {
   const { client } = createClient(async () => response({}));
+  assert.equal(client.getConfig().url, "https://ukmyztfewlklzitmpccc.supabase.co");
+  assert.match(client.getConfig().anonKey, /^sb_publishable_/);
   assert.throws(() => client.setConfig({ url: "http://estate.supabase.co", anonKey: "public" }));
   assert.throws(() => client.setConfig({ url: "https://estate.supabase.co.attacker.test", anonKey: "public" }));
   assert.throws(() => client.setConfig({ url: "https://estate.supabase.co", anonKey: "sb_secret_test" }), /service_role key/);
   const serviceRoleJwt = `header.${Buffer.from(JSON.stringify({ role: "service_role" })).toString("base64url")}.signature`;
   assert.throws(() => client.setConfig({ url: "https://estate.supabase.co", anonKey: serviceRoleJwt }), /service_role key/);
   assert.equal(client.setConfig({ url: "https://estate.supabase.co/", anonKey: "public" }).configured, true);
+});
+
+test("developer reset restores the bundled connection and clears the local session and override", async () => {
+  const { client, values } = createClient(async (url) =>
+    url.endsWith("/auth/v1/token?grant_type=password")
+      ? response({
+          access_token: "access",
+          refresh_token: "refresh",
+          expires_in: 3600,
+          user: { id: "user-1" },
+        })
+      : response({}),
+  );
+  client.setConfig({ url: "https://other.supabase.co", anonKey: "public" });
+  await client.signIn("owner@example.test", "long-password");
+  assert.equal(client.publicStatus().signedIn, true);
+  client.resetConfig();
+  assert.equal(client.getConfig().url, "https://ukmyztfewlklzitmpccc.supabase.co");
+  assert.match(client.getConfig().anonKey, /^sb_publishable_/);
+  assert.equal(client.publicStatus().signedIn, false);
+  assert.equal(values.has("coconut-ledger-sync-config-v1"), false);
 });
 
 test("sign-up without an auth session does not mark the device signed in", async () => {

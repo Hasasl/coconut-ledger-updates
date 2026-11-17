@@ -22,10 +22,13 @@ const L = {
     sync_fail: "Sync failed, saved on this device",
     estate_sync_title: "Estate sharing and sync",
     estate_sync_hint:
-      "Each person signs in with their own account. Estate records are private to approved members. Configure your Supabase project to enable sharing; never enter a service-role key here.",
+      "Connection is preconfigured. Each person signs in with their own account; only approved members can access estate records.",
+    sync_connection_public:
+      "These are public client settings, not secrets. Never use a service-role key; Supabase row-level security protects estate data.",
     supabase_url: "Supabase project URL",
     supabase_key: "Supabase publishable (anon) key",
     sync_save_config: "Save connection",
+    sync_reset_config: "Restore built-in connection",
     sync_config_saved: "Sync connection saved",
     sync_connection_settings: "Supabase connection settings",
     sync_email: "Email",
@@ -507,6 +510,7 @@ const L = {
     upd_banner: "Android app version {0} is ready to install.",
     upd_saved: "Link saved",
     upd_badlink: "The link must start with https://",
+    dev_sync_settings: "Estate sync connection",
   },
   si: {
     nav_overview: "මුල් පිටුව",
@@ -528,10 +532,13 @@ const L = {
     sync_fail: "Cloud එකට සුරැකීම අසාර්ථකයි, උපාංගයේ සුරැකුණා",
     estate_sync_title: "වතු දත්ත බෙදාගැනීම සහ සමමුහුර්ත කිරීම",
     estate_sync_hint:
-      "සෑම අයෙකුම තමන්ගේ ගිණුමෙන් ඇතුළු වේ. අනුමත සාමාජිකයන්ට පමණක් වතු දත්ත දැකිය හැක. බෙදාගැනීම සඳහා Supabase සකසන්න; service-role යතුර මෙහි ඇතුළත් නොකරන්න.",
+      "සම්බන්ධතාව කලින් සකසා ඇත. සෑම අයෙකුම තමන්ගේ ගිණුමෙන් ඇතුළු වේ; අනුමත සාමාජිකයන්ට පමණක් වතු දත්ත වෙත පිවිසිය හැක.",
+    sync_connection_public:
+      "මේවා රහස් නොවන පොදු client සැකසුම්ය. service-role යතුර කිසිවිටෙක භාවිත නොකරන්න; වතු දත්ත ආරක්ෂා කරන්නේ Supabase row-level security මඟිනි.",
     supabase_url: "Supabase ව්‍යාපෘති URL",
     supabase_key: "Supabase publishable (anon) යතුර",
     sync_save_config: "සම්බන්ධතාව සුරකින්න",
+    sync_reset_config: "යෙදුමේ පෙරනිමි සම්බන්ධතාව නැවත යොදන්න",
     sync_config_saved: "සමමුහුර්ත සම්බන්ධතාව සුරැකුණා",
     sync_connection_settings: "Supabase සම්බන්ධතා සැකසුම්",
     sync_email: "විද්‍යුත් තැපෑල",
@@ -1012,6 +1019,7 @@ const L = {
     upd_banner: "Android යෙදුම් සංස්කරණය {0} ස්ථාපනයට සූදානම්.",
     upd_saved: "සබැඳිය සුරැකුණා",
     upd_badlink: "සබැඳිය https:// වලින් පටන් ගත යුතුයි.",
+    dev_sync_settings: "වතු සමමුහුර්ත සම්බන්ධතාව",
   },
 };
 const MONS = {
@@ -1073,7 +1081,7 @@ const t = (k, ...a) => {
   return s;
 };
 
-const VER = "1.8.7";
+const VER = "1.8.8";
 const SECURITY_NOTICE_VERSION = "1.8.5";
 /* Your company, shown at the bottom of the Data tab. Leave it empty to show the app name instead. */
 const COMPANY = "CyberTech Lanka";
@@ -1564,10 +1572,6 @@ function estateSyncCard() {
     roles = ["manager", "data_entry", "viewer"];
   return `<div class="card estate-sync">
     <h2>${t("estate_sync_title")}</h2><p class="hint">${t("estate_sync_hint")}</p>
-    <details ${!config.url || !config.anonKey ? "open" : ""}><summary>${t("sync_connection_settings")}</summary><div class="fields">
-      <label class="fld wide"><span>${t("supabase_url")}</span><input id="estateSyncUrl" type="url" autocomplete="url" value="${esc(config.url)}"></label>
-      <label class="fld wide"><span>${t("supabase_key")}</span><input id="estateSyncKey" type="password" autocomplete="off" value="${esc(config.anonKey)}"></label>
-      <button class="btn primary" id="estateSyncSaveConfig">${t("sync_save_config")}</button></div></details>
     ${config.url && !status.signedIn ? `<p>${t("sync_not_signed_in")}</p><div class="fields">
       <label class="fld"><span>${t("sync_email")}</span><input id="estateSyncEmail" type="email" autocomplete="email"></label>
       <label class="fld"><span>${t("sync_password")}</span><input id="estateSyncPassword" type="password" autocomplete="current-password"></label>
@@ -2575,14 +2579,17 @@ function updStatusHtml() {
   if (SH.apkName && !busy) out.push(t("upd_apk", esc(SH.apkName)) + bt("install", "upd_install", 1));
   return out.join("<br>");
 }
-/* Everyone sees only the version and what the updater is doing. Tapping the version line 7 times shows the
-   developer options (update link and Check for updates), used to try a test release on one phone. */
+/* Seven taps on the version line reveal update controls and the estate sync connection editor. */
 let devTaps = 0,
   devOpen = false;
 const devTools = () =>
   devOpen
     ? `<div class="devtools"><label class="fld">${t("upd_link")}<input id="u-link" type="url" inputmode="url" autocomplete="off" spellcheck="false" value="${esc(SH.updateUrl || "")}" placeholder="https://raw.githubusercontent.com/…/update.json"></label>
-    <div class="btnrow" style="margin-top:10px"><button class="btn" data-upd="save">${t("upd_save")}</button><button class="btn primary" data-upd="check">${t("upd_check")}</button></div></div>`
+    <div class="btnrow" style="margin-top:10px"><button class="btn" data-upd="save">${t("upd_save")}</button><button class="btn primary" data-upd="check">${t("upd_check")}</button></div>
+    ${ESTATE_SYNC ? `<h3>${t("dev_sync_settings")}</h3><p class="hint">${t("sync_connection_public")}</p>
+    <label class="fld">${t("supabase_url")}<input id="devSyncUrl" type="url" autocomplete="off" value="${esc(ESTATE_SYNC.getConfig().url)}"></label>
+    <label class="fld">${t("supabase_key")}<input id="devSyncKey" type="text" autocomplete="off" spellcheck="false" value="${esc(ESTATE_SYNC.getConfig().anonKey)}"></label>
+    <div class="btnrow" style="margin-top:10px"><button class="btn primary" data-dev-sync="save">${t("sync_save_config")}</button><button class="btn" data-dev-sync="reset">${t("sync_reset_config")}</button></div>` : ""}</div>`
     : "";
 const updCard = () =>
   UPD
@@ -4380,12 +4387,6 @@ document.addEventListener("click", async (e) => {
     return render({ dir: still() ? "" : "fade" });
   }
   if (b.id === "skinBtn") return toggleSkin(e);
-  if (b.id === "estateSyncSaveConfig")
-    return runEstateAction(() => {
-      ESTATE_SYNC.setConfig({ url: $("#estateSyncUrl").value, anonKey: $("#estateSyncKey").value });
-      estateSyncState.error = "";
-      setSync("", "sync_device");
-    }, "sync_config_saved");
   if (b.id === "estateSyncSignIn")
     return runEstateAction(async () => {
       await ESTATE_SYNC.signIn($("#estateSyncEmail").value, $("#estateSyncPassword").value);
@@ -4556,6 +4557,15 @@ document.addEventListener("click", async (e) => {
     renderPresetOptions();
     return toast(t("preset_deleted"));
   }
+  if (b.dataset.devSync)
+    return runEstateAction(async () => {
+      if (b.dataset.devSync === "reset") ESTATE_SYNC.resetConfig();
+      else if (b.dataset.devSync === "save")
+        ESTATE_SYNC.setConfig({ url: $("#devSyncUrl").value, anonKey: $("#devSyncKey").value });
+      else return;
+      estateSyncState.error = "";
+      await initializeEstateSync();
+    }, "sync_config_saved");
   if (b.dataset.upd && UPD) {
     const k = b.dataset.upd,
       inp = $("#u-link");

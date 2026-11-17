@@ -31,18 +31,20 @@ You edit web/  ->  python tools/make_release.py  ->  GitHub Desktop: Commit + Pu
 
 ### Optional multi-device estate sync
 
-Estate sync is local-first and disabled until a Supabase project is configured. When enabled, each
-person signs in with an individual account. The app uploads ledger records to that project's private
-database; an invitation only creates a join request, and an estate owner must approve every request
-before the account can read or sync records.
+Estate sync is local-first. The app is preconfigured with the estate's Supabase project URL and public
+publishable key, so users do not need to configure every device. Each person signs in with an individual
+account. The app uploads ledger records to that project's private database; an invitation only creates
+a join request, and an estate owner must approve every request before the account can read or sync records.
 
 Before using real estate data:
 
 1. Create a Supabase project and configure email/password authentication and email confirmation.
 2. In the Supabase SQL Editor, run `supabase/migrations/202611170001_estate_sync.sql` once.
-3. In the app, open **Data > Estate sharing and sync > Supabase connection settings** and enter the
-   project's `https://<project-ref>.supabase.co` URL and its public publishable/anon key. Never use
-   or distribute a `service_role` key in the app.
+3. The project's URL and public publishable/anon key are bundled into `web/sync.js`. They are public
+   client settings, not secrets; never bundle a `service_role` or `sb_secret` key. To inspect or change
+   these settings on a device, open **Data > App updates** and tap the app version line seven times.
+   The developer options reveal the connection fields. Supabase Auth and row-level security—not hiding
+   or encrypting the public key—protect estate data.
 4. Create an account and estate on the first device. The owner creates a one-time, 24-hour invite
    and can revoke any unused invite.
    The other person signs in, submits the invite code and a display name, then waits for owner

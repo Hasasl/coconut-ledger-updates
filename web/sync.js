@@ -2,7 +2,11 @@
 (() => {
   const CONFIG_KEY = "coconut-ledger-sync-config-v1",
     SESSION_KEY = "coconut-ledger-sync-session-v1",
-    STORE_KEY = "coconut-ledger-sync-store-v1";
+    STORE_KEY = "coconut-ledger-sync-store-v1",
+    DEFAULT_CONFIG = Object.freeze({
+      url: "https://ukmyztfewlklzitmpccc.supabase.co",
+      anonKey: "sb_publishable_Y2p8MJP4de_Lqz1TZGfl0w_YFGXzxh6",
+    });
 
   function read(key, fallback) {
     try {
@@ -14,7 +18,7 @@
   function write(key, value) {
     localStorage.setItem(key, JSON.stringify(value));
   }
-  let config = read(CONFIG_KEY, null),
+  let config = read(CONFIG_KEY, DEFAULT_CONFIG),
     session = read(SESSION_KEY, null),
     syncStore = read(STORE_KEY, {});
 
@@ -45,6 +49,16 @@
     }
     config = next;
     write(CONFIG_KEY, config);
+    return publicStatus();
+  }
+  function resetConfig() {
+    const next = { ...DEFAULT_CONFIG };
+    if (!config || config.url !== next.url || config.anonKey !== next.anonKey) {
+      session = null;
+      localStorage.removeItem(SESSION_KEY);
+    }
+    config = next;
+    localStorage.removeItem(CONFIG_KEY);
     return publicStatus();
   }
   function publicStatus() {
@@ -300,6 +314,7 @@
   }
   return (window.EstateSync = {
     setConfig,
+    resetConfig,
     getConfig: () => (config ? { ...config } : { url: "", anonKey: "" }),
     publicStatus,
     signUp,
