@@ -76,7 +76,8 @@ const L = {
     share_ded_amount: "Deduction for {0}",
     share_additions: "Add to each share (optional)",
     share_add_amount: "Add to {0}'s share",
-    share_add_hint: "Optional top-up after splitting; it increases that person's payout without changing the harvest balance.",
+    share_add_hint:
+      "Optional top-up after splitting; it increases that person's payout without changing the harvest balance.",
     share_after_ded: "Final share amounts",
     share_result: "{0}: {1} share − {2} deduction + {3} added = {4}",
     latest_money: "Latest harvest, the money",
@@ -117,7 +118,8 @@ const L = {
     buyer_search: "Search buyer history",
     search_buyer: "Search",
     clear_search: "Clear",
-    buyer_search_hint: "Monthly totals remain for the full month; matching harvests show their own paid and outstanding amounts.",
+    buyer_search_hint:
+      "Monthly totals remain for the full month; matching harvests show their own paid and outstanding amounts.",
     buyer_none: "No harvests found for that buyer.",
     share_payouts: "Daughter and Son payouts",
     paid_to_date: "Paid to date",
@@ -142,7 +144,8 @@ const L = {
     backup_valid: "{0} records found. Backup is valid and ready to import.",
     backup_invalid: "Paste a valid full JSON backup to check it.",
     reminders_title: "Harvest and backup reminders",
-    reminders_hint: "Harvest reminders are scheduled for 08:00 two days and one day before the forecast date. A monthly backup reminder is scheduled for the first day of the month.",
+    reminders_hint:
+      "Harvest reminders are scheduled for 08:00 two days and one day before the forecast date. A monthly backup reminder is scheduled for the first day of the month.",
     reminders_enabled: "Notifications are enabled",
     reminders_disabled: "Allow notifications to receive reminders",
     enable_reminders: "Enable notifications",
@@ -227,7 +230,8 @@ const L = {
     btn_json: "Save full backup",
     btn_copy: "Copy backup text",
     open_drive: "Open Google Drive",
-    bk_note: "CSV holds harvests, buyer payments and other income. Full backup also holds monthly payouts, reviews and deduction presets.",
+    bk_note:
+      "CSV holds harvests, buyer payments and other income. Full backup also holds monthly payouts, reviews and deduction presets.",
     imp_h: "Import records",
     imp_hint:
       "Choose a CSV or backup file from the phone, Drive or Gmail, or paste rows below. One harvest per line, in this order:",
@@ -236,7 +240,8 @@ const L = {
     imp_go: "Import pasted rows",
     choose_file: "Choose file",
     wipe_h: "Start over",
-    wipe_hint: "Removes every harvest, payment, monthly payout, review status, deduction preset and other income record. Save a backup first.",
+    wipe_hint:
+      "Removes every harvest, payment, monthly payout, review status, deduction preset and other income record. Save a backup first.",
     wipe_btn: "Delete all records",
     f_add: "Add harvest",
     f_edit: "Edit harvest",
@@ -258,7 +263,8 @@ const L = {
     remove_custom_ded: "Remove",
     round_total: "Set total deductions to",
     round_apply: "Apply total",
-    round_help: "Current deductions: {0}. Enter the total you want; the difference is added as a manual rounding adjustment.",
+    round_help:
+      "Current deductions: {0}. Enter the total you want; the difference is added as a manual rounding adjustment.",
     round_preview: "This adds {0}, bringing deductions to {1}.",
     round_invalid: "Enter a total at least as high as current deductions ({0}).",
     round_applied: "Added {0} as a manual rounding adjustment. Total deductions: {1}.",
@@ -296,7 +302,8 @@ const L = {
     c_clear_h: "Clear the sample records?",
     c_clear_p: "The app will be empty and ready for your own harvests.",
     c_wipe_h: "Delete all records?",
-    c_wipe_p: "Every harvest, payment, monthly payout, review status, deduction preset and other income record will be removed. This cannot be undone.",
+    c_wipe_p:
+      "Every harvest, payment, monthly payout, review status, deduction preset and other income record will be removed. This cannot be undone.",
     i_none: "Nothing to import. Paste rows or choose a file.",
     i_bad: "That backup text is damaged and cannot be read.",
     i_notbk: "That file is not a backup from this app.",
@@ -376,11 +383,30 @@ const L = {
     fm_bio_p:
       "A coconut palm opens a new flower bunch about once a month, which is why it can be picked monthly. Each bunch develops for about 44 to 46 months from its first bud, and the nuts themselves grow during the last 12 months after the flower opens. Sri Lankan estates traditionally pick every two months, six picks a year; Coconut Research Institute trials found monthly picking means fewer ripe nuts fall and are lost. Dry spells show up in the harvest about a year later.",
     fm_acc_p:
-      "The app tested itself on your past harvests, predicting each one from only the records before it. Average error: price {0}, coconuts {1}, days between harvests {2}.",
-    fm_acc_n: "Tested on {0} past harvests.",
+      "Walk-forward test errors: price {0}, coconuts {1}, days between harvests {2}. Missing months are treated as elapsed time, not zero harvests.",
+    fm_acc_n: "Tested on {0} past harvest intervals.",
     fm_acc_few:
-      "Too few records to test yet. From about 7 harvests, the app tests itself on your past harvests and picks the method that predicts them best.",
+      "Too few past intervals to measure accuracy reliably. Add records over time; missing months are not counted as zero harvests.",
     fm_methods: "Methods chosen: price, {0}; coconuts, {1}; harvest gaps, {2}.",
+    scenario_h: "Try a planning scenario",
+    scenario_hint:
+      "Planning only; this does not change your records. Leave coconuts or price blank to use the model estimate. Coconuts means harvested total; sale income uses your recent loaded share.",
+    scenario_date: "Expected harvest date",
+    scenario_nuts: "Expected coconuts harvested",
+    scenario_price: "Expected price per coconut",
+    scenario_run: "Calculate scenario",
+    scenario_reset: "Reset to model",
+    scenario_estimate: "Scenario estimate",
+    scenario_loaded: "Expected coconuts sold",
+    scenario_income: "Estimated sale income",
+    scenario_deductions: "Estimated deductions",
+    scenario_balance: "Estimated balance after deductions",
+    scenario_share: "Estimated {0} share",
+    scenario_bad_date: "Choose a valid date after the latest recorded harvest.",
+    scenario_bad_nuts: "Enter a whole coconut count greater than zero, or leave it blank.",
+    scenario_bad_price: "Enter a price greater than zero, or leave it blank.",
+    fm_gap_note:
+      "A long gap between records makes this estimate less certain. The model uses the dates you entered and does not invent missing harvests.",
     m_naive: "last price",
     m_level: "smoothed price",
     m_trend: "recent trend that fades",
@@ -562,7 +588,8 @@ const L = {
     backup_valid: "වාර්තා {0}ක් හමු විය. උපස්ථය නිවැරදියි; ඇතුළත් කළ හැක.",
     backup_invalid: "පරීක්ෂා කිරීමට නිවැරදි සම්පූර්ණ JSON උපස්ථයක් අලවන්න.",
     reminders_title: "අස්වනු සහ උපස්ථ මතක් කිරීම්",
-    reminders_hint: "අනාවැකි දිනයට දින දෙකකට සහ එක් දිනකට පෙර පෙ.ව. 8ට අස්වනු මතක් කිරීම් යෙදේ. සෑම මාසයකම පළමු දින උපස්ථ මතක් කිරීමක් යෙදේ.",
+    reminders_hint:
+      "අනාවැකි දිනයට දින දෙකකට සහ එක් දිනකට පෙර පෙ.ව. 8ට අස්වනු මතක් කිරීම් යෙදේ. සෑම මාසයකම පළමු දින උපස්ථ මතක් කිරීමක් යෙදේ.",
     reminders_enabled: "දැනුම්දීම් සක්‍රියයි",
     reminders_disabled: "මතක් කිරීම් ලැබීමට දැනුම්දීම් සඳහා අවසර දෙන්න",
     enable_reminders: "දැනුම්දීම් සක්‍රිය කරන්න",
@@ -646,7 +673,8 @@ const L = {
     btn_json: "සම්පූර්ණ උපස්ථය සුරකින්න",
     btn_copy: "උපස්ථ පෙළ පිටපත් කරන්න",
     open_drive: "Google Drive විවෘත කරන්න",
-    bk_note: "CSV ගොනුවේ අස්වනු, ගැනුම්කරු ගෙවීම් සහ වෙනත් ආදායම් ඇත. සම්පූර්ණ උපස්ථයේ මාසික ගෙවීම්, සමාලෝචන සහ අඩුකිරීම් සැකසුම්ද ඇත.",
+    bk_note:
+      "CSV ගොනුවේ අස්වනු, ගැනුම්කරු ගෙවීම් සහ වෙනත් ආදායම් ඇත. සම්පූර්ණ උපස්ථයේ මාසික ගෙවීම්, සමාලෝචන සහ අඩුකිරීම් සැකසුම්ද ඇත.",
     imp_h: "දත්ත ඇතුළත් කිරීම",
     imp_hint:
       "දුරකථනයෙන්, Drive හෝ Gmail වෙතින් CSV හෝ උපස්ථ ගොනුවක් තෝරන්න, නැත්නම් පහත පේළි අලවන්න. එක් පේළියකට එක් අස්වැන්නක්, මේ පිළිවෙළට:",
@@ -655,7 +683,8 @@ const L = {
     imp_go: "අලවපු පේළි ඇතුළත් කරන්න",
     choose_file: "ගොනුවක් තෝරන්න",
     wipe_h: "මුල සිට පටන් ගන්න",
-    wipe_hint: "සියලු අස්වනු, ගැනුම්කරු ගෙවීම්, වෙනත් ආදායම්, මාසික කොටස් ගෙවීම්, සමාලෝචන සහ අඩුකිරීම් සැකසුම් මැකේ. මුලින් උපස්ථයක් සුරකින්න.",
+    wipe_hint:
+      "සියලු අස්වනු, ගැනුම්කරු ගෙවීම්, වෙනත් ආදායම්, මාසික කොටස් ගෙවීම්, සමාලෝචන සහ අඩුකිරීම් සැකසුම් මැකේ. මුලින් උපස්ථයක් සුරකින්න.",
     wipe_btn: "සියලු දත්ත මකන්න",
     f_add: "අස්වැන්නක් එක් කරන්න",
     f_edit: "අස්වැන්න වෙනස් කරන්න",
@@ -715,7 +744,8 @@ const L = {
     c_clear_h: "ආදර්ශ දත්ත ඉවත් කරන්නද?",
     c_clear_p: "යෙදුම හිස් වී ඔබේ දත්ත සඳහා සූදානම් වේ.",
     c_wipe_h: "සියලු දත්ත මකන්නද?",
-    c_wipe_p: "සියලු අස්වනු, ගැනුම්කරු ගෙවීම්, වෙනත් ආදායම්, මාසික කොටස් ගෙවීම්, සමාලෝචන සහ අඩුකිරීම් සැකසුම් මැකේ. මෙය ආපසු ගත නොහැක.",
+    c_wipe_p:
+      "සියලු අස්වනු, ගැනුම්කරු ගෙවීම්, වෙනත් ආදායම්, මාසික කොටස් ගෙවීම්, සමාලෝචන සහ අඩුකිරීම් සැකසුම් මැකේ. මෙය ආපසු ගත නොහැක.",
     i_none: "ඇතුළත් කිරීමට කිසිවක් නැත. පේළි අලවන්න හෝ ගොනුවක් තෝරන්න.",
     i_bad: "ඒ උපස්ථ පෙළ හානි වී ඇත, කියවිය නොහැක.",
     i_notbk: "ඒ ගොනුව මේ යෙදුමේ උපස්ථයක් නොවේ.",
@@ -796,11 +826,30 @@ const L = {
     fm_bio_p:
       "පොල් ගසක මාසයකට වරක් පමණ අලුත් මල් පොකුරක් විවෘත වේ. ඒ නිසා මාසිකව පොල් කැඩිය හැක. එක් පොකුරක් පළමු අංකුරයේ සිට මාස 44 සිට 46ක් පමණ වැඩේ. ගෙඩි වැඩෙන්නේ මල විවෘත වූ පසු අවසන් මාස 12 තුළයි. ශ්‍රී ලංකාවේ වතු වල සාම්ප්‍රදායිකව මාස දෙකකට වරක්, වසරකට කැඩීම් හයක් කරයි. මාසිකව කැඩීමෙන් ඉදුණු ගෙඩි වැටී නැති වීම අඩු වන බව පොල් පර්යේෂණ ආයතනයේ අත්හදා බැලීම් වලින් සොයා ගත්තේය. නියඟයේ බලපෑම අස්වැන්නට පෙනෙන්නේ වසරකට පමණ පසුවය.",
     fm_acc_p:
-      "යෙදුම ඔබේ පරණ අස්වනු මත තමන්වම පරීක්ෂා කළේය. එක් එක් අස්වැන්න, ඊට පෙර දත්ත පමණක් භාවිතයෙන් අනුමාන කළේය. සාමාන්‍ය දෝෂය: මිල {0}, පොල් ගණන {1}, අස්වනු අතර දින {2}.",
-    fm_acc_n: "පරණ අස්වනු {0}ක් මත පරීක්ෂා කළා.",
+      "පියවරෙන් පියවර පරීක්ෂා කිරීමේ දෝෂ: මිල {0}, පොල් ගණන {1}, අස්වනු අතර දින {2}. මඟහැරුණු මාස ශූන්‍ය අස්වැන්නක් ලෙස නොව ගතවූ කාලය ලෙස සලකයි.",
+    fm_acc_n: "පසුගිය අස්වනු අතර කාල පරතර {0}ක් මත පරීක්ෂා කළා.",
     fm_acc_few:
-      "පරීක්ෂා කිරීමට තවම දත්ත මදි. අස්වනු 7ක් පමණ වූ පසු යෙදුම ඔබේ පරණ අස්වනු මත තමන්වම පරීක්ෂා කර, හොඳම ක්‍රමය තෝරා ගනී.",
+      "විශ්වාසදායක නිරවද්‍යතාවයක් මැනීමට තවම අස්වනු අතර කාල පරතර මදි. කාලයත් සමඟ වාර්තා එකතු කරන්න; මඟහැරුණු මාස ශූන්‍ය අස්වැන්නක් ලෙස ගණන් නොගනී.",
     fm_methods: "තෝරාගත් ක්‍රම: මිල, {0}; පොල් ගණන, {1}; අස්වනු අතර දින, {2}.",
+    scenario_h: "සැලසුම් අවස්ථාවක් බලන්න",
+    scenario_hint:
+      "සැලසුමක් පමණි; ඔබේ වාර්තා වෙනස් නොවේ. පොල් ගණන හෝ මිල හිස්ව තැබුවහොත් ආකෘතියේ ඇස්තමේන්තුව භාවිත වේ. පොල් ගණන යනු කැඩූ මුළු ගණනයි; විකිණුම් ආදායම මෑතකදී පැටවූ අනුපාතය භාවිත කරයි.",
+    scenario_date: "අපේක්ෂිත අස්වනු දිනය",
+    scenario_nuts: "අපේක්ෂිතව කැඩෙන පොල් ගණන",
+    scenario_price: "පොල් ගෙඩියක අපේක්ෂිත මිල",
+    scenario_run: "සැලසුම ගණනය කරන්න",
+    scenario_reset: "ආකෘතියට යළි පිහිටුවන්න",
+    scenario_estimate: "සැලසුම් ඇස්තමේන්තුව",
+    scenario_loaded: "විකිණීමට අපේක්ෂිත පොල්",
+    scenario_income: "ඇස්තමේන්තුගත විකිණුම් ආදායම",
+    scenario_deductions: "ඇස්තමේන්තුගත අඩු කිරීම්",
+    scenario_balance: "අඩු කිරීම් පසු ඇස්තමේන්තුගත ශේෂය",
+    scenario_share: "ඇස්තමේන්තුගත {0} කොටස",
+    scenario_bad_date: "අවසන් වාර්තා කළ අස්වැන්නෙන් පසු වලංගු දිනයක් තෝරන්න.",
+    scenario_bad_nuts: "ශූන්‍යයට වඩා වැඩි පූර්ණ පොල් ගණනක් ඇතුළත් කරන්න, නැත්නම් හිස්ව තබන්න.",
+    scenario_bad_price: "ශූන්‍යයට වඩා වැඩි මිලක් ඇතුළත් කරන්න, නැත්නම් හිස්ව තබන්න.",
+    fm_gap_note:
+      "වාර්තා අතර දිගු පරතරයක් නිසා ඇස්තමේන්තුවේ විශ්වාසය අඩු විය හැක. ඔබ ඇතුළත් කළ දිනයන් භාවිත කරන අතර මඟහැරුණු අස්වනු නිර්මාණය නොකරයි.",
     m_naive: "අවසන් මිල",
     m_level: "සුමට කළ මිල",
     m_trend: "ක්‍රමයෙන් අඩු වන මෑත ප්‍රවණතාව",
@@ -904,7 +953,7 @@ const t = (k, ...a) => {
   return s;
 };
 
-const VER = "1.8.5";
+const VER = "1.8.6";
 const SECURITY_NOTICE_VERSION = "1.8.5";
 /* Your company, shown at the bottom of the Data tab. Leave it empty to show the app name instead. */
 const COMPANY = "CyberTech Lanka";
@@ -1211,7 +1260,11 @@ const customDedEntries = (h) =>
         .filter((d) => d.name)
     : [];
 const roundingDedAmount = (h) =>
-  sum(customDedEntries(h).filter((d) => d.kind === ROUNDING_KIND).map((d) => d.amount));
+  sum(
+    customDedEntries(h)
+      .filter((d) => d.kind === ROUNDING_KIND)
+      .map((d) => d.amount),
+  );
 const customDedTotal = (h) => sum(customDedEntries(h).map((d) => d.amount));
 const shareDedEntries = (h) =>
   Array.from({ length: Math.max(1, Math.round(state.shares) || 1) }, (_, i) => {
@@ -1312,12 +1365,8 @@ function monthly(hs, incomes) {
       inc = harvestInc + sum(extra.map((income) => income.amount)),
       ded = sum(l.map((h) => h.dedT)),
       net = inc - ded;
-    const shareDeds = Array.from({ length: state.shares }, (_, i) =>
-        sum(l.map((h) => (h.shareDeds || [])[i] || 0)),
-      ),
-      shareAdds = Array.from({ length: state.shares }, (_, i) =>
-        sum(l.map((h) => (h.shareAdds || [])[i] || 0)),
-      );
+    const shareDeds = Array.from({ length: state.shares }, (_, i) => sum(l.map((h) => (h.shareDeds || [])[i] || 0))),
+      shareAdds = Array.from({ length: state.shares }, (_, i) => sum(l.map((h) => (h.shareAdds || [])[i] || 0)));
     return {
       key: k,
       label: MONLS[lang][+k.slice(5) - 1] + " " + k.slice(0, 4),
@@ -1391,26 +1440,73 @@ function bands(errs, floor) {
   return { lo: -s, hi: s };
 }
 
-/* Coconuts per day between harvests, smoothed, optionally adjusted for the season. */
+function intervalSeasonF(fromMs, toMs, amp) {
+  const days = Math.max(1, Math.ceil((toMs - fromMs) / DAY)),
+    stride = Math.max(1, Math.ceil(days / 400));
+  let total = 0;
+  for (let offset = 0; offset < days; offset += stride) {
+    const span = Math.min(stride, days - offset);
+    total += seasonF(fromMs + (offset + span / 2) * DAY, amp) * span;
+  }
+  return total / days;
+}
+function robustLevel(samples, targetMs, halfLifeDays) {
+  const weighted = samples
+    .map((sample) => ({
+      value: sample.value,
+      weight: Math.pow(0.5, Math.max(0, targetMs - sample.end) / DAY / halfLifeDays) * (sample.support || 1),
+    }))
+    .filter((sample) => Number.isFinite(sample.value) && sample.weight > 0);
+  if (!weighted.length) return 0;
+  const weightedMedian = (rows) => {
+    const sorted = rows.slice().sort((a, b) => a.value - b.value),
+      halfway = sum(sorted.map((row) => row.weight)) / 2;
+    let seen = 0;
+    for (const row of sorted) {
+      seen += row.weight;
+      if (seen >= halfway) return row.value;
+    }
+    return sorted[sorted.length - 1].value;
+  };
+  const center = weightedMedian(weighted),
+    deviations = weighted.map((row) => ({ value: Math.abs(row.value - center), weight: row.weight })),
+    mad = weightedMedian(deviations),
+    radius = mad > 0 ? 3 * 1.4826 * mad : Math.max(1, Math.abs(center) * 1.5),
+    totalWeight = sum(weighted.map((row) => row.weight));
+  return (
+    sum(weighted.map((row) => Math.min(center + radius, Math.max(0, center - radius, row.value)) * row.weight)) /
+    totalWeight
+  );
+}
+
+/* Yield is an interval total, so missing harvest records must not become zero-yield months. */
 function yieldModel(hs) {
   const pts = [];
-  for (let i = 1; i < hs.length; i++)
-    if (hs[i].gap > 0) {
-      const end = pd(hs[i].date),
-        mid = end - (hs[i].gap * DAY) / 2;
-      pts.push({ rate: hs[i].total / hs[i].gap, mid });
-    }
-  const run = (c, upto) => {
-    const xs = pts.slice(0, upto).map((p) => p.rate / seasonF(p.mid, c.amp));
-    return xs.length ? ewma(xs, c.a) : 0;
-  };
+  for (let i = 1; i < hs.length; i++) {
+    const end = pd(hs[i].date),
+      days = hs[i].gap;
+    if (days > 0) pts.push({ total: hs[i].total, days, start: end - days * DAY, end });
+  }
+  const levelAt = (c, upto, targetMs) =>
+    robustLevel(
+      pts.slice(0, upto).map((point) => ({
+        value: point.total / (point.days * intervalSeasonF(point.start, point.end, c.amp)),
+        end: point.end,
+        support: Math.sqrt(Math.min(point.days, 90) / 30),
+      })),
+      targetMs,
+      c.halfLifeDays,
+    );
   const configs = [];
-  [0, SEASON.amp / 2, SEASON.amp].forEach((amp) => [0.45, 0.25, 0.7].forEach((a) => configs.push({ amp, a })));
+  [0, SEASON.amp / 2, SEASON.amp].forEach((amp) =>
+    [365, 180, 90].forEach((halfLifeDays) => configs.push({ amp, halfLifeDays })),
+  );
   const score = (c) => {
     const errs = [];
     for (let i = 3; i < pts.length; i++) {
-      const p = run(c, i) * seasonF(pts[i].mid, c.amp);
-      if (p > 0) errs.push(pts[i].rate / p - 1);
+      const target = pts[i],
+        prediction = levelAt(c, i, target.start) * target.days * intervalSeasonF(target.start, target.end, c.amp);
+      if (prediction > 0) errs.push(target.total / prediction - 1);
     }
     return {
       errs,
@@ -1418,32 +1514,44 @@ function yieldModel(hs) {
     };
   };
   const best = pickBest(configs, score) || {
-    c: { amp: SEASON.amp / 2, a: 0.45 },
+    c: { amp: 0, halfLifeDays: 180 },
     r: { errs: [], mape: NaN },
   };
-  const level = run(best.c, pts.length);
   return {
     c: best.c,
     tested: best.r.errs.length,
     mape: best.r.mape,
-    band: bands(best.r.errs, 0.06),
-    at: (fromMs, toMs) => level * seasonF((fromMs + toMs) / 2, best.c.amp) * ((toMs - fromMs) / DAY),
+    band: bands(best.r.errs, 0.08),
+    at: (fromMs, toMs) =>
+      levelAt(best.c, pts.length, fromMs) *
+      Math.max(0, (toMs - fromMs) / DAY) *
+      intervalSeasonF(fromMs, toMs, best.c.amp),
   };
 }
 
-/* Price: last price, a smoothed level, or a recent trend that fades out; optionally with the supply season. */
-function priceModel(hs, gapDays) {
-  const ps = hs.map((h) => ({ p: h.price, ms: pd(h.date) }));
+/* Price forecasts use elapsed calendar time, not the number of records entered. */
+function priceModel(hs) {
+  const ps = hs.map((h) => ({ p: h.price, ms: pd(h.date) })),
+    periodsBetween = (from, to) => Math.max(0.1, (to - from) / (30 * DAY));
   const fit = (c, upto) => {
     const xs = ps.slice(0, upto).map((x) => x.p / priceSeasonF(x.ms, c.amp));
     if (c.kind === "naive") return { L: xs[xs.length - 1], T: 0 };
-    if (c.kind === "level") return { L: ewma(xs, c.a), T: 0 };
+    if (c.kind === "level")
+      return {
+        L: robustLevel(
+          xs.map((value, i) => ({ value, end: ps[i].ms })),
+          ps[upto - 1].ms,
+          c.halfLifeDays,
+        ),
+        T: 0,
+      };
     let L = xs[0],
-      T = xs.length > 1 ? xs[1] - xs[0] : 0;
+      T = xs.length > 1 ? (xs[1] - xs[0]) / periodsBetween(ps[0].ms, ps[1].ms) : 0;
     for (let i = 1; i < xs.length; i++) {
-      const f = L + c.phi * T,
+      const periods = periodsBetween(ps[i - 1].ms, ps[i].ms),
+        f = L + T * periods,
         L2 = c.a * xs[i] + (1 - c.a) * f;
-      T = c.b * (L2 - L) + (1 - c.b) * c.phi * T;
+      T = c.b * ((L2 - L) / periods) + (1 - c.b) * Math.pow(c.phi, periods) * T;
       L = L2;
     }
     return { L, T };
@@ -1455,17 +1563,19 @@ function priceModel(hs, gapDays) {
   };
   const configs = [
     { kind: "naive", amp: 0 },
-    { kind: "level", a: 0.5, amp: 0 },
+    { kind: "level", halfLifeDays: 730, amp: 0 },
+    { kind: "level", halfLifeDays: 270, amp: 0 },
+    { kind: "level", halfLifeDays: 90, amp: 0 },
     { kind: "trend", a: 0.5, b: 0.3, phi: 0.85, amp: 0 },
-    { kind: "trend", a: 0.6, b: 0.2, phi: 0.92, amp: 0 },
     { kind: "trend", a: 0.5, b: 0.3, phi: 0.85, amp: SEASON.amp },
   ];
   const score = (c) => {
     const errs = [];
     for (let i = 3; i < ps.length; i++) {
       const m = fit(c, i),
-        p = ahead(c, m, 1) * priceSeasonF(ps[i].ms, c.amp);
-      if (p > 0) errs.push(ps[i].p / p - 1);
+        steps = periodsBetween(ps[i - 1].ms, ps[i].ms),
+        prediction = ahead(c, m, steps) * priceSeasonF(ps[i].ms, c.amp);
+      if (prediction > 0) errs.push(ps[i].p / prediction - 1);
     }
     return {
       errs,
@@ -1473,18 +1583,18 @@ function priceModel(hs, gapDays) {
     };
   };
   const best = pickBest(configs, score) || {
-    c: configs[2],
+    c: { kind: "level", halfLifeDays: 270, amp: 0 },
     r: { errs: [], mape: NaN },
   };
   const m = fit(best.c, ps.length),
     lastMs = ps[ps.length - 1].ms,
-    band = bands(best.r.errs, 0.03);
+    band = bands(best.r.errs, 0.04);
   return {
     c: best.c,
     tested: best.r.errs.length,
     mape: best.r.mape,
     at: (ms) => {
-      const steps = Math.max(0, (ms - lastMs) / DAY / gapDays),
+      const steps = Math.max(0, (ms - lastMs) / (30 * DAY)),
         p = Math.max(0, ahead(best.c, m, steps) * priceSeasonF(ms, best.c.amp)),
         w = Math.sqrt(Math.max(1, steps));
       return {
@@ -1538,14 +1648,13 @@ function forecast(hs) {
   if (n < 3 || hs.slice(1).filter((h) => h.gap > 0).length < 2) return null;
   const G = gapModel(hs),
     Y = yieldModel(hs),
-    P = priceModel(hs, G.gap);
+    P = priceModel(hs);
   const loadRate = ewma(
       hs.slice(-6).map((h) => (h.total ? h.loaded / h.total : 0)),
       0.4,
     ),
     dedT =
-      sum(CATS.map((c) => mean(hs.slice(-6).map((h) => h.dv[c])))) +
-      mean(hs.slice(-6).map((h) => customDedTotal(h))),
+      sum(CATS.map((c) => mean(hs.slice(-6).map((h) => h.dv[c])))) + mean(hs.slice(-6).map((h) => customDedTotal(h))),
     shareDedT = Array.from({ length: state.shares }, (_, i) =>
       mean(hs.slice(-6).map((h) => (h.shareDeds || [])[i] || 0)),
     ),
@@ -1581,24 +1690,37 @@ function forecast(hs) {
       shareNet: shareDedT.map((d, i) => net / state.shares - d + shareAddT[i]),
     };
   };
-  const steps = [];
-  for (let k = 1, from = last; k <= 3; k++, from += G.gap * DAY) steps.push(step(from, from + G.gap * DAY, k));
-  /* the next 12 months from today */
   const now = todayMs(),
-    yearEnd = now + 365 * DAY,
+    gapMs = G.gap * DAY,
+    elapsedGaps = Math.max(0, Math.floor((now - last) / gapMs)),
+    steps = [];
+  for (let k = elapsedGaps + 1, from = last + elapsedGaps * gapMs; k <= elapsedGaps + 3; k++, from += gapMs)
+    steps.push(step(from, from + gapMs, k));
+  /* the next 12 months from today */
+  const yearEnd = now + 365 * DAY,
     year = [];
-  for (let k = 1, from = last; from + G.gap * DAY <= yearEnd && k < 60; k++, from += G.gap * DAY)
-    if (from + G.gap * DAY > now) year.push(step(from, from + G.gap * DAY, Math.min(k, 6)));
+  for (
+    let offset = 0, from = last + elapsedGaps * gapMs;
+    from + gapMs <= yearEnd && offset < 60;
+    offset++, from += gapMs
+  )
+    year.push(step(from, from + gapMs, Math.min(elapsedGaps + offset + 1, 6)));
   /* next calendar month */
   const d = new Date(),
     nmStart = Date.UTC(d.getFullYear(), d.getMonth() + 1, 1),
     nmEnd = Date.UTC(d.getFullYear(), d.getMonth() + 2, 1),
     nmPrice = P.at((nmStart + nmEnd) / 2),
     nmHarv = year.filter((x) => x.date >= nmStart && x.date < nmEnd);
-  const tested = Math.min(Y.tested, P.tested);
-  const errs = [P.mape, Y.mape].filter(isFinite);
+  const tested = Math.min(Y.tested, P.tested, G.tested);
+  const errs = [P.mape, Y.mape, G.mape].filter(isFinite);
   const worst = errs.length ? Math.max.apply(0, errs) : 1;
   const conf = tested < 3 ? 1 : worst < 0.06 ? 3 : worst < 0.12 ? 2 : 1;
+  const gaps = hs
+      .slice(1)
+      .map((h) => h.gap)
+      .filter((gap) => gap > 0),
+    typicalGap = median(gaps),
+    longGap = gaps.some((gap) => gap > typicalGap * 1.8);
   return {
     n,
     gap: G.gap,
@@ -1614,6 +1736,7 @@ function forecast(hs) {
     nm: { start: nmStart, price: nmPrice, harvests: nmHarv },
     conf,
     tested,
+    longGap,
   };
 }
 
@@ -1905,6 +2028,7 @@ const ROUTES = ["overview", "months", "insights", "forecast", "data"];
 let route = "overview",
   range = "all",
   buyerQuery = "",
+  forecastScenario = { date: "", nuts: "", price: "" },
   drawFns = [];
 const kpi = (lab, val, foot) =>
   `<div class="card kpi"><div class="lab">${lab}</div><div class="val num">${val}</div>${foot ? `<div class="foot">${foot}</div>` : ""}</div>`;
@@ -1926,26 +2050,28 @@ const LEG = () =>
   `<div class="legend"><span><i class="k1"></i>${t("loaded")}</span><span><i class="k3"></i>${t("rejected")}</span><span><i class="k4"></i>${t("home")}</span></div>`;
 function flowRows(h) {
   const rows = CATS.map((c) => [catName(c, h), h.dv[c]])
-    .concat(customDedEntries(h).map((d) => [d.name, d.amount]))
-    .filter((r) => r[1] > 0)
-    .sort((a, b) => b[1] - a[1]),
+      .concat(customDedEntries(h).map((d) => [d.name, d.amount]))
+      .filter((r) => r[1] > 0)
+      .sort((a, b) => b[1] - a[1]),
     base = Math.max(h.inc, h.dedT, 1);
   return (
     `<div class="flow"><div class="row in"><span>${t("income_row", N(h.paid), price(h.price))}</span><div class="bar"><i style="width:${(h.inc / base) * 100}%"></i></div><span class="v num">${money(h.inc)}</span></div>` +
     rows
       .map(
         (r, i) =>
-        `<div class="row"><span>${esc(r[0])}</span><div class="bar"><i style="width:${(r[1] / base) * 100}%;animation-delay:${i * 50}ms"></i></div><span class="v num">− ${N(r[1])}<span class="pct">${h.inc ? Math.round((r[1] / h.inc) * 100) : 0}%</span></span></div>`,
+          `<div class="row"><span>${esc(r[0])}</span><div class="bar"><i style="width:${(r[1] / base) * 100}%;animation-delay:${i * 50}ms"></i></div><span class="v num">− ${N(r[1])}<span class="pct">${h.inc ? Math.round((r[1] / h.inc) * 100) : 0}%</span></span></div>`,
       )
       .join("") +
     `<div class="row net"><span>${t("balance")}</span><div class="bar"><i style="width:${(Math.max(0, h.net) / base) * 100}%"></i></div><span class="v num ${h.net < 0 ? "neg-t" : ""}">${money(h.net)}</span></div>` +
     (state.shares > 1 || h.shareDeds.some((d) => d > 0) || h.shareAdds.some((a) => a > 0)
-      ? `<div class="row share"><span>${esc(shareLab())} (÷ ${state.shares})</span><div class="bar"><i style="width:${(Math.max(0, h.share) / base) * 100}%"></i></div><span class="v num ${h.net < 0 ? "neg-t" : ""}">${money(h.share)}</span></div>${h.shareDeds.map((d, i) => {
-          const add = h.shareAdds[i] || 0;
-          return d > 0 || add > 0
-            ? `<div class="row share"><span>${esc(t("share_result", esc(shareNameAt(i)), money(h.share), money(d), money(add), money(h.shareNet[i])))}</span><div class="bar"></div><span class="v num">${money(h.shareNet[i])}</span></div>`
-            : "";
-        }).join("")}`
+      ? `<div class="row share"><span>${esc(shareLab())} (÷ ${state.shares})</span><div class="bar"><i style="width:${(Math.max(0, h.share) / base) * 100}%"></i></div><span class="v num ${h.net < 0 ? "neg-t" : ""}">${money(h.share)}</span></div>${h.shareDeds
+          .map((d, i) => {
+            const add = h.shareAdds[i] || 0;
+            return d > 0 || add > 0
+              ? `<div class="row share"><span>${esc(t("share_result", esc(shareNameAt(i)), money(h.share), money(d), money(add), money(h.shareNet[i])))}</span><div class="bar"></div><span class="v num">${money(h.shareNet[i])}</span></div>`
+              : "";
+          })
+          .join("")}`
       : "") +
     `</div>`
   );
@@ -1982,16 +2108,11 @@ function vOverview(hs) {
     paid = sum(yr.map((h) => h.paid)),
     inc = harvestInc + sum(extraIncome.map((income) => income.amount)),
     net = sum(yr.map((h) => h.net)) + sum(extraIncome.map((income) => income.amount)),
-    shareNets = Array.from({ length: state.shares }, (_, i) =>
-      sum(
-        yr.map(
-          (h) =>
-            h.net / state.shares -
-            ((h.shareDeds || [])[i] || 0) +
-            ((h.shareAdds || [])[i] || 0),
-        ),
-      ) +
-      sum(extraIncome.map((income) => income.amount)) / state.shares,
+    shareNets = Array.from(
+      { length: state.shares },
+      (_, i) =>
+        sum(yr.map((h) => h.net / state.shares - ((h.shareDeds || [])[i] || 0) + ((h.shareAdds || [])[i] || 0))) +
+        sum(extraIncome.map((income) => income.amount)) / state.shares,
     ),
     prs = yr.map((h) => h.price);
   const since = Math.round((todayMs() - pd(last.date)) / DAY);
@@ -2058,23 +2179,34 @@ function vMonths(hs) {
     .map((m) => {
       const list = buyerQuery
         ? m.list.filter((h) =>
-            [h.buyer, h.contact].some((value) => String(value || "").toLowerCase().includes(buyerQuery.toLowerCase())),
+            [h.buyer, h.contact].some((value) =>
+              String(value || "")
+                .toLowerCase()
+                .includes(buyerQuery.toLowerCase()),
+            ),
           )
         : m.list;
       if (buyerQuery && !list.length) return "";
       const reviewed = state.reviewedMonths.includes(m.key),
         payout = state.monthPayouts[m.key] || [];
-      return `<div class="mhead"><h2>${m.label}</h2><button class="btn small" data-mpdf="${m.key}">${t("btn_mpdf")}</button>
+      return (
+        `<div class="mhead"><h2>${m.label}</h2><button class="btn small" data-mpdf="${m.key}">${t("btn_mpdf")}</button>
     <button class="btn small" data-review-month="${m.key}">${t(reviewed ? "reopen_month" : "mark_reviewed")}</button>${reviewed ? `<span class="chip">${t("month_reviewed")}</span>` : ""}
     <div class="msum num">${m.list.length ? `<b>${price(m.price)}</b> ${t("per_coconut")} · <b>${N(m.loaded)}</b> ${t("bought_s")} · ${N(m.total)} ${t("harvested")} · ` : ""}${t("total_income")} <b>${money(m.inc)}</b> · ${t("deductions")} <b>${money(m.ded)}</b> · ${t("balance")} <b>${money(m.net)}</b> · ${t("amount_received")} <b>${money(m.received)}</b> · ${t("amount_due")} <b>${money(m.due)}</b>${m.credit ? ` · ${t("credit")} <b>${money(m.credit)}</b>` : ""}${state.shares > 1 ? ` · ${m.shareNet.map((v, i) => `${esc(shareNameAt(i))}: <b>${money(v)}</b>`).join(" · ")}` : ` · ${esc(shareNameAt(0))}: <b>${money(m.shareNet[0])}</b>`}</div>
     ${reviewed ? `<p class="hint">${t("review_editable_hint")}</p>` : ""}</div>
-  ${!buyerQuery ? `<details class="card payout-box"><summary>${t("share_payouts")}</summary><div class="fields payout-fields">
-    ${m.shareNet.map((share, i) => {
-      const paid = Number(payout[i]) || 0;
-      return `<label class="fld"><span>${esc(shareNameAt(i))} · ${t("paid_to_date")} (${esc(state.cur)})</span><input type="number" inputmode="decimal" min="0" step="0.01" data-payout-month="${m.key}" data-payout-index="${i}" value="${paid || ""}">
+  ${
+    !buyerQuery
+      ? `<details class="card payout-box"><summary>${t("share_payouts")}</summary><div class="fields payout-fields">
+    ${m.shareNet
+      .map((share, i) => {
+        const paid = Number(payout[i]) || 0;
+        return `<label class="fld"><span>${esc(shareNameAt(i))} · ${t("paid_to_date")} (${esc(state.cur)})</span><input type="number" inputmode="decimal" min="0" step="0.01" data-payout-month="${m.key}" data-payout-index="${i}" value="${paid || ""}">
         <small>${t("balance")}: ${money(share)} · ${t("remaining")}: ${money(Math.max(0, share - paid))}</small></label>`;
-    }).join("")}
-    <button class="btn small" data-save-payout="${m.key}">${t("save_payouts")}</button></div></details>` : ""}
+      })
+      .join("")}
+    <button class="btn small" data-save-payout="${m.key}">${t("save_payouts")}</button></div></details>`
+      : ""
+  }
   <div class="rows">` +
         list
           .slice()
@@ -2088,7 +2220,18 @@ function vMonths(hs) {
     <div class="when"><b>${fd(h.date)}</b>${h.gap != null ? `<span class="chip">${t("days_after", h.gap)}</span>` : `<span class="chip">${t("first_rec")}</span>`}<span style="flex:1"></span><button class="btn small" data-edit="${esc(h.id)}">${t("edit")}</button></div>
     <div class="hgrid">${F(t("price"), price(h.price), "key")}${F(t("loaded"), N(h.loaded), "key")}${F(t("harvested"), N(h.total))}${F(t("free"), N(h.free))}${F(t("rejected"), N(h.rejected))}${F(t("home"), N(h.home))}
       ${F(t("income"), money(h.inc))}${F(t("deductions"), "− " + N(h.dedT))}${F(t("amount_received"), money(h.received))}${F(t("amount_due"), money(h.due))}${h.credit ? F(t("credit"), money(h.credit)) : ""}<div class="f"><span>${t("balance")}</span><b class="num ${h.net < 0 ? "neg-t" : "pos-t"}">${money(h.net)}</b></div></div>
-    ${h.payments.length ? `<details class="dd"><summary>${t("payments_title")}</summary><ul class="num">${h.payments.slice().sort((a, b) => a.date.localeCompare(b.date)).map((payment) => `<li><span>${fd(payment.date)}${payment.note ? " · " + esc(payment.note) : ""}</span><b>${money(Number(payment.amount) || 0)}</b></li>`).join("")}</ul></details>` : ""}
+    ${
+      h.payments.length
+        ? `<details class="dd"><summary>${t("payments_title")}</summary><ul class="num">${h.payments
+            .slice()
+            .sort((a, b) => a.date.localeCompare(b.date))
+            .map(
+              (payment) =>
+                `<li><span>${fd(payment.date)}${payment.note ? " · " + esc(payment.note) : ""}</span><b>${money(Number(payment.amount) || 0)}</b></li>`,
+            )
+            .join("")}</ul></details>`
+        : ""
+    }
     ${dl.length ? `<details class="dd"><summary>${t("ded_break")}</summary><ul class="num">${dl.map((d) => `<li><span>${esc(d[0])}</span><b>${N(d[1])}</b></li>`).join("")}</ul></details>` : ""}
     ${h.shareDeds.some((d) => d > 0) || h.shareAdds.some((a) => a > 0) ? `<details class="dd"><summary>${t("share_after_ded")}</summary><ul class="num">${h.shareDeds.map((d, j) => `<li><span>${esc(t("share_result", esc(shareNameAt(j)), money(h.share), money(d), money(h.shareAdds[j]), money(h.shareNet[j])))}</span><b>${money(h.shareNet[j])}</b></li>`).join("")}</ul></details>` : ""}
     <div class="who"><span>${t("buyer")}: <b>${h.buyer ? esc(h.buyer) : t("not_rec")}</b></span>${h.contact ? `<span>${t("contact")}: <a href="tel:${esc(String(h.contact).replace(/[^\d+]/g, ""))}">${esc(h.contact)}</a></span>` : ""}<span>${t("entered_by")}: <b>${h.by ? esc(h.by) : t("not_rec")}</b></span></div>
@@ -2107,7 +2250,8 @@ function vMonths(hs) {
               )
               .join("")
           : "") +
-        `</div>`;
+        `</div>`
+      );
     })
     .join("");
   return (
@@ -2195,6 +2339,17 @@ function vForecast(hs) {
       `<div class="card empty"><h2>${t("fc_none_h")}</h2><p>${t("fc_none_p", hs.length)}</p><button class="btn primary" data-add>${t("add_harvest")}</button></div>`
     );
   const s = fc.steps[0],
+    scenarioDate = forecastScenario.date || iso(s.date),
+    scenarioMs = pd(scenarioDate),
+    lastHarvestMs = pd(hs[hs.length - 1].date),
+    modelNuts = scenarioDate === iso(s.date) ? s.nuts : fc.Y.at(lastHarvestMs, scenarioMs),
+    scenarioNuts = forecastScenario.nuts === "" ? modelNuts : Number(forecastScenario.nuts),
+    modelPrice = fc.P.at(scenarioMs),
+    scenarioPrice = forecastScenario.price === "" ? modelPrice.p : Number(forecastScenario.price),
+    scenarioLoaded = scenarioNuts * fc.paidRate,
+    scenarioDed = s.dedT - s.nuts * state.transRate + scenarioNuts * state.transRate,
+    scenarioNet = scenarioLoaded * scenarioPrice - scenarioDed,
+    scenarioShareNet = s.shareDeds.map((deduction, i) => scenarioNet / state.shares - deduction + s.shareAdds[i]),
     nmName = MONLS[lang][new Date(fc.nm.start).getUTCMonth()] + " " + new Date(fc.nm.start).getUTCFullYear(),
     nmH = fc.nm.harvests,
     pct = (x) => (isFinite(x) ? "±" + (x * 100).toFixed(1) + "%" : "–");
@@ -2272,6 +2427,20 @@ function vForecast(hs) {
     ${kpi(t("next_date"), fd(s.date, false), t("fm_every", fc.gap))}
     ${kpi(t("exp_bal"), "≈ " + cnt(s.net, state.cur), s.shareNet.map((v, i) => `${esc(shareNameAt(i))} ≈ ${money(v)}`).join(" · "))}
   </div>
+  <div class="card"><h2>${t("scenario_h")}</h2><p class="hint">${t("scenario_hint")}</p>
+    <div class="fields">
+      <label class="fld"><span>${t("scenario_date")}</span><input id="fcScenarioDate" type="date" min="${iso(lastHarvestMs + DAY)}" value="${esc(scenarioDate)}"></label>
+      <label class="fld"><span>${t("scenario_nuts")}</span><input id="fcScenarioNuts" type="number" inputmode="numeric" min="1" step="1" placeholder="${N(modelNuts)}" value="${esc(forecastScenario.nuts)}"></label>
+      <label class="fld"><span>${t("scenario_price")} (${esc(state.cur)})</span><input id="fcScenarioPrice" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="${price(modelPrice.p)}" value="${esc(forecastScenario.price)}"></label>
+    </div>
+    <div class="btnrow" style="margin-top:12px"><button class="btn primary" id="fcScenarioRun">${t("scenario_run")}</button><button class="btn" id="fcScenarioReset">${t("scenario_reset")}</button></div>
+    <div class="grid kpis sm" style="margin-top:14px">
+      ${kpi(t("scenario_estimate"), fd(scenarioMs, false), t("scenario_loaded") + ": " + N(scenarioLoaded))}
+      ${kpi(t("scenario_income"), money(scenarioLoaded * scenarioPrice), t("scenario_deductions") + ": " + money(scenarioDed))}
+      ${kpi(t("scenario_balance"), money(scenarioNet), scenarioShareNet.map((value, i) => t("scenario_share", esc(shareNameAt(i))) + ": " + money(value)).join(" · "))}
+    </div>
+  </div>
+  ${fc.longGap ? `<p class="hint">${t("fm_gap_note")}</p>` : ""}
   <div class="card"><h2>${t("next_month", nmName)}</h2><p style="margin:4px 0 0">${mTxt}</p></div>
   <div class="grid two">
     <div class="card"><h2>${t("fc_price_h")}</h2><p class="hint">${t("fc_price_hint")}</p><div class="legend"><span><i></i>${t("paid_so_far")}</span><span><i class="d"></i>${t("fc_range")}</span></div><div class="chart" id="fc-price"></div></div>
@@ -2880,9 +3049,7 @@ $("#hform").addEventListener("submit", (e) => {
     ded,
     customDeds: customDedEntries({
       customDeds: customDeds.concat(
-        roundingAdjustment > 0
-          ? [{ name: t("round_adj"), amount: roundingAdjustment, kind: ROUNDING_KIND }]
-          : [],
+        roundingAdjustment > 0 ? [{ name: t("round_adj"), amount: roundingAdjustment, kind: ROUNDING_KIND }] : [],
       ),
     }),
     shareDeds,
@@ -3129,8 +3296,13 @@ function validateFullBackup(backup) {
           Array.isArray(preset.ded) ||
           (preset.customDeds != null &&
             (!Array.isArray(preset.customDeds) ||
-              preset.customDeds.some((deduction) => !deduction || !String(deduction.name || "").trim() ||
-                !Number.isFinite(Number(deduction.amount)) || Number(deduction.amount) < 0))) ||
+              preset.customDeds.some(
+                (deduction) =>
+                  !deduction ||
+                  !String(deduction.name || "").trim() ||
+                  !Number.isFinite(Number(deduction.amount)) ||
+                  Number(deduction.amount) < 0,
+              ))) ||
           (preset.shareDeds != null &&
             (!Array.isArray(preset.shareDeds) ||
               preset.shareDeds.some((amount) => !Number.isFinite(Number(amount)) || Number(amount) < 0))) ||
@@ -3359,7 +3531,10 @@ function openReport() {
   if (!hs.length && !state.otherIncome.length) return toast(t("empty_h"));
   const fc = forecast(hs),
     ms = monthly(hs).reverse(),
-    dates = hs.map((h) => h.date).concat(state.otherIncome.map((income) => income.date)).sort(),
+    dates = hs
+      .map((h) => h.date)
+      .concat(state.otherIncome.map((income) => income.date))
+      .sort(),
     last = hs[hs.length - 1],
     S = (f) => sum(hs.map(f));
   const tot = S((h) => h.total),
@@ -3378,12 +3553,8 @@ function openReport() {
       .concat(customCats.map((d) => [d.name, d.amount]))
       .filter((c) => c[1] > 0)
       .sort((a, b) => b[1] - a[1]);
-  const shareDeds = Array.from({ length: state.shares }, (_, i) =>
-      sum(hs.map((h) => (h.shareDeds || [])[i] || 0)),
-    ),
-    shareAdds = Array.from({ length: state.shares }, (_, i) =>
-      sum(hs.map((h) => (h.shareAdds || [])[i] || 0)),
-    ),
+  const shareDeds = Array.from({ length: state.shares }, (_, i) => sum(hs.map((h) => (h.shareDeds || [])[i] || 0))),
+    shareAdds = Array.from({ length: state.shares }, (_, i) => sum(hs.map((h) => (h.shareAdds || [])[i] || 0))),
     shareNets = shareDeds.map((d, i) => net / state.shares - d + shareAdds[i]);
   const T = (l, v) => `<div class="rt"><span>${l}</span><b>${v}</b></div>`,
     sh = state.shares > 1;
@@ -3417,8 +3588,33 @@ function openReport() {
           `<tr><td>${fd(h.date)}</td><td class="pr">${price(h.price)}</td><td>${N(h.total)}</td><td>${N(h.loaded)}</td><td>${N(h.rejected)}</td><td>${N(h.home)}</td><td>${N(h.free)}</td><td>${N(h.inc)}</td><td>${N(h.received)}</td><td>${N(h.due)}</td><td>${N(h.credit)}</td><td>${N(h.dedT)}</td><td><b>${N(h.net)}</b></td>${h.shareNet.map((v) => `<td>${N(v)}</td>`).join("")}<td>${esc(h.buyer || "")}</td></tr>`,
       )
       .join("")}</tbody></table></div></div>
-  ${hs.some((h) => h.payments.length) ? `  <div class="card"><h2>${t("payments_title")}</h2><div class="tbl"><table class="num"><thead><tr><th>${t("f_date")}</th><th>${t("buyer")}</th><th>${t("payment_date")}</th><th>${t("payment_amount")}</th><th>${t("payment_note")}</th></tr></thead><tbody>${hs.flatMap((h) => h.payments.slice().sort((a, b) => a.date.localeCompare(b.date)).map((payment) => `<tr><td>${fd(h.date)}</td><td>${esc(h.buyer || "")}</td><td>${fd(payment.date)}</td><td>${money(Number(payment.amount) || 0)}</td><td>${esc(payment.note || "")}</td></tr>`)).join("")}</tbody></table></div></div>` : ""}
-  ${state.otherIncome.length ? `<div class="card"><h2>${t("rep_income")}</h2><div class="tbl"><table class="num"><thead><tr><th>${t("income_month")}</th><th>${t("income_note")}</th><th>${t("income_amount")}</th></tr></thead><tbody>${state.otherIncome.slice().sort((a, b) => a.date.localeCompare(b.date)).map((income) => `<tr><td>${incomeMonthLabel(income.date)}</td><td>${esc(income.note)}</td><td>${money(income.amount)}</td></tr>`).join("")}</tbody></table></div></div>` : ""}
+  ${
+    hs.some((h) => h.payments.length)
+      ? `  <div class="card"><h2>${t("payments_title")}</h2><div class="tbl"><table class="num"><thead><tr><th>${t("f_date")}</th><th>${t("buyer")}</th><th>${t("payment_date")}</th><th>${t("payment_amount")}</th><th>${t("payment_note")}</th></tr></thead><tbody>${hs
+          .flatMap((h) =>
+            h.payments
+              .slice()
+              .sort((a, b) => a.date.localeCompare(b.date))
+              .map(
+                (payment) =>
+                  `<tr><td>${fd(h.date)}</td><td>${esc(h.buyer || "")}</td><td>${fd(payment.date)}</td><td>${money(Number(payment.amount) || 0)}</td><td>${esc(payment.note || "")}</td></tr>`,
+              ),
+          )
+          .join("")}</tbody></table></div></div>`
+      : ""
+  }
+  ${
+    state.otherIncome.length
+      ? `<div class="card"><h2>${t("rep_income")}</h2><div class="tbl"><table class="num"><thead><tr><th>${t("income_month")}</th><th>${t("income_note")}</th><th>${t("income_amount")}</th></tr></thead><tbody>${state.otherIncome
+          .slice()
+          .sort((a, b) => a.date.localeCompare(b.date))
+          .map(
+            (income) =>
+              `<tr><td>${incomeMonthLabel(income.date)}</td><td>${esc(income.note)}</td><td>${money(income.amount)}</td></tr>`,
+          )
+          .join("")}</tbody></table></div></div>`
+      : ""
+  }
   ${fc ? `<div class="card"><h2>${t("next3")}</h2><p class="hint">${t("rep_fc_note")}</p><div class="fc-list">${fc.steps.map((x) => `<div class="fc-item"><h3>${t("around", fd(x.date))}</h3><p class="num">≈ ${price(Math.round(x.price))} ${t("per_coconut")}</p><p class="num">≈ ${N(x.nuts)} ${t("harvested")} · ${t("n_loaded", N(x.loaded)).replace("≈ ", "")}</p><p class="num">≈ ${money(x.net)} · ${t("balance")}</p></div>`).join("")}</div></div>` : ""}
   </div>`;
   repName = "coconut-report-" + iso(todayMs());
@@ -3460,12 +3656,8 @@ function agg(l, otherIncome) {
     credit = S((h) => h.credit || 0),
     dedT = S((h) => h.dedT),
     inc = harvestInc + sum(otherIncome.map((income) => income.amount));
-  const shareDeds = Array.from({ length: state.shares }, (_, i) =>
-      S((h) => (h.shareDeds || [])[i] || 0),
-    ),
-    shareAdds = Array.from({ length: state.shares }, (_, i) =>
-      S((h) => (h.shareAdds || [])[i] || 0),
-    ),
+  const shareDeds = Array.from({ length: state.shares }, (_, i) => S((h) => (h.shareDeds || [])[i] || 0)),
+    shareAdds = Array.from({ length: state.shares }, (_, i) => S((h) => (h.shareAdds || [])[i] || 0)),
     net = inc - dedT,
     share = net / state.shares;
   return {
@@ -3527,7 +3719,18 @@ function openMonthReport(key) {
     multi = m.list.length > 1;
   const T = (l, v) => `<div class="rt"><span>${l}</span><b>${v}</b></div>`;
   const det = (h) =>
-    `<p class="rdet">${t("f_date")}: <b>${fd(h.date)}</b>${h.gap != null ? ` (${t("days_after", h.gap)})` : ""} · ${t("buyer")}: <b>${h.buyer ? esc(h.buyer) : t("not_rec")}</b>${h.contact ? ` · ${t("contact")}: <b>${esc(h.contact)}</b>` : ""} · ${t("entered_by")}: <b>${h.by ? esc(h.by) : t("not_rec")}</b>${h.note ? `<br>${esc(h.note)}` : ""}${h.payments.length ? `<br>${t("payments_title")}: ${h.payments.slice().sort((a, b) => a.date.localeCompare(b.date)).map((payment) => `${fd(payment.date)} ${money(Number(payment.amount) || 0)}${payment.note ? " (" + esc(payment.note) + ")" : ""}`).join("; ")}` : ""}</p>`;
+    `<p class="rdet">${t("f_date")}: <b>${fd(h.date)}</b>${h.gap != null ? ` (${t("days_after", h.gap)})` : ""} · ${t("buyer")}: <b>${h.buyer ? esc(h.buyer) : t("not_rec")}</b>${h.contact ? ` · ${t("contact")}: <b>${esc(h.contact)}</b>` : ""} · ${t("entered_by")}: <b>${h.by ? esc(h.by) : t("not_rec")}</b>${h.note ? `<br>${esc(h.note)}` : ""}${
+      h.payments.length
+        ? `<br>${t("payments_title")}: ${h.payments
+            .slice()
+            .sort((a, b) => a.date.localeCompare(b.date))
+            .map(
+              (payment) =>
+                `${fd(payment.date)} ${money(Number(payment.amount) || 0)}${payment.note ? " (" + esc(payment.note) + ")" : ""}`,
+            )
+            .join("; ")}`
+        : ""
+    }</p>`;
   const detIncome = (income) =>
     `<p class="rdet">${t("income_month")}: <b>${incomeMonthLabel(income.date)}</b> · ${t("other_income")}: <b>${money(income.amount)}</b><br>${esc(income.note)}</p>`;
   const block = (x, includeCoconuts) =>
@@ -3595,6 +3798,22 @@ document.addEventListener("click", async (e) => {
     return render({ dir: still() ? "" : "fade" });
   }
   if (b.id === "skinBtn") return toggleSkin(e);
+  if (b.id === "fcScenarioRun") {
+    const date = $("#fcScenarioDate").value,
+      nuts = $("#fcScenarioNuts").value.trim(),
+      priceValue = $("#fcScenarioPrice").value.trim(),
+      last = calc().slice(-1)[0];
+    if (!last || !validIsoDate(date) || pd(date) <= pd(last.date)) return toast(t("scenario_bad_date"));
+    if (nuts && (!Number.isSafeInteger(Number(nuts)) || Number(nuts) <= 0)) return toast(t("scenario_bad_nuts"));
+    if (priceValue && (!Number.isFinite(Number(priceValue)) || Number(priceValue) <= 0))
+      return toast(t("scenario_bad_price"));
+    forecastScenario = { date, nuts, price: priceValue };
+    return render();
+  }
+  if (b.id === "fcScenarioReset") {
+    forecastScenario = { date: "", nuts: "", price: "" };
+    return render();
+  }
   if (b.id === "addPayment") {
     $("#paymentFields").insertAdjacentHTML("beforeend", paymentRow({ date: iso(todayMs()) }));
     return;
@@ -3700,8 +3919,7 @@ document.addEventListener("click", async (e) => {
     const key = b.dataset.savePayout,
       inputs = Array.from(document.querySelectorAll(`[data-payout-month="${key}"]`)),
       amounts = inputs.map((input) => (input.value.trim() === "" ? 0 : Number(input.value)));
-    if (amounts.some((amount) => !Number.isFinite(amount) || amount < 0))
-      return toast(t("e_custom_amount"));
+    if (amounts.some((amount) => !Number.isFinite(amount) || amount < 0)) return toast(t("e_custom_amount"));
     state.monthPayouts[key] = amounts;
     persist();
     render();

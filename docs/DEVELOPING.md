@@ -223,8 +223,13 @@ All of it is in `web/app.js`, from `/* ---------- forecast models` down to `func
 
 - **Three models.** Coconuts per day between harvests (`yieldModel`), price (`priceModel`) and days
   between harvests (`gapModel`).
-- **Backtest.** Each model tries a few settings. For every past harvest, it predicts that harvest from
-  only the records before it, and keeps the average error.
+- **Irregular records.** Yield is fitted to the actual days between recorded harvests. A missing month
+  is elapsed time, not an invented zero-yield observation. Seasonality is averaged across each full
+  interval; recent records are weighted by calendar age, and isolated extreme values are limited so
+  one entry does not dominate the estimate.
+- **Walk-forward backtest.** Each model tries a few settings. It predicts a later recorded harvest
+  using only earlier records, using the actual elapsed time for that interval. The error display is an
+  estimate, not a guarantee; it gets more meaningful as more harvest intervals are recorded.
 - **Simplest good setting wins.** The simplest setting within one standard error of the best one is
   used (the "one standard error rule"). A season or a trend is only used when it clearly predicts your
   own past harvests better. That protects against overfitting with few records.
@@ -232,6 +237,10 @@ All of it is in `web/app.js`, from `/* ---------- forecast models` down to `func
   the season model starts from that shape (`SEASON`). The price model may assume prices rise when supply
   is low. Both are only kept if the backtest says they help.
 - **Ranges.** The "likely" ranges come from the backtest errors, and widen further into the future.
+- **Planning scenario.** On the Forecast tab, an optional date, coconut count and price can be entered
+  to recalculate estimated sales, deductions and shares. Blank count or price uses the model's estimate.
+  This is temporary planning only; it does not change the ledger or saved harvests. The sale estimate
+  applies the recent loaded-coconut share.
 - **Market notes.** The Forecast tab's market text is the word `fm_market_p` in `L.en` and `L.si`.
   Update it when the Central Bank publishes new figures (agriculture data bulletin, cbsl.gov.lk).
 
