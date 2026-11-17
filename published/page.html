@@ -3502,7 +3502,11 @@ function mirror() {
     NB.saveState(
       JSON.stringify({
         state: state.sample ? null : state,
-        ui: { lang, skin: LS.get("coconut-ledger-skin") || "neon", me: LS.get(ME) || "" },
+        ui: {
+          lang,
+          skin: LS.get("coconut-ledger-skin") || "neon",
+          me: LS.get(ME) || "",
+        },
       }),
     );
   } catch (e) {}
@@ -3588,7 +3592,10 @@ function pushCloud() {
     writing = true;
     setSync("busy", "sync_busy");
     try {
-      await docRef.set({ updatedAt: state.updatedAt, json: JSON.stringify(state) });
+      await docRef.set({
+        updatedAt: state.updatedAt,
+        json: JSON.stringify(state),
+      });
       setSync("ok", "sync_ok");
     } catch (e) {
       setSync("", "sync_fail");
@@ -3752,7 +3759,11 @@ function pickBest(configs, score) {
 }
 /* Relative errors (actual / predicted - 1) give the "likely" range; never narrower than ±floor. */
 function bands(errs, floor) {
-  if (errs.length >= 5) return { lo: Math.min(-floor, quant(errs, 0.1)), hi: Math.max(floor, quant(errs, 0.9)) };
+  if (errs.length >= 5)
+    return {
+      lo: Math.min(-floor, quant(errs, 0.1)),
+      hi: Math.max(floor, quant(errs, 0.9)),
+    };
   const s = Math.max(floor, errs.length ? Math.sqrt(mean(errs.map((e) => e * e))) * 1.3 : floor * 1.5);
   return { lo: -s, hi: s };
 }
@@ -3778,9 +3789,15 @@ function yieldModel(hs) {
       const p = run(c, i) * seasonF(pts[i].mid, c.amp);
       if (p > 0) errs.push(pts[i].rate / p - 1);
     }
-    return { errs, mape: errs.length >= 3 ? mean(errs.map(Math.abs)) : Infinity };
+    return {
+      errs,
+      mape: errs.length >= 3 ? mean(errs.map(Math.abs)) : Infinity,
+    };
   };
-  const best = pickBest(configs, score) || { c: { amp: SEASON.amp / 2, a: 0.45 }, r: { errs: [], mape: NaN } };
+  const best = pickBest(configs, score) || {
+    c: { amp: SEASON.amp / 2, a: 0.45 },
+    r: { errs: [], mape: NaN },
+  };
   const level = run(best.c, pts.length);
   return {
     c: best.c,
@@ -3827,9 +3844,15 @@ function priceModel(hs, gapDays) {
         p = ahead(c, m, 1) * priceSeasonF(ps[i].ms, c.amp);
       if (p > 0) errs.push(ps[i].p / p - 1);
     }
-    return { errs, mape: errs.length >= 3 ? mean(errs.map(Math.abs)) : Infinity };
+    return {
+      errs,
+      mape: errs.length >= 3 ? mean(errs.map(Math.abs)) : Infinity,
+    };
   };
-  const best = pickBest(configs, score) || { c: configs[2], r: { errs: [], mape: NaN } };
+  const best = pickBest(configs, score) || {
+    c: configs[2],
+    r: { errs: [], mape: NaN },
+  };
   const m = fit(best.c, ps.length),
     lastMs = ps[ps.length - 1].ms,
     band = bands(best.r.errs, 0.03);
@@ -3841,7 +3864,11 @@ function priceModel(hs, gapDays) {
       const steps = Math.max(0, (ms - lastMs) / DAY / gapDays),
         p = Math.max(0, ahead(best.c, m, steps) * priceSeasonF(ms, best.c.amp)),
         w = Math.sqrt(Math.max(1, steps));
-      return { p, lo: Math.max(0, p * (1 + band.lo * w)), hi: p * (1 + band.hi * w) };
+      return {
+        p,
+        lo: Math.max(0, p * (1 + band.lo * w)),
+        hi: p * (1 + band.hi * w),
+      };
     },
   };
 }
@@ -3861,9 +3888,15 @@ function gapModel(hs) {
   const score = (c) => {
     const errs = [];
     for (let i = 2; i < gs.length; i++) errs.push(gs[i] / pred(c, gs.slice(0, i)) - 1);
-    return { errs, mape: errs.length >= 3 ? mean(errs.map(Math.abs)) : Infinity };
+    return {
+      errs,
+      mape: errs.length >= 3 ? mean(errs.map(Math.abs)) : Infinity,
+    };
   };
-  const best = pickBest(configs, score) || { c: configs[0], r: { errs: [], mape: NaN } };
+  const best = pickBest(configs, score) || {
+    c: configs[0],
+    r: { errs: [], mape: NaN },
+  };
   const recent = gs.slice(-8);
   return {
     c: best.c,
@@ -4171,7 +4204,14 @@ function updStatusHtml() {
   else if (s.state === "opened") out.push(t("upd_opened"));
   else if (s.state === "error")
     out.push(
-      t({ nolink: "upd_none", net: "upd_err_net", sig: "upd_err_sig", file: "upd_err_file" }[s.code] || "upd_err_bad"),
+      t(
+        {
+          nolink: "upd_none",
+          net: "upd_err_net",
+          sig: "upd_err_sig",
+          file: "upd_err_file",
+        }[s.code] || "upd_err_bad",
+      ),
     );
   else if (!SH.pendingPage && !SH.apkName && SH.lastCheck) out.push(t("upd_ok", fdt(SH.lastCheck)));
   if (SH.pendingPage) out.push(t("upd_ready", esc(SH.pendingPage)) + bt("restart", "upd_restart"));
@@ -4305,7 +4345,9 @@ function vOverview(hs) {
       $("#c-spark"),
       hs.slice(-12).map((h) => h.price),
     );
-    barChart($("#c-nuts"), nutsData(hs.slice(-12)), { label: t("per_harvest_h") });
+    barChart($("#c-nuts"), nutsData(hs.slice(-12)), {
+      label: t("per_harvest_h"),
+    });
   });
   return (
     banner() +
@@ -4493,7 +4535,11 @@ function vForecast(hs) {
       $("#fc-season"),
       MONS[lang].map((m, i) => {
         const v = seasonF(Date.UTC(2026, i, 15), ampShow) * 100;
-        return { label: m, v, tip: `<b>${MONLS[lang][i]}</b>${t("fm_season_tip", Math.round(v))}` };
+        return {
+          label: m,
+          v,
+          tip: `<b>${MONLS[lang][i]}</b>${t("fm_season_tip", Math.round(v))}`,
+        };
       }),
       [],
       { label: t("fm_season_h"), h: 180 },
@@ -4584,7 +4630,13 @@ function applyStatic() {
    At start-up the loading screen builds every tab while its animation plays. */
 const pages = {};
 let rendered = false;
-const VIEWS = { overview: vOverview, months: vMonths, insights: vInsights, forecast: vForecast, data: vData };
+const VIEWS = {
+  overview: vOverview,
+  months: vMonths,
+  insights: vInsights,
+  forecast: vForecast,
+  data: vData,
+};
 function invalidate() {
   for (const k in pages) {
     if (k !== route && pages[k].parentNode) pages[k].remove();
@@ -4749,8 +4801,14 @@ function toggleSkin(ev) {
     tr.ready
       .then(() =>
         document.documentElement.animate(
-          { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },
-          { duration: 560, easing: "cubic-bezier(.65,0,.35,1)", pseudoElement: "::view-transition-new(root)" },
+          {
+            clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`],
+          },
+          {
+            duration: 560,
+            easing: "cubic-bezier(.65,0,.35,1)",
+            pseudoElement: "::view-transition-new(root)",
+          },
         ),
       )
       .catch(() => {});
@@ -5087,7 +5145,10 @@ function importText(txt) {
       throw t("i_bad");
     }
     if (!o || !Array.isArray(o.harvests)) throw t("i_notbk");
-    return { replace: Object.assign(o, { sample: false }), count: o.harvests.length };
+    return {
+      replace: Object.assign(o, { sample: false }),
+      count: o.harvests.length,
+    };
   }
   const out = [];
   txt.split(/\r?\n/).forEach((line, ln) => {
@@ -5215,11 +5276,23 @@ function openReport() {
   repName = "coconut-report-" + iso(todayMs());
   document.body.classList.add("rep");
   $("#report").scrollTop = 0;
-  lineChart($("#r-price"), priceData(hs), [], { label: t("price_chart_h"), w: 720, h: 230 });
-  barChart($("#r-nuts"), nutsData(hs), { label: t("per_harvest_h"), w: 720, h: 230 });
+  lineChart($("#r-price"), priceData(hs), [], {
+    label: t("price_chart_h"),
+    w: 720,
+    h: 230,
+  });
+  barChart($("#r-nuts"), nutsData(hs), {
+    label: t("per_harvest_h"),
+    w: 720,
+    h: 230,
+  });
   barChart(
     $("#r-net"),
-    hs.map((h) => ({ label: fd(h.date, false), segs: [{ v: h.net, cls: h.net < 0 ? "neg" : "s1" }], tip: "" })),
+    hs.map((h) => ({
+      label: fd(h.date, false),
+      segs: [{ v: h.net, cls: h.net < 0 ? "neg" : "s1" }],
+      tip: "",
+    })),
     { label: t("bal_per_h"), w: 720, h: 200 },
   );
 }

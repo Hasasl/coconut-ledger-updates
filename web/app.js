@@ -720,7 +720,7 @@ const t = (k, ...a) => {
 
 const VER = "1.8.1";
 /* Your company, shown at the bottom of the Data tab. Leave it empty to show the app name instead. */
-const COMPANY = "CyberTech Lanka PVT(LTD)";
+const COMPANY = "CyberTech Lanka";
 const FIRST_YEAR = 2026;
 const MIN_SHELL = 6; /* the oldest Android app (version code) this page works with */
 const CATS = ["harvest", "cart", "transport", "church", "personal", "fertilizer", "power", "other"];
@@ -1904,7 +1904,7 @@ function legal() {
     years = yr > FIRST_YEAR ? FIRST_YEAR + "–" + yr : String(FIRST_YEAR),
     owner = COMPANY.trim() || "Coconut Ledger";
   return `<footer class="legal">
-    <div class="legal-mark">Coconut Ledger<sup>™</sup></div>
+    <div class="legal-mark">${esc(owner)}<sup>™</sup></div>
     <p>© ${years} ${esc(owner)}. ${t("rights")}</p>
     <p class="num">${t("version", VER)}${UPD && SH.versionName ? " · Android " + esc(SH.versionName) : ""}</p>
     <p class="legal-made">${t("made")}</p>
