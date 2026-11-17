@@ -184,7 +184,11 @@ compare against a hand calculation.
 - Adding a deduction type to `CATS` also moves the CSV columns. Add it at the end and update
   `toCSV()` and `importText()` together.
 - Per-harvest custom deductions are stored in `customDeds`; keep their trailing JSON column in
-  `toCSV()` and `importText()` so CSV backups round-trip.
+  `toCSV()` and `importText()` so CSV backups round-trip. Manual rounding is stored there as a
+  tagged `rounding` deduction so it is included in totals and reports without changing the CSV schema.
+- Per-recipient deductions are stored in `shareDeds` and come out of each equal share after estate
+  deductions. Keep their CSV JSON column in sync, and include each recipient's resulting amount in
+  harvest and report breakdowns.
 
 ### 7b. How the forecast works
 

@@ -243,6 +243,16 @@
           <button type="button" class="btn small" id="addCustomDed" data-t="add_custom_ded"></button>
         </div>
         <div class="custom-ded-list" id="customDedFields"></div>
+        <div class="rounding-tools">
+          <label class="fld"
+            ><span><span data-t="round_total"></span> (<span class="curlab"></span>)</span
+            ><input id="f-ded-target" type="number" inputmode="decimal" min="0" step="1" placeholder="0"
+          /></label>
+          <button type="button" class="btn small" id="applyRounding" data-t="round_apply"></button>
+          <p class="hint" id="roundingInfo" aria-live="polite"></p>
+        </div>
+        <div class="custom-ded-head"><b data-t="share_deductions"></b></div>
+        <div class="custom-ded-list" id="shareDedFields"></div>
         <label class="fld"
           ><span data-t="f_othernote"></span><input id="f-othernote" type="text" maxlength="80" data-tp="othernote_ph"
         /></label>
@@ -258,6 +268,7 @@
           <div><span data-t="balance"></span><b class="num" id="l-net">0</b></div>
           <div><span id="l-shareLab"></span><b class="num" id="l-share">0</b></div>
         </div>
+        <ul class="share-ded-live num" id="shareDedLive" aria-live="polite"></ul>
         <p class="err" id="f-err"></p>
         <footer>
           <button type="button" class="btn danger" id="delBtn" data-t="delete"></button><span style="flex: 1"></span

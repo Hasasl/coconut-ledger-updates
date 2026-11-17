@@ -21,7 +21,17 @@ Start with **[docs/DEVELOPING.md](docs/DEVELOPING.md)**.
    `android/app/src/main/assets/index.html`; publishing is not required.
 2. Open the `android/` folder in Android Studio, wait for Gradle sync, then choose **Run** and an
    emulator to build and preview the bundled page.
-3. If Android Studio was already open, rebuild and run again after each page change.
+3. Or build a debug APK from PowerShell in the repository folder. Set the SDK path if it is not
+   already configured (change it if Android Studio installed the SDK elsewhere):
+   ```powershell
+   $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
+   Set-Location android
+   .\gradlew.bat assembleDebug
+   ```
+   Android Studio can install it on the emulator with **Run**; the APK is also at
+   `android/app/build/outputs/apk/debug/app-debug.apk`.
+4. Repeat the page build and Android **Run** after each change. These local debug steps do not push
+   or publish the update.
 
 The debug build may not install over a release-signed app already on a physical phone. Use an emulator
 for this preview so you do not need to uninstall the app or risk its local records.

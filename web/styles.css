@@ -1334,6 +1334,29 @@ dialog::backdrop {
   align-items: end;
   gap: 8px;
 }
+.rounding-tools {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 8px;
+  margin-top: 12px;
+}
+.rounding-tools .hint {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.share-ded-live {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ink-2);
+  font-size: 13px;
+}
+.share-ded-live li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
 label.fld {
   display: flex;
   flex-direction: column;

@@ -51,6 +51,12 @@ const L = {
     deductions: "Deductions",
     share_child: "Each child gets",
     share_custom: "Each {0} gets",
+    share_child_n: "Child {0}",
+    share_custom_n: "{0} {1}",
+    share_deductions: "Deductions from each share",
+    share_ded_amount: "Deduction for {0}",
+    share_after_ded: "Each share after deduction",
+    share_ded_result: "{0}: {1} share − {2} deduction = {3}",
     latest_money: "Latest harvest, the money",
     latest_hint: "Income, each deduction, then the split.",
     bought_by: "Bought by {0}.",
@@ -179,6 +185,13 @@ const L = {
     custom_name: "Name / person",
     custom_amount: "Amount ({0})",
     remove_custom_ded: "Remove",
+    round_total: "Set total deductions to",
+    round_apply: "Apply total",
+    round_help: "Current deductions: {0}. Enter the total you want; the difference is added as a manual rounding adjustment.",
+    round_preview: "This adds {0}, bringing deductions to {1}.",
+    round_invalid: "Enter a total at least as high as current deductions ({0}).",
+    round_applied: "Added {0} as a manual rounding adjustment. Total deductions: {1}.",
+    round_adj: "Manual rounding adjustment",
     e_custom_name: "Enter a name/person for each custom deduction amount.",
     e_custom_amount: "Custom deduction amounts cannot be negative.",
     f_othernote: "What is the Other amount for?",
@@ -385,6 +398,12 @@ const L = {
     deductions: "අඩු කිරීම්",
     share_child: "එක් දරුවෙකුට",
     share_custom: "එක් {0} කොටසකට",
+    share_child_n: "දරුවා {0}",
+    share_custom_n: "{0} {1}",
+    share_deductions: "එක් එක් කොටසෙන් අඩු කිරීම්",
+    share_ded_amount: "{0} වෙතින් අඩු කිරීම",
+    share_after_ded: "අඩු කිරීමෙන් පසු එක් කොටසකට",
+    share_ded_result: "{0}: කොටස {1} − අඩු කිරීම {2} = {3}",
     latest_money: "අවසන් අස්වැන්නේ මුදල්",
     latest_hint: "ආදායම, අඩු කිරීම්, ඉන්පසු බෙදීම.",
     bought_by: "ගත්තේ {0}.",
@@ -512,6 +531,13 @@ const L = {
     custom_name: "නම / පුද්ගලයා",
     custom_amount: "මුදල ({0})",
     remove_custom_ded: "ඉවත් කරන්න",
+    round_total: "අඩු කිරීම් එකතුව මෙසේ සකසන්න",
+    round_apply: "එකතුව යොදන්න",
+    round_help: "දැනට අඩු කිරීම්: {0}. අවශ්‍ය එකතුව ඇතුළත් කරන්න; වෙනස අතින් වටකිරීමේ අඩු කිරීමක් ලෙස එක් වේ.",
+    round_preview: "මෙයින් {0}ක් එක් වී අඩු කිරීම් එකතුව {1} වේ.",
+    round_invalid: "දැනට අඩු කිරීම් ({0}) හෝ ඊට වැඩි එකතුවක් ඇතුළත් කරන්න.",
+    round_applied: "අතින් වටකිරීමේ අඩු කිරීමක් ලෙස {0}ක් එක් කළා. අඩු කිරීම් එකතුව: {1}.",
+    round_adj: "අතින් වටකිරීමේ අඩු කිරීම",
     e_custom_name: "අභිරුචි අඩු කිරීමේ සෑම මුදලකටම නමක් / පුද්ගලයෙක් ඇතුළත් කරන්න.",
     e_custom_amount: "අභිරුචි අඩු කිරීමේ මුදල ඍණ විය නොහැක.",
     f_othernote: "වෙනත් මුදල කුමක් සඳහාද?",
@@ -732,7 +758,7 @@ const t = (k, ...a) => {
   return s;
 };
 
-const VER = "1.8.2";
+const VER = "1.8.3";
 /* Your company, shown at the bottom of the Data tab. Leave it empty to show the app name instead. */
 const COMPANY = "CyberTech Lanka";
 const FIRST_YEAR = 2026;
@@ -986,27 +1012,41 @@ const ewma = (a, al) => a.reduce((s, x, i) => (i ? al * x + (1 - al) * s : x), 0
 const autoFree = (g) => (state.freePer > 0 ? Math.floor(g / state.freePer) : 0);
 const freeRule = () => t("free_rule", N(state.freePer));
 const shareLab = () => (state.shareName === "child" ? t("share_child") : t("share_custom", state.shareName));
+const shareNameAt = (i) =>
+  state.shareName === "child" ? t("share_child_n", i + 1) : t("share_custom_n", state.shareName, i + 1);
 const catName = (k, h) => t("cat_" + k) + (k === "other" && h && h.otherNote ? ": " + h.otherNote : "");
 /* Income = Loaded × price. Home use comes off the whole harvest first; what is left and not loaded is Rejected:
    rejected = harvested − home use − loaded. The buyer's free coconuts (1 per 100 loaded) are shown but do not reduce income.
    Transport cart = harvested × rate unless typed in. */
 const blank = (v) => v == null || v === "";
 const dedVal = (h, c) => (c === "transport" && blank(h.ded[c]) ? (+h.total || 0) * state.transRate : +h.ded[c] || 0);
+const ROUNDING_KIND = "rounding";
 const customDedEntries = (h) =>
   Array.isArray(h && h.customDeds)
     ? h.customDeds
         .map((d) => {
           const amount = Number(d && d.amount);
+          const kind = d && d.kind === ROUNDING_KIND ? ROUNDING_KIND : "";
           return {
-            name: String((d && d.name) || "")
-              .trim()
-              .slice(0, 60),
+            name: kind
+              ? t("round_adj")
+              : String((d && d.name) || "")
+                  .trim()
+                  .slice(0, 60),
             amount: Number.isFinite(amount) ? Math.max(0, amount) : 0,
+            ...(kind ? { kind } : {}),
           };
         })
         .filter((d) => d.name)
     : [];
+const roundingDedAmount = (h) =>
+  sum(customDedEntries(h).filter((d) => d.kind === ROUNDING_KIND).map((d) => d.amount));
 const customDedTotal = (h) => sum(customDedEntries(h).map((d) => d.amount));
+const shareDedEntries = (h) =>
+  Array.from({ length: Math.max(1, Math.round(state.shares) || 1) }, (_, i) => {
+    const amount = Number(h && Array.isArray(h.shareDeds) ? h.shareDeds[i] : 0);
+    return Number.isFinite(amount) ? Math.max(0, amount) : 0;
+  });
 function customDedSummary(hs) {
   const rows = new Map();
   hs.forEach((h) =>
@@ -1034,6 +1074,7 @@ function calc() {
       dv = {};
     CATS.forEach((c) => (dv[c] = dedVal(h, c)));
     const customDeds = customDedEntries(h),
+    shareDeds = shareDedEntries(h),
       ded = sum(CATS.map((c) => dv[c])) + sum(customDeds.map((d) => d.amount)),
       net = inc - ded,
       rest = 0;
@@ -1049,10 +1090,12 @@ function calc() {
       rest,
       dv,
       customDeds,
+      shareDeds,
       inc,
       dedT: ded,
       net,
       share: net / state.shares,
+      shareNet: shareDeds.map((d) => net / state.shares - d),
       gap: i ? Math.round((pd(h.date) - pd(hs[i - 1].date)) / DAY) : null,
     });
   });
@@ -1068,6 +1111,9 @@ function monthly(hs) {
     const paid = sum(l.map((h) => h.paid)),
       inc = sum(l.map((h) => h.inc)),
       net = sum(l.map((h) => h.net));
+    const shareDeds = Array.from({ length: state.shares }, (_, i) =>
+      sum(l.map((h) => (h.shareDeds || [])[i] || 0)),
+    );
     return {
       key: k,
       label: MONLS[lang][+k.slice(5) - 1] + " " + k.slice(0, 4),
@@ -1082,6 +1128,8 @@ function monthly(hs) {
       ded: inc - net,
       net,
       share: net / state.shares,
+      shareDeds,
+      shareNet: shareDeds.map((d) => net / state.shares - d),
       price: paid ? inc / paid : mean(l.map((h) => h.price)),
     };
   });
@@ -1289,6 +1337,9 @@ function forecast(hs) {
     dedT =
       sum(CATS.map((c) => mean(hs.slice(-6).map((h) => h.dv[c])))) +
       mean(hs.slice(-6).map((h) => customDedTotal(h))),
+    shareDedT = Array.from({ length: state.shares }, (_, i) =>
+      mean(hs.slice(-6).map((h) => (h.shareDeds || [])[i] || 0)),
+    ),
     transNow = mean(hs.slice(-6).map((h) => h.dv.transport)),
     last = pd(hs[n - 1].date);
   const step = (from, to, k) => {
@@ -1313,6 +1364,8 @@ function forecast(hs) {
       dedT: ded,
       net,
       share: net / state.shares,
+      shareDeds: shareDedT,
+      shareNet: shareDedT.map((d) => net / state.shares - d),
     };
   };
   const steps = [];
@@ -1654,7 +1707,7 @@ function flowRows(h) {
       .join("") +
     `<div class="row net"><span>${t("balance")}</span><div class="bar"><i style="width:${(Math.max(0, h.net) / base) * 100}%"></i></div><span class="v num ${h.net < 0 ? "neg-t" : ""}">${money(h.net)}</span></div>` +
     (state.shares > 1
-      ? `<div class="row share"><span>${esc(shareLab())} (÷ ${state.shares})</span><div class="bar"><i style="width:${(Math.max(0, h.share) / base) * 100}%"></i></div><span class="v num ${h.net < 0 ? "neg-t" : ""}">${money(h.share)}</span></div>`
+      ? `<div class="row share"><span>${esc(shareLab())} (÷ ${state.shares})</span><div class="bar"><i style="width:${(Math.max(0, h.share) / base) * 100}%"></i></div><span class="v num ${h.net < 0 ? "neg-t" : ""}">${money(h.share)}</span></div>${h.shareDeds.map((d, i) => (d > 0 ? `<div class="row share"><span>${esc(shareNameAt(i))} · ${money(d)} ${t("deductions")}</span><div class="bar"></div><span class="v num">${money(h.shareNet[i])}</span></div>` : "")).join("")}`
       : "") +
     `</div>`
   );
@@ -1689,6 +1742,9 @@ function vOverview(hs) {
     paid = sum(yr.map((h) => h.paid)),
     inc = sum(yr.map((h) => h.inc)),
     net = sum(yr.map((h) => h.net)),
+    shareNets = Array.from({ length: state.shares }, (_, i) =>
+      sum(yr.map((h) => h.net / state.shares - ((h.shareDeds || [])[i] || 0))),
+    ),
     prs = yr.map((h) => h.price);
   const since = Math.round((todayMs() - pd(last.date)) / DAY);
   let hero;
@@ -1701,7 +1757,7 @@ function vOverview(hs) {
     <div class="hero"><div class="ring"><svg viewBox="0 0 120 120"><circle class="track" cx="60" cy="60" r="52"/><circle class="prog" cx="60" cy="60" r="52" stroke-dasharray="${C}" stroke-dashoffset="${C}" data-off="${C * (1 - pr)}"/></svg>
     <div class="mid"><b class="num">${Math.abs(left)}</b><span>${left > 0 ? t("days_go") : left === 0 ? t("due_today") : t("days_over")}</span></div></div>
     <div class="txt"><div class="big">${t("around", fd(s.date))}</div><div style="color:var(--ink-2);font-size:13px">${t("day_of", Math.max(0, since), fc.gap)}</div>
-    <div class="facts"><div><b class="num">≈ ${price(Math.round(s.price))}</b>${t("exp_price")}</div><div><b class="num">≈ ${N(s.loaded)}</b>${t("loaded")}</div><div><b class="num">≈ ${money(s.share)}</b>${esc(shareLab())}</div></div>
+    <div class="facts"><div><b class="num">≈ ${price(Math.round(s.price))}</b>${t("exp_price")}</div><div><b class="num">≈ ${N(s.loaded)}</b>${t("loaded")}</div>${s.shareNet.map((v, i) => `<div><b class="num">≈ ${money(v)}</b>${esc(shareNameAt(i))}</div>`).join("")}</div>
     <button class="btn small" data-go="forecast" style="margin-top:12px">${t("see_fc")}</button></div></div></div>`;
   } else hero = `<div class="card"><h2>${t("next_harvest")}</h2><p class="hint">${t("need3")}</p></div>`;
   const parts = [
@@ -1736,7 +1792,7 @@ function vOverview(hs) {
     ${kpi(t("loaded"), cnt(sum(yr.map((h) => h.loaded))), t("free") + " " + N(sum(yr.map((h) => h.free))))}
     ${kpi(t("k_harv12"), cnt(tot), t("k_harv_foot", yr.length, N(sum(yr.map((h) => h.rejected))), N(sum(yr.map((h) => h.home)))))}
     ${kpi(t("income"), cnt(inc, state.cur), t("deducted", money(inc - net)))}
-    ${kpi(t("balance"), cnt(net, state.cur), state.shares > 1 ? `${esc(shareLab())} ${money(net / state.shares)}` : "")}
+    ${kpi(t("balance"), cnt(net, state.cur), shareNets.map((v, i) => `${esc(shareNameAt(i))} ${money(v)}`).join(" · "))}
   </div>
   <div class="grid two">
     <div class="card"><h2>${t("latest_money")}</h2><p class="hint">${last.buyer ? t("bought_by", esc(last.buyer)) + " " : ""}${t("latest_hint")}</p>${flowRows(last)}</div>
@@ -1755,7 +1811,7 @@ function vMonths(hs) {
       .reverse()
       .map(
         (m) =>
-          `<div class="mhead"><h2>${m.label}</h2><button class="btn small" data-mpdf="${m.key}">${t("btn_mpdf")}</button><div class="msum num"><b>${price(m.price)}</b> ${t("per_coconut")} · <b>${N(m.loaded)}</b> ${t("bought_s")} · ${N(m.total)} ${t("harvested")} · ${t("balance")} <b>${money(m.net)}</b>${state.shares > 1 ? ` · ${esc(shareLab())} <b>${money(m.share)}</b>` : ""}</div></div>
+          `<div class="mhead"><h2>${m.label}</h2><button class="btn small" data-mpdf="${m.key}">${t("btn_mpdf")}</button><div class="msum num"><b>${price(m.price)}</b> ${t("per_coconut")} · <b>${N(m.loaded)}</b> ${t("bought_s")} · ${N(m.total)} ${t("harvested")} · ${t("balance")} <b>${money(m.net)}</b>${state.shares > 1 ? ` · ${m.shareNet.map((v, i) => `${esc(shareNameAt(i))}: <b>${money(v)}</b>`).join(" · ")}` : ` · ${esc(shareNameAt(0))}: <b>${money(m.shareNet[0])}</b>`}</div></div>
   <div class="rows">` +
           m.list
             .slice()
@@ -1768,8 +1824,9 @@ function vMonths(hs) {
               return `<div class="card hrow" style="animation-delay:${Math.min(i, 10) * 30}ms">
     <div class="when"><b>${fd(h.date)}</b>${h.gap != null ? `<span class="chip">${t("days_after", h.gap)}</span>` : `<span class="chip">${t("first_rec")}</span>`}<span style="flex:1"></span><button class="btn small" data-edit="${esc(h.id)}">${t("edit")}</button></div>
     <div class="hgrid">${F(t("price"), price(h.price), "key")}${F(t("loaded"), N(h.loaded), "key")}${F(t("harvested"), N(h.total))}${F(t("free"), N(h.free))}${F(t("rejected"), N(h.rejected))}${F(t("home"), N(h.home))}
-      ${F(t("income"), money(h.inc))}${F(t("deductions"), "− " + N(h.dedT))}<div class="f"><span>${t("balance")}</span><b class="num ${h.net < 0 ? "neg-t" : "pos-t"}">${money(h.net)}</b></div>${state.shares > 1 ? F(esc(shareLab()), money(h.share)) : ""}</div>
+      ${F(t("income"), money(h.inc))}${F(t("deductions"), "− " + N(h.dedT))}<div class="f"><span>${t("balance")}</span><b class="num ${h.net < 0 ? "neg-t" : "pos-t"}">${money(h.net)}</b></div></div>
     ${dl.length ? `<details class="dd"><summary>${t("ded_break")}</summary><ul class="num">${dl.map((d) => `<li><span>${esc(d[0])}</span><b>${N(d[1])}</b></li>`).join("")}</ul></details>` : ""}
+    ${h.shareDeds.some((d) => d > 0) ? `<details class="dd"><summary>${t("share_after_ded")}</summary><ul class="num">${h.shareDeds.map((d, j) => `<li><span>${esc(shareNameAt(j))}: ${money(h.share)} − ${money(d)}</span><b>${money(h.shareNet[j])}</b></li>`).join("")}</ul></details>` : ""}
     <div class="who"><span>${t("buyer")}: <b>${h.buyer ? esc(h.buyer) : t("not_rec")}</b></span>${h.contact ? `<span>${t("contact")}: <a href="tel:${esc(String(h.contact).replace(/[^\d+]/g, ""))}">${esc(h.contact)}</a></span>` : ""}<span>${t("entered_by")}: <b>${h.by ? esc(h.by) : t("not_rec")}</b></span></div>
     ${h.note ? `<p class="note">${esc(h.note)}</p>` : ""}</div>`;
             })
@@ -1925,7 +1982,7 @@ function vForecast(hs) {
     ${kpi(t("fm_nm_price"), "≈ " + cnt(fc.nm.price.p, state.cur), nmName + " · " + t("likely", N(fc.nm.price.lo), N(fc.nm.price.hi)))}
     ${kpi(t("exp_coconuts"), "≈ " + cnt(s.nuts), t("n_loaded", N(s.loaded)) + " · " + t("likely", N(s.nutsLo), N(s.nutsHi)))}
     ${kpi(t("next_date"), fd(s.date, false), t("fm_every", fc.gap))}
-    ${kpi(t("exp_bal"), "≈ " + cnt(s.net, state.cur), state.shares > 1 ? `${esc(shareLab())} ≈ ${money(s.share)}` : t("after_charges", money(s.dedT)))}
+    ${kpi(t("exp_bal"), "≈ " + cnt(s.net, state.cur), s.shareNet.map((v, i) => `${esc(shareNameAt(i))} ≈ ${money(v)}`).join(" · "))}
   </div>
   <div class="card"><h2>${t("next_month", nmName)}</h2><p style="margin:4px 0 0">${mTxt}</p></div>
   <div class="grid two">
@@ -1933,9 +1990,9 @@ function vForecast(hs) {
     <div class="card"><h2>${t("fc_harv_h")}</h2><p class="hint">${t("fc_rate", fc.rate.toFixed(1))}</p><div class="legend"><span><i></i>${t("harvested")}</span><span><i class="g"></i>${t("forecast_w")}</span></div><div class="chart" id="fc-nuts"></div></div>
   </div>
   <div class="card"><h2>${t("next3")}</h2><p class="hint">${t("next3_hint", (fc.paidRate * 100).toFixed(0))}</p><div class="fc-list">
-    ${fc.steps.map((x) => `<div class="fc-item"><h3>${t("around", fd(x.date))}</h3><p class="num">≈ ${price(Math.round(x.price))} ${t("per_coconut")}</p><p class="num">${t("n_paid_for", N(x.nuts), N(x.loaded))}</p><p class="num">≈ ${money(x.net)} · ${t("balance")}</p>${state.shares > 1 ? `<p class="num"><b style="color:var(--ink)">≈ ${money(x.share)} · ${esc(shareLab())}</b></p>` : ""}</div>`).join("")}</div></div>
+    ${fc.steps.map((x) => `<div class="fc-item"><h3>${t("around", fd(x.date))}</h3><p class="num">≈ ${price(Math.round(x.price))} ${t("per_coconut")}</p><p class="num">${t("n_paid_for", N(x.nuts), N(x.loaded))}</p><p class="num">≈ ${money(x.net)} · ${t("balance")}</p>${x.shareNet.map((v, i) => `<p class="num"><b style="color:var(--ink)">≈ ${money(v)} · ${esc(shareNameAt(i))}</b></p>`).join("")}</div>`).join("")}</div></div>
   <div class="grid two">
-    <div class="card"><h2>${t("fm_year_h")}</h2><p style="margin:4px 0 0">${t("fm_year_p", yr.length, N(yrNuts), N(yrLo), N(yrHi), money(yrInc), money(yrNet))}</p>${state.shares > 1 ? `<p class="hint" style="margin:8px 0 0">${esc(shareLab())} ≈ ${money(yrNet / state.shares)}</p>` : ""}</div>
+    <div class="card"><h2>${t("fm_year_h")}</h2><p style="margin:4px 0 0">${t("fm_year_p", yr.length, N(yrNuts), N(yrLo), N(yrHi), money(yrInc), money(yrNet))}</p>${Array.from({ length: state.shares }, (_, i) => `<p class="hint" style="margin:8px 0 0">${esc(shareNameAt(i))} ≈ ${money(sum(yr.map((x) => x.shareNet[i])))}</p>`).join("")}</div>
     <div class="card"><h2>${t("fm_cycle_h")}</h2><p style="margin:4px 0 0">${t("fm_cycle_p", fc.gap, fc.G.lo, fc.G.hi, fc.G.min, fc.G.max)}</p></div>
   </div>
   <div class="grid two">
@@ -1978,7 +2035,7 @@ function vData() {
     <label class="fld wide">${t("trans_rate")} (${esc(state.cur)})<input id="s-trans" type="number" inputmode="decimal" min="0" step="0.01" value="${esc(state.transRate)}"></label></div>
     <div class="btnrow" style="margin-top:12px"><button class="btn primary" id="s-save">${t("save_details")}</button></div></div>
   <div class="card" style="grid-column:1/-1"><h2>${t("imp_h")}</h2><p class="hint">${t("imp_hint")}</p>
-    <p style="margin:0 0 10px"><code>date, harvested, rejected, home use, price, harvesting, cart, transport, church, my money, fertilizer, power, other, buyer name, buyer contact, entered by, note, other note, free to buyer, loaded, custom deductions JSON</code></p>
+    <p style="margin:0 0 10px"><code>date, harvested, rejected, home use, price, harvesting, cart, transport, church, my money, fertilizer, power, other, buyer name, buyer contact, entered by, note, other note, free to buyer, loaded, custom deductions JSON, per-share deductions JSON</code></p>
     <p class="hint">${t("imp_ex")}</p>
     <textarea class="box" id="imp" rows="5" placeholder="${esc(t("imp_ph"))}" aria-label="${esc(t("imp_h"))}"></textarea>
     <div class="btnrow" style="margin-top:10px"><button class="btn primary" id="impGo">${t("imp_go")}</button><label class="btn">${t("choose_file")}<input type="file" id="impFile" accept=".csv,.json,.txt,text/csv,text/comma-separated-values,application/json,text/plain" hidden></label></div>
@@ -2213,7 +2270,8 @@ function toast(m) {
 }
 const dlg = $("#dlg"),
   ask = $("#ask");
-let editId = null;
+let editId = null,
+  roundingAdjustment = 0;
 function openD(d) {
   if (d.showModal) d.showModal();
   else d.setAttribute("open", "");
@@ -2273,6 +2331,7 @@ function readCustomDedFields() {
 }
 function renderCustomDedFields(rows) {
   $("#customDedFields").innerHTML = (rows || [])
+    .filter((d) => d.kind !== ROUNDING_KIND)
     .map(
       (d) => `<div class="custom-ded-row">
         <label class="fld"><span>${t("custom_name")}</span><input type="text" data-custom-name maxlength="60" value="${esc(d.name || "")}"></label>
@@ -2282,10 +2341,43 @@ function renderCustomDedFields(rows) {
     )
     .join("");
 }
+function readShareDedFields() {
+  return Array.from($("#shareDedFields").querySelectorAll("[data-share-ded]"), (input) => {
+    const amount = input.value.trim() === "" ? 0 : parseFloat(input.value);
+    return isFinite(amount) ? amount : 0;
+  });
+}
+function renderShareDedFields(rows) {
+  $("#shareDedFields").innerHTML = Array.from({ length: Math.max(1, state.shares) }, (_, i) => {
+    const name = shareNameAt(i),
+      amount = rows && rows[i] ? rows[i] : "";
+    return `<label class="fld"><span>${t("share_ded_amount", esc(name))}</span><input type="number" inputmode="decimal" data-share-ded min="0" step="1" value="${esc(amount || "")}"></label>`;
+  }).join("");
+}
+const dedInputValue = (h, c) => {
+  const amount = h && h.ded[c];
+  return c === "transport" ? (blank(amount) ? "" : amount) : amount || "";
+};
 const val = (id) => {
   const v = parseFloat($("#" + id).value);
   return isFinite(v) ? v : 0;
 };
+function roundingBaseDeduction() {
+  const autoT = val("f-total") * state.transRate;
+  return (
+    sum(CATS.map((c) => (c === "transport" && $("#d-transport").value.trim() === "" ? autoT : val("d-" + c)))) +
+    sum(readCustomDedFields().map((d) => d.amount))
+  );
+}
+function updateRoundingInfo(c) {
+  const input = $("#f-ded-target"),
+    value = input.value.trim(),
+    target = value === "" ? NaN : Number(value);
+  if (value === "") $("#roundingInfo").textContent = t("round_help", money(c.ded));
+  else if (!Number.isFinite(target) || target < c.baseDed)
+    $("#roundingInfo").textContent = t("round_invalid", money(c.baseDed));
+  else $("#roundingInfo").textContent = t("round_preview", money(target - c.baseDed), money(target));
+}
 function liveCalc() {
   const total = val("f-total"),
     home = val("f-home"),
@@ -2296,14 +2388,14 @@ function liveCalc() {
     free = fv === "" ? auto : val("f-free"),
     inc = loaded * val("f-price"),
     autoT = total * state.transRate,
-    net =
-      inc -
-      sum(CATS.map((c) => (c === "transport" && $("#d-transport").value.trim() === "" ? autoT : val("d-" + c)))) -
-      sum(readCustomDedFields().map((d) => d.amount));
-  return { taken: loaded, rej, autoT, auto, free, paid: loaded, inc, net };
+    baseDed = roundingBaseDeduction(),
+    ded = baseDed + roundingAdjustment,
+    net = inc - ded;
+  return { taken: loaded, rej, autoT, auto, free, paid: loaded, inc, baseDed, ded, net };
 }
 function live() {
   const c = liveCalc();
+  updateRoundingInfo(c);
   $("#f-free").placeholder = t("auto", N(c.auto));
   $("#d-transport").placeholder = t("auto", N(c.autoT));
   $("#l-paid").textContent = N(c.rej);
@@ -2312,8 +2404,27 @@ function live() {
   n.textContent = money(c.net);
   n.className = "num " + (c.net < 0 ? "neg-t" : "");
   $("#l-share").textContent = money(c.net / state.shares);
+  $("#shareDedLive").innerHTML = readShareDedFields()
+    .map((ded, i) => {
+      const share = c.net / state.shares,
+        after = share - ded;
+      return `<li>${esc(t("share_ded_result", esc(shareNameAt(i)), money(share), money(ded), money(after)))}</li>`;
+    })
+    .join("");
 }
 $("#hform").addEventListener("input", live);
+$("#applyRounding").addEventListener("click", () => {
+  const value = $("#f-ded-target").value.trim(),
+    target = value === "" ? NaN : Number(value),
+    current = liveCalc();
+  if (!Number.isFinite(target) || target < current.baseDed) {
+    updateRoundingInfo(current);
+    return;
+  }
+  roundingAdjustment = target - current.baseDed;
+  live();
+  toast(t("round_applied", money(roundingAdjustment), money(liveCalc().ded)));
+});
 /* the harvest whose charges "Use previous charges" copies: the latest one other than the one being edited */
 function prevOf(id) {
   const l = calc().filter((h) => h.id !== id);
@@ -2330,6 +2441,7 @@ function openForm(id) {
   const h = id && state.harvests.find((x) => x.id === id),
     prev = !h && !state.sample ? calc().pop() : null,
     me = LS.get(ME) || "";
+  roundingAdjustment = h ? roundingDedAmount(h) : 0;
   applyStatic();
   $("#dlgTitle").textContent = t(h ? "f_edit" : "f_add");
   $("#delBtn").style.display = h ? "" : "none";
@@ -2347,8 +2459,10 @@ function openForm(id) {
   $("#f-buyer").value = h ? h.buyer || "" : prev ? prev.buyer || "" : "";
   $("#f-contact").value = h ? h.contact || "" : prev ? prev.contact || "" : "";
   $("#f-by").value = h ? h.by || "" : me;
-  CATS.forEach((c) => ($("#d-" + c).value = h && h.ded[c] ? h.ded[c] : ""));
+  CATS.forEach((c) => ($("#d-" + c).value = dedInputValue(h, c)));
   renderCustomDedFields(h ? customDedEntries(h) : []);
+  renderShareDedFields(h ? shareDedEntries(h) : []);
+  $("#f-ded-target").value = h ? roundingBaseDeduction() + roundingAdjustment : "";
   $("#copyLast").style.display = prevOf(editId) ? "" : "none";
   live();
   openD(dlg);
@@ -2356,8 +2470,11 @@ function openForm(id) {
 $("#copyLast").onclick = () => {
   const l = prevOf(editId);
   if (!l) return toast(t("t_noprev"));
-  CATS.forEach((c) => ($("#d-" + c).value = blank(l.ded[c]) ? "" : l.ded[c] || ""));
+  CATS.forEach((c) => ($("#d-" + c).value = dedInputValue(l, c)));
   renderCustomDedFields(customDedEntries(l));
+  renderShareDedFields(shareDedEntries(l));
+  roundingAdjustment = roundingDedAmount(l);
+  $("#f-ded-target").value = roundingBaseDeduction() + roundingAdjustment;
   $("#f-othernote").value = l.otherNote || "";
   live();
 };
@@ -2371,6 +2488,7 @@ $("#hform").addEventListener("submit", (e) => {
     fv = $("#f-free").value.trim(),
     lv = $("#f-loaded").value.trim();
   const customDeds = readCustomDedFields();
+  const shareDeds = readShareDedFields();
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return (err.textContent = t("e_date"));
   if (pr <= 0) return (err.textContent = t("e_price"));
   if (total <= 0) return (err.textContent = t("e_total"));
@@ -2379,6 +2497,7 @@ $("#hform").addEventListener("submit", (e) => {
   if (fv !== "" && val("f-free") > liveCalc().taken) return (err.textContent = t("e_free"));
   if (customDeds.some((d) => d.amount < 0)) return (err.textContent = t("e_custom_amount"));
   if (customDeds.some((d) => d.amount > 0 && !d.name)) return (err.textContent = t("e_custom_name"));
+  if (shareDeds.some((d) => d < 0)) return (err.textContent = t("e_custom_amount"));
   if (state.harvests.some((h) => h.date === date && h.id !== editId) && !state.sample)
     return (err.textContent = t("e_dup"));
   if (state.sample) {
@@ -2400,7 +2519,14 @@ $("#hform").addEventListener("submit", (e) => {
     free: fv === "" ? null : Math.round(val("f-free")),
     price: pr,
     ded,
-    customDeds: customDedEntries({ customDeds }),
+    customDeds: customDedEntries({
+      customDeds: customDeds.concat(
+        roundingAdjustment > 0
+          ? [{ name: t("round_adj"), amount: roundingAdjustment, kind: ROUNDING_KIND }]
+          : [],
+      ),
+    }),
+    shareDeds,
     otherNote: $("#f-othernote").value.trim(),
     buyer: $("#f-buyer").value.trim(),
     contact: $("#f-contact").value.trim(),
@@ -2450,6 +2576,7 @@ function toCSV() {
                 h.freeSet == null ? "" : h.freeSet,
                 h.loaded,
                 q(JSON.stringify(h.customDeds)),
+                q(JSON.stringify(h.shareDeds)),
               ],
             )
             .join(","),
@@ -2578,6 +2705,17 @@ function importText(txt) {
         throw t("i_bad");
       }
     }
+    let shareDeds = [];
+    if ((c[21] || "").trim()) {
+      try {
+        const parsed = JSON.parse(c[21]);
+        if (!Array.isArray(parsed) || parsed.some((amount) => !Number.isFinite(Number(amount)) || Number(amount) < 0))
+          throw new Error("Per-share deductions must be non-negative amounts.");
+        shareDeds = parsed.map(Number);
+      } catch (e) {
+        throw t("i_bad");
+      }
+    }
     const ded = {};
     CATS.forEach((k, i) => (ded[k] = k === "transport" && (c[5 + i] || "") === "" ? null : n(5 + i)));
     out.push({
@@ -2591,6 +2729,7 @@ function importText(txt) {
       price: n(4),
       ded,
       customDeds,
+      shareDeds,
       buyer: c[13] || "",
       contact: c[14] || "",
       by: c[15] || "",
@@ -2655,6 +2794,10 @@ function openReport() {
       .concat(customCats.map((d) => [d.name, d.amount]))
       .filter((c) => c[1] > 0)
       .sort((a, b) => b[1] - a[1]);
+  const shareDeds = Array.from({ length: state.shares }, (_, i) =>
+    sum(hs.map((h) => (h.shareDeds || [])[i] || 0)),
+  ),
+    shareNets = shareDeds.map((d) => net / state.shares - d);
   const T = (l, v) => `<div class="rt"><span>${l}</span><b>${v}</b></div>`,
     sh = state.shares > 1;
   $("#report").innerHTML =
@@ -2662,14 +2805,15 @@ function openReport() {
   <div class="page"><div class="rhead"><div><h1>${esc(state.estate)}</h1><p>${t("rep_title")} · ${fd(first.date)} – ${fd(last.date)} · ${t("n_harvests", hs.length)}</p></div><p class="rmeta">${t("rep_made", fd(todayMs()))}<br>${t("version", VER)}</p></div>
   <div class="rk num">${T(t("rep_latest"), price(last.price))}${T(t("avg_price"), price(paid ? inc / paid : 0))}${T(t("loaded"), N(loaded))}${T(t("harvested"), N(tot))}
     ${T(t("free"), N(S((h) => h.free)))}${T(t("rejected"), N(S((h) => h.rejected)))}${T(t("home"), N(S((h) => h.home)))}
-    ${T(t("income"), money(inc))}${T(t("deductions"), money(ded))}${T(t("balance"), money(net))}${sh ? T(esc(shareLab()), money(net / state.shares)) : ""}</div>
+    ${T(t("income"), money(inc))}${T(t("deductions"), money(ded))}${T(t("balance"), money(net))}${shareNets.map((v, i) => T(esc(shareNameAt(i)), money(v))).join("")}</div>
   <div class="card"><h2>${t("price_chart_h")}</h2><div class="chart" id="r-price"></div></div>
   <div class="card"><h2>${t("per_harvest_h")}</h2>${LEG()}<div class="chart" id="r-nuts"></div></div>
-  <div class="card"><h2>${t("mbm")}</h2><div class="tbl"><table class="num"><thead><tr><th>${t("th_month")}</th><th>${t("price")}</th><th>${t("harvested")}</th><th>${t("th_loaded")}</th><th>${t("th_free")}</th><th>${t("th_rej")}</th><th>${t("th_home")}</th><th>${t("income")}</th><th>${t("deductions")}</th><th>${t("balance")}</th>${sh ? `<th>${esc(shareLab())}</th>` : ""}</tr></thead>
-    <tbody>${ms.map((m) => `<tr><td>${m.label}</td><td class="pr">${price(m.price)}</td><td>${N(m.total)}</td><td>${N(m.loaded)}</td><td>${N(m.free)}</td><td>${N(m.rej)}</td><td>${N(m.home)}</td><td>${N(m.inc)}</td><td>${N(m.ded)}</td><td><b>${N(m.net)}</b></td>${sh ? `<td>${N(m.share)}</td>` : ""}</tr>`).join("")}</tbody></table></div></div>
+  <div class="card"><h2>${t("mbm")}</h2><div class="tbl"><table class="num"><thead><tr><th>${t("th_month")}</th><th>${t("price")}</th><th>${t("harvested")}</th><th>${t("th_loaded")}</th><th>${t("th_free")}</th><th>${t("th_rej")}</th><th>${t("th_home")}</th><th>${t("income")}</th><th>${t("deductions")}</th><th>${t("balance")}</th>${shareNets.map((_, i) => `<th>${esc(shareNameAt(i))}</th>`).join("")}</tr></thead>
+    <tbody>${ms.map((m) => `<tr><td>${m.label}</td><td class="pr">${price(m.price)}</td><td>${N(m.total)}</td><td>${N(m.loaded)}</td><td>${N(m.free)}</td><td>${N(m.rej)}</td><td>${N(m.home)}</td><td>${N(m.inc)}</td><td>${N(m.ded)}</td><td><b>${N(m.net)}</b></td>${m.shareNet.map((v) => `<td>${N(v)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div>
   <div class="card"><h2>${t("where_goes")}</h2><div class="flow">${cats.map((c) => `<div class="row"><span>${esc(c[0])}</span><div class="bar"><i style="width:${(c[1] / base) * 100}%"></i></div><span class="v num">${N(c[1])}<span class="pct">${inc ? Math.round((c[1] / inc) * 100) : 0}%</span></span></div>`).join("")}
     <div class="row net"><span>${t("balance")}</span><div class="bar"><i style="width:${(Math.max(0, net) / base) * 100}%"></i></div><span class="v num">${money(net)}<span class="pct">${inc ? Math.round((net / inc) * 100) : 0}%</span></span></div>
     ${sh ? `<div class="row share"><span>${esc(shareLab())} (÷ ${state.shares})</span><div class="bar"><i style="width:${(Math.max(0, net / state.shares) / base) * 100}%"></i></div><span class="v num">${money(net / state.shares)}</span></div>` : ""}</div></div>
+  <div class="card"><h2>${t("share_after_ded")}</h2><div class="tbl"><table class="num"><thead><tr><th>${t("rep_item")}</th><th>${esc(shareLab())}</th><th>${t("share_deductions")}</th><th>${t("balance")}</th></tr></thead><tbody>${shareDeds.map((d, i) => `<tr><td>${esc(shareNameAt(i))}</td><td>${money(net / state.shares)}</td><td>− ${N(d)}</td><td><b>${money(shareNets[i])}</b></td></tr>`).join("")}</tbody></table></div></div>
   <div class="card"><h2>${t("rep_dedm")}</h2><div class="tbl"><table class="num"><thead><tr><th>${t("th_month")}</th>${CATS.map((c) => `<th>${t("cat_" + c)}</th>`).join("")}${customCats.map((d) => `<th>${esc(d.name)}</th>`).join("")}<th>${t("th_total")}</th></tr></thead>
     <tbody>${ms
       .map((m) => {
@@ -2678,13 +2822,13 @@ function openReport() {
       })
       .join("")}</tbody></table></div></div>
   <div class="card"><h2>${t("bal_per_h")}</h2><div class="chart" id="r-net"></div></div>
-  <div class="card"><h2>${t("rep_all")}</h2><div class="tbl"><table class="num"><thead><tr><th>${t("f_date")}</th><th>${t("price")}</th><th>${t("harvested")}</th><th>${t("th_loaded")}</th><th>${t("th_rej")}</th><th>${t("th_home")}</th><th>${t("th_free")}</th><th>${t("income")}</th><th>${t("deductions")}</th><th>${t("balance")}</th><th>${t("buyer")}</th></tr></thead>
+  <div class="card"><h2>${t("rep_all")}</h2><div class="tbl"><table class="num"><thead><tr><th>${t("f_date")}</th><th>${t("price")}</th><th>${t("harvested")}</th><th>${t("th_loaded")}</th><th>${t("th_rej")}</th><th>${t("th_home")}</th><th>${t("th_free")}</th><th>${t("income")}</th><th>${t("deductions")}</th><th>${t("balance")}</th>${shareNets.map((_, i) => `<th>${esc(shareNameAt(i))}</th>`).join("")}<th>${t("buyer")}</th></tr></thead>
     <tbody>${hs
       .slice()
       .reverse()
       .map(
         (h) =>
-          `<tr><td>${fd(h.date)}</td><td class="pr">${price(h.price)}</td><td>${N(h.total)}</td><td>${N(h.loaded)}</td><td>${N(h.rejected)}</td><td>${N(h.home)}</td><td>${N(h.free)}</td><td>${N(h.inc)}</td><td>${N(h.dedT)}</td><td><b>${N(h.net)}</b></td><td>${esc(h.buyer || "")}</td></tr>`,
+          `<tr><td>${fd(h.date)}</td><td class="pr">${price(h.price)}</td><td>${N(h.total)}</td><td>${N(h.loaded)}</td><td>${N(h.rejected)}</td><td>${N(h.home)}</td><td>${N(h.free)}</td><td>${N(h.inc)}</td><td>${N(h.dedT)}</td><td><b>${N(h.net)}</b></td>${h.shareNet.map((v) => `<td>${N(v)}</td>`).join("")}<td>${esc(h.buyer || "")}</td></tr>`,
       )
       .join("")}</tbody></table></div></div>
   ${fc ? `<div class="card"><h2>${t("next3")}</h2><p class="hint">${t("rep_fc_note")}</p><div class="fc-list">${fc.steps.map((x) => `<div class="fc-item"><h3>${t("around", fd(x.date))}</h3><p class="num">≈ ${price(Math.round(x.price))} ${t("per_coconut")}</p><p class="num">≈ ${N(x.nuts)} ${t("harvested")} · ${t("n_loaded", N(x.loaded)).replace("≈ ", "")}</p><p class="num">≈ ${money(x.net)} · ${t("balance")}</p></div>`).join("")}</div></div>` : ""}
@@ -2721,6 +2865,11 @@ function agg(l) {
   const loaded = S((h) => h.loaded),
     inc = S((h) => h.inc),
     dedT = S((h) => h.dedT);
+  const shareDeds = Array.from({ length: state.shares }, (_, i) =>
+    S((h) => (h.shareDeds || [])[i] || 0),
+  ),
+    net = inc - dedT,
+    share = net / state.shares;
   return {
     total: S((h) => h.total),
     loaded,
@@ -2731,8 +2880,10 @@ function agg(l) {
     dv,
     customDeds: customDedSummary(l),
     dedT,
-    net: inc - dedT,
-    share: (inc - dedT) / state.shares,
+    net,
+    share,
+    shareDeds,
+    shareNet: shareDeds.map((d) => share - d),
     price: loaded ? inc / loaded : mean(l.map((h) => h.price)),
     otherNote: l
       .map((h) => h.otherNote)
@@ -2755,7 +2906,7 @@ function moneyTable(o) {
   ${o.customDeds.map((d) => `<tr><td>${esc(d.name)}</td><td></td><td>− ${N(d.amount)}</td><td>${bar(d.amount)}${pc(d.amount)}</td></tr>`).join("")}
   <tr class="sub"><td>${t("rep_totded")}</td><td></td><td>− ${N(o.dedT)}</td><td>${pc(o.dedT)}</td></tr>
   <tr class="tot"><td>${t("balance")}</td><td></td><td>${money(o.net)}</td><td>${pc(o.net)}</td></tr>
-  ${state.shares > 1 ? `<tr class="shr"><td>${esc(shareLab())} (÷ ${state.shares})</td><td></td><td>${money(o.share)}</td><td></td></tr>` : ""}</tbody></table>`;
+  ${o.shareDeds.map((d, i) => `<tr class="shr"><td>${esc(shareNameAt(i))}</td><td>${money(o.share)} − ${money(d)}</td><td>${money(o.shareNet[i])}</td><td>${pc(o.shareNet[i])}</td></tr>`).join("")}</tbody></table>`;
 }
 function openMonthReport(key) {
   const ms = monthly(calc()),
@@ -2765,8 +2916,7 @@ function openMonthReport(key) {
     pm = ms[i - 1],
     o = agg(m.list),
     po = pm && agg(pm.list),
-    multi = m.list.length > 1,
-    sh = state.shares > 1;
+    multi = m.list.length > 1;
   const T = (l, v) => `<div class="rt"><span>${l}</span><b>${v}</b></div>`;
   const det = (h) =>
     `<p class="rdet">${t("f_date")}: <b>${fd(h.date)}</b>${h.gap != null ? ` (${t("days_after", h.gap)})` : ""} · ${t("buyer")}: <b>${h.buyer ? esc(h.buyer) : t("not_rec")}</b>${h.contact ? ` · ${t("contact")}: <b>${esc(h.contact)}</b>` : ""} · ${t("entered_by")}: <b>${h.by ? esc(h.by) : t("not_rec")}</b>${h.note ? `<br>${esc(h.note)}` : ""}</p>`;
@@ -2777,7 +2927,7 @@ function openMonthReport(key) {
   <div class="page"><div class="rhead"><div><h1>${esc(state.estate)}</h1><p>${t("rep_month")} · <b>${m.label}</b> · ${m.list.length === 1 && lang === "en" ? "1 harvest" : t("n_harvests", m.list.length)}</p></div><p class="rmeta">${t("rep_made", fd(todayMs()))}<br>${t("version", VER)}</p></div>
   <h3 class="sec">${t("rep_sum")}</h3>
   <div class="rk num">${T(t("price_lab"), price(o.price))}${T(t("loaded"), N(o.loaded))}${T(t("harvested"), N(o.total))}${T(t("rejected"), N(o.rejected))}
-    ${T(t("income"), money(o.inc))}${T(t("deductions"), money(o.dedT))}${T(t("balance"), money(o.net))}${sh ? T(esc(shareLab()), money(o.share)) : T(t("home"), N(o.home))}</div>
+    ${T(t("income"), money(o.inc))}${T(t("deductions"), money(o.dedT))}${T(t("balance"), money(o.net))}${o.shareNet.map((v, i) => T(esc(shareNameAt(i)), money(v))).join("")}</div>
   ${po ? `<div class="card rcmp"><b>${t("rep_cmp", pm.label)}</b><span>${t("price")} ${delta(o.price, po.price)}</span><span>${t("loaded")} ${delta(o.loaded, po.loaded)}</span><span>${t("income")} ${delta(o.inc, po.inc)}</span><span>${t("balance")} ${delta(o.net, po.net)}</span></div>` : ""}
   ${multi ? `<h3 class="sec">${t("rep_mtotal")}</h3>${block(o)}` + m.list.map((h) => `<h3 class="sec">${t("rep_harv_on", fd(h.date))}</h3>${det(h)}${block(agg([h]))}`).join("") : `<h3 class="sec">${t("rep_details")}</h3>${det(m.list[0])}${block(o)}`}
   <p class="rfoot">Coconut Estate Ledger · ${t("version", VER)} · ${t("rep_made", fd(todayMs()))}</p>
