@@ -1150,7 +1150,7 @@ const t = (k, ...a) => {
   return s;
 };
 
-const VER = "1.9.2";
+const VER = "1.9.3";
 const SECURITY_NOTICE_VERSION = "1.8.5";
 /* Your company, shown at the bottom of the Data tab. Leave it empty to show the app name instead. */
 const COMPANY = "CyberTech Lanka";
