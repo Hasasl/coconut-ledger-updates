@@ -1397,6 +1397,7 @@ label.fld {
   color: var(--ink-2);
   justify-content: flex-end;
 }
+.password-input-wrap input,
 label.fld input,
 label.fld textarea,
 textarea.box {
@@ -1410,12 +1411,61 @@ textarea.box {
   width: 100%;
   min-width: 0;
 }
+.password-field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+}
+.password-field > label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.password-input-wrap {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+.password-field .password-input-wrap input {
+  padding-right: 44px;
+}
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  place-items: center;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.password-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+.password-toggle .eye-slash {
+  opacity: 0;
+}
+.password-toggle[aria-pressed="true"] .eye-slash {
+  opacity: 1;
+}
+.password-toggle:hover {
+  color: var(--ink);
+}
 label.fld.lead input {
   font-family: var(--display);
   font-size: 22px;
   font-weight: 700;
   color: var(--accent);
 }
+.password-input-wrap input:not([type="checkbox"]):focus,
 label.fld input:not([type="checkbox"]):focus,
 textarea:focus {
   outline: 2px solid var(--accent);

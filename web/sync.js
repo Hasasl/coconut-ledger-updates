@@ -215,7 +215,10 @@
   }
   async function requestAccess(code, displayName) {
     const rows = await rpc("request_estate_access", { p_invite_code: code, p_display_name: displayName });
-    return rows && rows[0];
+    const request = Array.isArray(rows) ? rows[0] : null;
+    if (!request || !request.estate_id || !request.estate_name || request.request_status !== "pending")
+      throw new Error("The server did not confirm the join request.");
+    return request;
   }
   async function listRequests(estateId) {
     const rows = await rpc("list_estate_join_requests", { p_estate_id: estateId });

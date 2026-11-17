@@ -39,7 +39,8 @@ Users without an active estate membership keep full local app access and can cre
 becomes the owner. A previously selected estate is restored only after the signed-in account's membership
 is confirmed.
 While the app is open, local edits are debounced for sync and the active estate is checked every 30 seconds;
-**Sync now** requests an immediate refresh. This is foreground syncing, not background push.
+**Sync now** requests an immediate refresh. Owners also refresh pending join requests while the app is open
+and when **Data** is opened; a new request shows an in-app notice. This is foreground syncing, not background push.
 
 Before using real estate data:
 

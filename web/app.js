@@ -33,6 +33,8 @@ const L = {
     sync_connection_settings: "Supabase connection settings",
     sync_email: "Email",
     sync_password: "Password",
+    sync_show_password: "Show password",
+    sync_hide_password: "Hide password",
     sync_signin: "Sign in",
     sync_login_success: "Signed in",
     sync_signup: "Create account",
@@ -47,6 +49,7 @@ const L = {
     sync_display_name: "Your name for the estate",
     sync_join: "Send join request",
     sync_pending_owner: "Request sent. An owner must approve it before this device can access records.",
+    sync_new_join_request: "New join request from {0}. Open Data to review.",
     sync_estates: "Your approved estates",
     sync_select_estate: "Select estate",
     sync_set_active: "Open estate",
@@ -572,6 +575,8 @@ const L = {
     sync_connection_settings: "Supabase සම්බන්ධතා සැකසුම්",
     sync_email: "විද්‍යුත් තැපෑල",
     sync_password: "මුරපදය",
+    sync_show_password: "මුරපදය පෙන්වන්න",
+    sync_hide_password: "මුරපදය සඟවන්න",
     sync_signin: "ඇතුළු වන්න",
     sync_login_success: "ඇතුළු වුණා",
     sync_signup: "ගිණුමක් සාදන්න",
@@ -586,6 +591,7 @@ const L = {
     sync_display_name: "වත්තේ පෙන්වන ඔබේ නම",
     sync_join: "එක්වීමේ ඉල්ලීම යවන්න",
     sync_pending_owner: "ඉල්ලීම යැවුණා. මෙම උපාංගයට දත්ත ලබාගැනීමට පෙර හිමිකරු අනුමත කළ යුතුය.",
+    sync_new_join_request: "{0} වෙතින් එක්වීමේ නව ඉල්ලීමක්. සමාලෝචනය කිරීමට දත්ත පිටුව විවෘත කරන්න.",
     sync_estates: "ඔබට අනුමත වතු",
     sync_select_estate: "වත්ත තෝරන්න",
     sync_set_active: "වත්ත විවෘත කරන්න",
@@ -1136,7 +1142,7 @@ const t = (k, ...a) => {
   return s;
 };
 
-const VER = "1.9.1";
+const VER = "1.9.0";
 const SECURITY_NOTICE_VERSION = "1.8.5";
 /* Your company, shown at the bottom of the Data tab. Leave it empty to show the app name instead. */
 const COMPANY = "CyberTech Lanka";
@@ -1339,7 +1345,8 @@ let estateSyncState = {
 let estateSyncTimer = 0,
   estateSyncRunning = false,
   estateSyncQueued = false,
-  estateSyncQueuedToast = false;
+  estateSyncQueuedToast = false,
+  estateRequestsEstateId = "";
 const MEMBER_ROLES = ["member_1", "member_2", "member_3", "member_4", "member_5"],
   MEMBER_FEATURES = ["overview", "months", "insights", "forecast"],
   FEATURE_LABELS = {
@@ -1880,6 +1887,7 @@ async function activateEstate(estateId, migrateLocal = true) {
 async function useLocalLedger() {
   if (activeEstateId) LS.set(stateStorageKey, JSON.stringify(state));
   activeEstateId = "";
+  estateRequestsEstateId = "";
   accessReady = true;
   estateSyncState.active = null;
   estateSyncState.features = [];
@@ -1924,8 +1932,13 @@ async function refreshEstatePanel() {
   const nextScope = active ? active.role + ":" + estateSyncState.features.slice().sort().join(",") : "";
   if (previousScope && previousScope !== nextScope) invalidateAllViews();
   if (active) prepareMemberAccess(estateId, active.role, estateSyncState.features);
-  estateSyncState.requests = active && active.role === "owner" ? await ESTATE_SYNC.listRequests(estateId) : [];
+  const requests = active && active.role === "owner" ? await ESTATE_SYNC.listRequests(estateId) : [];
   if (activeEstateId !== estateId) return;
+  if (active && active.role === "owner") updateEstateRequests(estateId, requests);
+  else {
+    estateSyncState.requests = [];
+    estateRequestsEstateId = "";
+  }
   estateSyncState.invites = active && active.role === "owner" ? await ESTATE_SYNC.listInvites(estateId) : [];
   if (activeEstateId !== estateId) return;
   if (
@@ -1937,8 +1950,38 @@ async function refreshEstatePanel() {
     active && ["owner", "manager"].includes(active.role) ? await ESTATE_SYNC.listMembers(estateId) : [];
   if (activeEstateId !== estateId) return;
   header();
+  estateSyncState.error = "";
   if (!canViewEstateRoute(route)) go(defaultEstateRoute());
   else if (previousScope && previousScope !== nextScope) render();
+}
+function updateEstateRequests(estateId, requests) {
+  const hasSnapshot = estateRequestsEstateId === estateId,
+    previousIds = hasSnapshot ? new Set(estateSyncState.requests.map((request) => request.id)) : new Set(),
+    newRequest = hasSnapshot ? requests.find((request) => !previousIds.has(request.id)) : null;
+  estateSyncState.requests = requests;
+  estateRequestsEstateId = estateId;
+  if (newRequest)
+    toast(t("sync_new_join_request", newRequest.display_name || newRequest.email || t("sync_request_join")));
+}
+async function refreshOwnerRequests() {
+  if (!ESTATE_SYNC || !activeEstateId || estateSyncState.active?.role !== "owner") return;
+  const estateId = activeEstateId,
+    requests = await ESTATE_SYNC.listRequests(estateId);
+  if (activeEstateId !== estateId || estateSyncState.active?.role !== "owner") return;
+  updateEstateRequests(estateId, requests);
+}
+function refreshEstatePanelOnOpen() {
+  if (!ESTATE_SYNC || !ESTATE_SYNC.publicStatus().signedIn || estateSyncState.active?.role !== "owner") return;
+  const estateId = activeEstateId;
+  void refreshEstatePanel()
+    .then(() => {
+      if (route === "data" && activeEstateId === estateId) render();
+    })
+    .catch((error) => {
+      if (activeEstateId !== estateId) return;
+      estateSyncState.error = estateErrorText(error);
+      if (route === "data") render();
+    });
 }
 function recordLabel(type, id) {
   const local = estateRecords(state).get(type + ":" + id);
@@ -1970,7 +2013,17 @@ function estateSyncCard() {
     <h2>${t("estate_sync_title")}</h2><p class="hint">${t("estate_sync_hint")}</p>
     ${config.url && !status.signedIn ? `<p>${t("sync_not_signed_in")}</p><div class="fields">
       <label class="fld"><span>${t("sync_email")}</span><input id="estateSyncEmail" type="email" autocomplete="email"></label>
-      <label class="fld"><span>${t("sync_password")}</span><input id="estateSyncPassword" type="password" autocomplete="current-password"></label>
+      <div class="password-field">
+        <label class="fld" for="estateSyncPassword">${t("sync_password")}</label>
+        <span class="password-input-wrap">
+        <input id="estateSyncPassword" type="password" autocomplete="current-password">
+        <button class="password-toggle" type="button" data-toggle-password="estateSyncPassword" aria-label="${t("sync_show_password")}" title="${t("sync_show_password")}" aria-pressed="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="eye-slash" d="m3 3 18 18"/>
+          </svg>
+        </button>
+        </span>
+      </div>
       <div class="btnrow"><button class="btn primary" id="estateSyncSignIn">${t("sync_signin")}</button><button class="btn" id="estateSyncSignUp">${t("sync_signup")}</button></div>
       </div>` : ""}
     ${status.signedIn ? `<p>${t("sync_signed_in", esc(status.user.email || ""))}</p>
@@ -3708,6 +3761,7 @@ function moveInd() {
 function go(r) {
   if (ROUTES.indexOf(r) < 0) r = "overview";
   if (!canViewEstateRoute(r)) r = defaultEstateRoute();
+  if (r === "data") refreshEstatePanelOnOpen();
   if (r === route && pages[r] && pages[r].classList.contains("on")) return scrollTo(0, 0);
   const dir = r === route ? "" : ROUTES.indexOf(r) > ROUTES.indexOf(route) ? "fwd" : "back";
   route = r;
@@ -4845,6 +4899,17 @@ document.addEventListener("click", async (e) => {
     return render({ dir: still() ? "" : "fade" });
   }
   if (b.id === "skinBtn") return toggleSkin(e);
+  if (b.dataset.togglePassword) {
+    const input = $("#" + b.dataset.togglePassword);
+    if (!input) return;
+    const visible = input.type === "password",
+      label = t(visible ? "sync_hide_password" : "sync_show_password");
+    input.type = visible ? "text" : "password";
+    b.setAttribute("aria-label", label);
+    b.setAttribute("title", label);
+    b.setAttribute("aria-pressed", String(visible));
+    return;
+  }
   if (b.id === "estateSyncSignIn")
     return runEstateAction(async () => {
       await ESTATE_SYNC.signIn($("#estateSyncEmail").value, $("#estateSyncPassword").value);
@@ -5264,7 +5329,15 @@ readShell();
   initCloud();
   initializeEstateSync();
   setInterval(() => {
-    if (document.visibilityState === "visible") syncEstateNow(false);
+    if (document.visibilityState !== "visible") return;
+    syncEstateNow(false);
+    if (route !== "data") {
+      const estateId = activeEstateId;
+      refreshOwnerRequests().catch((error) => {
+        if (activeEstateId === estateId && estateSyncState.active?.role === "owner")
+          estateSyncState.error = estateErrorText(error);
+      });
+    }
   }, 30000);
   mirror();
   syncNativeReminders();

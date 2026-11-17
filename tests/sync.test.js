@@ -121,6 +121,39 @@ test("join request listing provides the id field used by approve and reject cont
   ]);
 });
 
+test("join requests submit the invite and require server confirmation", async () => {
+  const submitted = [],
+    { client } = createClient(async (url, options) => {
+      if (url.endsWith("/auth/v1/token?grant_type=password"))
+        return response({
+          access_token: "access",
+          refresh_token: "refresh",
+          expires_in: 3600,
+          user: { id: "member-1" },
+        });
+      if (url.endsWith("/rest/v1/rpc/request_estate_access")) {
+        submitted.push(JSON.parse(options.body));
+        return response(
+          submitted.length === 1
+            ? [{ estate_id: "estate-1", estate_name: "Coconut Estate", request_status: "pending" }]
+            : [],
+        );
+      }
+      return response(null);
+    });
+  client.setConfig({ url: "https://estate.supabase.co", anonKey: "public" });
+  await client.signIn("member@example.test", "long-password");
+
+  const request = await client.requestAccess("a".repeat(64), "Member");
+  assert.equal(request.estate_name, "Coconut Estate");
+  assert.equal(request.request_status, "pending");
+  await assert.rejects(client.requestAccess("b".repeat(64), "Member"), /did not confirm the join request/);
+  assert.deepEqual(submitted, [
+    { p_invite_code: "a".repeat(64), p_display_name: "Member" },
+    { p_invite_code: "b".repeat(64), p_display_name: "Member" },
+  ]);
+});
+
 test("role controls use the authorized RPCs for memberships, features, and status changes", async () => {
   const calls = [],
     { client } = createClient(async (url, options) => {
