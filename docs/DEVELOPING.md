@@ -122,7 +122,7 @@ Press **Ctrl+Shift+O** in VS Code to jump to a function by name.
 | `sample()` | The sample records a new user sees |
 | `state`, `norm()`, `persist()`, `mirror()` | Saved data: loading, fixing older records, saving, and the backup copy kept inside the Android app |
 | `calc()` | **The money rules**: income = loaded × price; rejected = harvested − home use − loaded; free coconuts; transport cart = harvested × rate |
-| `monthly()` | Groups harvests and separate income entries into months |
+| `monthly()` | Groups harvests, separate income entries and buyer balances into months |
 | `yieldModel()`, `priceModel()`, `gapModel()`, `forecast()` | The forecast (see section 7b) |
 | `barChart()`, `lineChart()`, `spark()` | The charts (hand-drawn SVG, no library) |
 | Updates section (`UPD`, `readShell`, `updCard`) | The App updates card and messages from the Android shell |
@@ -149,7 +149,12 @@ Press **Ctrl+Shift+O** in VS Code to jump to a function by name.
 - `MainActivity.java`: shows the page full screen (hides the status and navigation bars, uses the area
   beside the camera hole, and shrinks the page when the keyboard opens), checks for updates, installs them,
   and talks to the page
-  through `AndroidBridge` (`saveFile`, `shareFile`, `printPage`, `getShellInfo`, `checkForUpdates`, ...).
+  through `AndroidBridge` (`saveFile`, `shareFile`, `printPage`, `getShellInfo`, `scheduleReminders`,
+  `requestNotificationPermission`, ...).
+- `ReminderReceiver.java`: schedules local notifications at 08:00 two days and one day before the next
+  forecast harvest, plus a monthly backup reminder on the first day of the month. Android 13+ requires
+  notification permission.
+- `ReminderBootReceiver.java`: restores reminders after reboot, time changes, and app replacement.
 - `ShareProvider.java`: lets other apps (Drive, Gmail, the installer) read a file the app shares.
 
 ---
@@ -197,6 +202,16 @@ compare against a hand calculation.
   Older CSV entries with any date in the month continue to be grouped into that month.
   Keep the `record_type`, `income_amount`, `income_note`, and `income_id` CSV columns in sync with
   `toCSV()` and `importText()`. Per-share additions are appended as `share_additions`.
+- Buyer payments are stored per harvest in `payments` as dated, partial receipts. They do not change
+  earned income, deductions, or shares. Outstanding is `max(0, harvest income − receipts)`; excess
+  receipts appear separately as credit. The CSV appends `buyer_payments` after `share_additions`
+  (column 28); older CSV files without it still import.
+- Monthly Daughter/Son paid-to-date values, review-only month status, and reusable deduction
+  presets are stored in `monthPayouts`, `reviewedMonths`, and `deductionPresets`. Full JSON backups
+  include them. CSV is the harvest/payment ledger export; use JSON to preserve these monthly controls
+  and presets. Reviewing a month never locks its records.
+- `Check backup` validates a pasted full JSON backup without changing the saved ledger. The separate
+  Import action is still required to restore it.
 
 ### 7b. How the forecast works
 

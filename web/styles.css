@@ -1023,6 +1023,26 @@ html[lang="si"] .seg.lang::before {
 .msum b {
   color: var(--ink);
 }
+.payout-box {
+  margin: 0 0 10px;
+  padding: 12px 16px;
+}
+.payout-box > summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+.payout-fields {
+  margin-top: 12px;
+  align-items: end;
+}
+.payout-fields small {
+  color: var(--ink-3);
+  font-size: 11px;
+}
+.payout-fields > button {
+  justify-self: start;
+}
 .rows {
   display: flex;
   flex-direction: column;
@@ -1331,6 +1351,12 @@ dialog::backdrop {
 .custom-ded-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 0.7fr) auto;
+  align-items: end;
+  gap: 8px;
+}
+.payment-row {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 0.8fr) minmax(0, 1fr) auto;
   align-items: end;
   gap: 8px;
 }
@@ -1986,6 +2012,18 @@ label.fld select {
     grid-template-columns: minmax(0, 1fr) minmax(0, 0.7fr);
   }
   .custom-ded-row .custom-remove {
+    grid-column: 2;
+    justify-self: end;
+  }
+}
+@media (max-width: 600px) {
+  .payment-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+  }
+  .payment-row label:nth-child(3) {
+    grid-column: 1 / -1;
+  }
+  .payment-row .custom-remove {
     grid-column: 2;
     justify-self: end;
   }

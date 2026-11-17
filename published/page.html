@@ -1030,6 +1030,26 @@ html[lang="si"] .seg.lang::before {
 .msum b {
   color: var(--ink);
 }
+.payout-box {
+  margin: 0 0 10px;
+  padding: 12px 16px;
+}
+.payout-box > summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+.payout-fields {
+  margin-top: 12px;
+  align-items: end;
+}
+.payout-fields small {
+  color: var(--ink-3);
+  font-size: 11px;
+}
+.payout-fields > button {
+  justify-self: start;
+}
 .rows {
   display: flex;
   flex-direction: column;
@@ -1338,6 +1358,12 @@ dialog::backdrop {
 .custom-ded-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 0.7fr) auto;
+  align-items: end;
+  gap: 8px;
+}
+.payment-row {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 0.8fr) minmax(0, 1fr) auto;
   align-items: end;
   gap: 8px;
 }
@@ -1993,6 +2019,18 @@ label.fld select {
     grid-template-columns: minmax(0, 1fr) minmax(0, 0.7fr);
   }
   .custom-ded-row .custom-remove {
+    grid-column: 2;
+    justify-self: end;
+  }
+}
+@media (max-width: 600px) {
+  .payment-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+  }
+  .payment-row label:nth-child(3) {
+    grid-column: 1 / -1;
+  }
+  .payment-row .custom-remove {
     grid-column: 2;
     justify-self: end;
   }
@@ -2687,11 +2725,30 @@ html:not([lang="si"]) .ld-tag .si {
             ><input id="f-contact" type="tel" maxlength="30" autocomplete="off" data-tp="phone_ph"
           /></label>
         </div>
+        <div class="sect"><span data-t="payments_title"></span></div>
+        <div class="btnrow" style="margin-bottom:10px">
+          <button type="button" class="btn small" id="addPayment" data-t="add_payment"></button>
+        </div>
+        <div class="custom-ded-list" id="paymentFields"></div>
         <div class="sect">
           <span><span data-t="deductions"></span> (<span class="curlab"></span>)</span
           ><button type="button" class="btn small" id="copyLast" data-t="copy_prev"></button>
         </div>
         <div class="fields ded" id="dedFields"></div>
+        <div class="custom-ded-head"><b data-t="deduction_presets"></b></div>
+        <div class="fields">
+          <label class="fld wide"
+            ><span data-t="choose_preset"></span><select id="presetSelect"></select>
+          </label>
+          <label class="fld wide"
+            ><span data-t="preset_name"></span><input id="presetName" type="text" maxlength="40"
+          /></label>
+        </div>
+        <div class="btnrow" style="margin:8px 0 12px">
+          <button type="button" class="btn small" id="applyPreset" data-t="apply_preset"></button>
+          <button type="button" class="btn small" id="savePreset" data-t="save_preset"></button>
+          <button type="button" class="btn small danger" id="deletePreset" data-t="delete_preset"></button>
+        </div>
         <div class="custom-ded-head">
           <b data-t="custom_ded"></b>
           <button type="button" class="btn small" id="addCustomDed" data-t="add_custom_ded"></button>
@@ -2871,6 +2928,55 @@ const L = {
     price: "Price",
     buyer: "Buyer",
     contact: "Contact",
+    payments_title: "Buyer payments received",
+    add_payment: "+ Add payment",
+    payment_date: "Payment date",
+    payment_amount: "Payment amount",
+    payment_note: "Payment note (optional)",
+    remove_payment: "Remove",
+    amount_received: "Received",
+    amount_due: "Outstanding",
+    credit: "Credit",
+    payment_invalid: "Each payment needs a valid date and a positive amount.",
+    buyer_search: "Search buyer history",
+    search_buyer: "Search",
+    clear_search: "Clear",
+    buyer_search_hint: "Monthly totals remain for the full month; matching harvests show their own paid and outstanding amounts.",
+    buyer_none: "No harvests found for that buyer.",
+    share_payouts: "Daughter and Son payouts",
+    paid_to_date: "Paid to date",
+    remaining: "Remaining",
+    save_payouts: "Save paid amounts",
+    payouts_saved: "Monthly payout amounts saved",
+    mark_reviewed: "Mark reviewed",
+    month_reviewed: "Reviewed",
+    reopen_month: "Reopen review",
+    deduction_presets: "Reusable deduction presets",
+    choose_preset: "Choose a preset",
+    preset_name: "Preset name",
+    save_preset: "Save current deductions",
+    apply_preset: "Apply preset",
+    delete_preset: "Delete preset",
+    preset_saved: "Deduction preset saved",
+    preset_applied: "Deduction preset applied",
+    preset_deleted: "Deduction preset deleted",
+    preset_name_required: "Enter a name for this preset.",
+    preset_required: "Choose a deduction preset first.",
+    check_backup: "Check backup",
+    backup_valid: "{0} records found. Backup is valid and ready to import.",
+    backup_invalid: "Paste a valid full JSON backup to check it.",
+    reminders_title: "Harvest and backup reminders",
+    reminders_hint: "Harvest reminders are scheduled for 08:00 two days and one day before the forecast date. A monthly backup reminder is scheduled for the first day of the month.",
+    reminders_enabled: "Notifications are enabled",
+    reminders_disabled: "Allow notifications to receive reminders",
+    enable_reminders: "Enable notifications",
+    harvest_reminder_title: "Harvest reminder",
+    harvest_reminder_two_days: "Your forecast harvest is in 2 days, on {0}.",
+    harvest_reminder_one_day: "Your forecast harvest is tomorrow, on {0}.",
+    backup_reminder_title: "Monthly backup reminder",
+    backup_reminder_body: "Save a full backup of your ledger today.",
+    payment_due_note: "Harvest income not yet received",
+    review_editable_hint: "Reviewed status is for reference only; records remain editable.",
     entered_by: "Entered by",
     not_rec: "not recorded",
     ded_break: "Deductions breakdown",
@@ -2945,7 +3051,7 @@ const L = {
     btn_json: "Save full backup",
     btn_copy: "Copy backup text",
     open_drive: "Open Google Drive",
-    bk_note: "The CSV holds your harvests. The full backup also holds your settings.",
+    bk_note: "CSV holds harvests, buyer payments and other income. Full backup also holds monthly payouts, reviews and deduction presets.",
     imp_h: "Import records",
     imp_hint:
       "Choose a CSV or backup file from the phone, Drive or Gmail, or paste rows below. One harvest per line, in this order:",
@@ -2954,7 +3060,7 @@ const L = {
     imp_go: "Import pasted rows",
     choose_file: "Choose file",
     wipe_h: "Start over",
-    wipe_hint: "Removes every harvest and other income record from this app. Save a backup first.",
+    wipe_hint: "Removes every harvest, payment, monthly payout, review status, deduction preset and other income record. Save a backup first.",
     wipe_btn: "Delete all records",
     f_add: "Add harvest",
     f_edit: "Edit harvest",
@@ -3014,7 +3120,7 @@ const L = {
     c_clear_h: "Clear the sample records?",
     c_clear_p: "The app will be empty and ready for your own harvests.",
     c_wipe_h: "Delete all records?",
-    c_wipe_p: "Every harvest and other income record will be removed from this app. This cannot be undone.",
+    c_wipe_p: "Every harvest, payment, monthly payout, review status, deduction preset and other income record will be removed. This cannot be undone.",
     i_none: "Nothing to import. Paste rows or choose a file.",
     i_bad: "That backup text is damaged and cannot be read.",
     i_notbk: "That file is not a backup from this app.",
@@ -3241,6 +3347,55 @@ const L = {
     price: "මිල",
     buyer: "ගැනුම්කරු",
     contact: "දුරකථනය",
+    payments_title: "ලැබුණු ගැනුම්කරුගේ ගෙවීම්",
+    add_payment: "+ ගෙවීමක් එක් කරන්න",
+    payment_date: "ගෙවූ දිනය",
+    payment_amount: "ගෙවූ මුදල",
+    payment_note: "ගෙවීමේ සටහන (විකල්ප)",
+    remove_payment: "ඉවත් කරන්න",
+    amount_received: "ලැබී ඇත",
+    amount_due: "ගෙවීමට ඉතිරි",
+    credit: "අතිරික්ත මුදල",
+    payment_invalid: "සෑම ගෙවීමකටම නිවැරදි දිනයක් සහ ධන මුදලක් ඇතුළත් කරන්න.",
+    buyer_search: "ගැනුම්කරුගේ වාර්තා සොයන්න",
+    search_buyer: "සොයන්න",
+    clear_search: "මකන්න",
+    buyer_search_hint: "මාසික එකතුව සම්පූර්ණ මාසයටයි; ගැළපෙන අස්වනු සඳහා ලැබුණු සහ ඉතිරි මුදල් වෙන වෙනම පෙන්වයි.",
+    buyer_none: "එම ගැනුම්කරුට ගැළපෙන අස්වනු හමු නොවීය.",
+    share_payouts: "දියණියගේ සහ පුතාගේ ගෙවීම්",
+    paid_to_date: "මෙතෙක් ගෙවා ඇත",
+    remaining: "ඉතිරිය",
+    save_payouts: "ගෙවූ මුදල් සුරකින්න",
+    payouts_saved: "මාසික කොටස් ගෙවීම් සුරැකුණා",
+    mark_reviewed: "සමාලෝචනය කළ ලෙස සලකුණු කරන්න",
+    month_reviewed: "සමාලෝචනය කළා",
+    reopen_month: "සමාලෝචනය නැවත අරඹන්න",
+    deduction_presets: "නැවත භාවිත කළ හැකි අඩුකිරීම්",
+    choose_preset: "අඩුකිරීමක් තෝරන්න",
+    preset_name: "අඩුකිරීමේ නම",
+    save_preset: "දැනට ඇති අඩුකිරීම් සුරකින්න",
+    apply_preset: "යොදන්න",
+    delete_preset: "මකන්න",
+    preset_saved: "අඩුකිරීම සුරැකුණා",
+    preset_applied: "අඩුකිරීම යෙදුවා",
+    preset_deleted: "අඩුකිරීම මැකුණා",
+    preset_name_required: "මෙම අඩුකිරීම සඳහා නමක් ඇතුළත් කරන්න.",
+    preset_required: "පළමුව අඩුකිරීමක් තෝරන්න.",
+    check_backup: "උපස්ථය පරීක්ෂා කරන්න",
+    backup_valid: "වාර්තා {0}ක් හමු විය. උපස්ථය නිවැරදියි; ඇතුළත් කළ හැක.",
+    backup_invalid: "පරීක්ෂා කිරීමට නිවැරදි සම්පූර්ණ JSON උපස්ථයක් අලවන්න.",
+    reminders_title: "අස්වනු සහ උපස්ථ මතක් කිරීම්",
+    reminders_hint: "අනාවැකි දිනයට දින දෙකකට සහ එක් දිනකට පෙර පෙ.ව. 8ට අස්වනු මතක් කිරීම් යෙදේ. සෑම මාසයකම පළමු දින උපස්ථ මතක් කිරීමක් යෙදේ.",
+    reminders_enabled: "දැනුම්දීම් සක්‍රියයි",
+    reminders_disabled: "මතක් කිරීම් ලැබීමට දැනුම්දීම් සඳහා අවසර දෙන්න",
+    enable_reminders: "දැනුම්දීම් සක්‍රිය කරන්න",
+    harvest_reminder_title: "අස්වනු මතක් කිරීම",
+    harvest_reminder_two_days: "අනාවැකි අස්වැන්නට තව දින 2යි ({0}).",
+    harvest_reminder_one_day: "අනාවැකි අස්වැන්න හෙටයි ({0}).",
+    backup_reminder_title: "මාසික උපස්ථ මතක් කිරීම",
+    backup_reminder_body: "අද ඔබේ ගිණුමේ සම්පූර්ණ උපස්ථයක් සුරකින්න.",
+    payment_due_note: "තවම නොලැබුණු අස්වනු ආදායම",
+    review_editable_hint: "සමාලෝචන තත්ත්වය සටහනක් පමණයි; වාර්තා තවදුරටත් වෙනස් කළ හැක.",
     entered_by: "ඇතුළත් කළේ",
     not_rec: "සටහන් කර නැත",
     ded_break: "අඩු කිරීම් විස්තරය",
@@ -3314,7 +3469,7 @@ const L = {
     btn_json: "සම්පූර්ණ උපස්ථය සුරකින්න",
     btn_copy: "උපස්ථ පෙළ පිටපත් කරන්න",
     open_drive: "Google Drive විවෘත කරන්න",
-    bk_note: "CSV ගොනුවේ ඇත්තේ අස්වනු දත්තයි. සම්පූර්ණ උපස්ථයේ සැකසුම්ද ඇත.",
+    bk_note: "CSV ගොනුවේ අස්වනු, ගැනුම්කරු ගෙවීම් සහ වෙනත් ආදායම් ඇත. සම්පූර්ණ උපස්ථයේ මාසික ගෙවීම්, සමාලෝචන සහ අඩුකිරීම් සැකසුම්ද ඇත.",
     imp_h: "දත්ත ඇතුළත් කිරීම",
     imp_hint:
       "දුරකථනයෙන්, Drive හෝ Gmail වෙතින් CSV හෝ උපස්ථ ගොනුවක් තෝරන්න, නැත්නම් පහත පේළි අලවන්න. එක් පේළියකට එක් අස්වැන්නක්, මේ පිළිවෙළට:",
@@ -3323,7 +3478,7 @@ const L = {
     imp_go: "අලවපු පේළි ඇතුළත් කරන්න",
     choose_file: "ගොනුවක් තෝරන්න",
     wipe_h: "මුල සිට පටන් ගන්න",
-    wipe_hint: "යෙදුමේ සියලු අස්වනු සහ වෙනත් ආදායම් වාර්තා මකා දමයි. මුලින් උපස්ථයක් සුරකින්න.",
+    wipe_hint: "සියලු අස්වනු, ගැනුම්කරු ගෙවීම්, වෙනත් ආදායම්, මාසික කොටස් ගෙවීම්, සමාලෝචන සහ අඩුකිරීම් සැකසුම් මැකේ. මුලින් උපස්ථයක් සුරකින්න.",
     wipe_btn: "සියලු දත්ත මකන්න",
     f_add: "අස්වැන්නක් එක් කරන්න",
     f_edit: "අස්වැන්න වෙනස් කරන්න",
@@ -3383,7 +3538,7 @@ const L = {
     c_clear_h: "ආදර්ශ දත්ත ඉවත් කරන්නද?",
     c_clear_p: "යෙදුම හිස් වී ඔබේ දත්ත සඳහා සූදානම් වේ.",
     c_wipe_h: "සියලු දත්ත මකන්නද?",
-    c_wipe_p: "සියලු අස්වනු සහ වෙනත් ආදායම් වාර්තා මැකී යයි. මෙය ආපසු ගත නොහැක.",
+    c_wipe_p: "සියලු අස්වනු, ගැනුම්කරු ගෙවීම්, වෙනත් ආදායම්, මාසික කොටස් ගෙවීම්, සමාලෝචන සහ අඩුකිරීම් සැකසුම් මැකේ. මෙය ආපසු ගත නොහැක.",
     i_none: "ඇතුළත් කිරීමට කිසිවක් නැත. පේළි අලවන්න හෝ ගොනුවක් තෝරන්න.",
     i_bad: "ඒ උපස්ථ පෙළ හානි වී ඇත, කියවිය නොහැක.",
     i_notbk: "ඒ ගොනුව මේ යෙදුමේ උපස්ථයක් නොවේ.",
@@ -3571,11 +3726,11 @@ const t = (k, ...a) => {
   return s;
 };
 
-const VER = "1.8.3";
+const VER = "1.8.4";
 /* Your company, shown at the bottom of the Data tab. Leave it empty to show the app name instead. */
 const COMPANY = "CyberTech Lanka";
 const FIRST_YEAR = 2026;
-const MIN_SHELL = 6; /* the oldest Android app (version code) this page works with */
+const MIN_SHELL = 11; /* the oldest Android app (version code) this page works with */
 const CATS = ["harvest", "cart", "transport", "church", "personal", "fertilizer", "power", "other"];
 const KEY = "coconut-ledger-v1",
   ME = "coconut-ledger-me",
@@ -3629,6 +3784,7 @@ function sample() {
       price: p[i],
       buyer: "Sample buyer",
       contact: "",
+      payments: [],
       by: "Sample",
       note: "",
       otherNote: i === 9 ? "Sample: loan deducted" : "",
@@ -3644,6 +3800,9 @@ function sample() {
       },
     })),
     otherIncome: [],
+    monthPayouts: {},
+    reviewedMonths: [],
+    deductionPresets: [],
   };
 }
 let state;
@@ -3690,6 +3849,13 @@ function mirror() {
 }
 function norm() {
   if (!Array.isArray(state.otherIncome)) state.otherIncome = [];
+  if (!state.monthPayouts || typeof state.monthPayouts !== "object" || Array.isArray(state.monthPayouts))
+    state.monthPayouts = {};
+  if (!Array.isArray(state.reviewedMonths)) state.reviewedMonths = [];
+  if (!Array.isArray(state.deductionPresets)) state.deductionPresets = [];
+  state.harvests.forEach((h) => {
+    if (!Array.isArray(h.payments)) h.payments = [];
+  });
   if (state.freePer == null || !isFinite(state.freePer)) state.freePer = 100;
   if (!(state.shares >= 1)) state.shares = 2;
   if (!state.shareName) state.shareName = "child";
@@ -3714,6 +3880,7 @@ function persist(touch) {
   LS.set(KEY, JSON.stringify(state));
   mirror();
   if (touch !== false) pushCloud();
+  syncNativeReminders();
 }
 
 /* ---------- sync to the owner's private store (only when opened inside Claude) ---------- */
@@ -3906,6 +4073,13 @@ function calc() {
     const customDeds = customDedEntries(h),
       shareDeds = shareDedEntries(h),
       shareAdds = shareAddEntries(h),
+      payments = Array.isArray(h.payments) ? h.payments : [],
+      received = sum(
+        payments.map((payment) => {
+          const amount = Number(payment && payment.amount);
+          return Number.isFinite(amount) && amount > 0 ? amount : 0;
+        }),
+      ),
       ded = sum(CATS.map((c) => dv[c])) + sum(customDeds.map((d) => d.amount)),
       net = inc - ded,
       rest = 0;
@@ -3923,7 +4097,11 @@ function calc() {
       customDeds,
       shareDeds,
       shareAdds,
+      payments,
       inc,
+      received,
+      due: Math.max(0, inc - received),
+      credit: Math.max(0, received - inc),
       dedT: ded,
       net,
       share: net / state.shares,
@@ -3948,6 +4126,9 @@ function monthly(hs, incomes) {
     const l = group.list,
       extra = group.incomes,
       paid = sum(l.map((h) => h.paid)),
+      received = sum(l.map((h) => h.received || 0)),
+      due = sum(l.map((h) => h.due || 0)),
+      credit = sum(l.map((h) => h.credit || 0)),
       harvestInc = sum(l.map((h) => h.inc)),
       inc = harvestInc + sum(extra.map((income) => income.amount)),
       ded = sum(l.map((h) => h.dedT)),
@@ -3966,6 +4147,9 @@ function monthly(hs, incomes) {
       total: sum(l.map((h) => h.total)),
       loaded: sum(l.map((h) => h.loaded)),
       paid,
+      received,
+      due,
+      credit,
       free: sum(l.map((h) => h.free)),
       rej: sum(l.map((h) => h.rejected)),
       home: sum(l.map((h) => h.home)),
@@ -4450,6 +4634,25 @@ function readShell() {
     UST = null;
   }
 }
+function syncNativeReminders() {
+  if (!NB || typeof NB.scheduleReminders !== "function") return;
+  const fc = state.sample ? null : forecast(calc()),
+    date = fc ? iso(fc.steps[0].date) : "";
+  NB.scheduleReminders(
+    date,
+    t("harvest_reminder_title"),
+    t("harvest_reminder_two_days", date ? fd(date) : ""),
+    t("harvest_reminder_title"),
+    t("harvest_reminder_one_day", date ? fd(date) : ""),
+    t("backup_reminder_title"),
+    t("backup_reminder_body"),
+  );
+}
+window.onNotificationPermission = (enabled) => {
+  readShell();
+  if (route === "data") render();
+  toast(t(enabled ? "reminders_enabled" : "reminders_disabled"));
+};
 const fdt = (ms) => {
   const d = new Date(ms);
   return (
@@ -4522,6 +4725,7 @@ window.onUpdateStatus = (j) => {
 const ROUTES = ["overview", "months", "insights", "forecast", "data"];
 let route = "overview",
   range = "all",
+  buyerQuery = "",
   drawFns = [];
 const kpi = (lab, val, foot) =>
   `<div class="card kpi"><div class="lab">${lab}</div><div class="val num">${val}</div>${foot ? `<div class="foot">${foot}</div>` : ""}</div>`;
@@ -4670,46 +4874,70 @@ function vOverview(hs) {
 function vMonths(hs) {
   if (!hs.length && !state.otherIncome.length) return banner() + emptyState();
   const F = (l, v, c) => `<div class="f ${c || ""}"><span>${l}</span><b class="num">${v}</b></div>`;
-  return (
-    banner() +
-    `<div class="btnrow" style="margin-bottom:14px"><button class="btn primary" data-add-income>${t("add_income")}</button></div>` +
-    monthly(hs)
-      .reverse()
-      .map(
-        (m) =>
-          `<div class="mhead"><h2>${m.label}</h2><button class="btn small" data-mpdf="${m.key}">${t("btn_mpdf")}</button><div class="msum num">${m.list.length ? `<b>${price(m.price)}</b> ${t("per_coconut")} · <b>${N(m.loaded)}</b> ${t("bought_s")} · ${N(m.total)} ${t("harvested")} · ` : ""}${t("total_income")} <b>${money(m.inc)}</b> · ${t("deductions")} <b>${money(m.ded)}</b> · ${t("balance")} <b>${money(m.net)}</b>${state.shares > 1 ? ` · ${m.shareNet.map((v, i) => `${esc(shareNameAt(i))}: <b>${money(v)}</b>`).join(" · ")}` : ` · ${esc(shareNameAt(0))}: <b>${money(m.shareNet[0])}</b>`}</div></div>
+  const rows = monthly(hs)
+    .reverse()
+    .map((m) => {
+      const list = buyerQuery
+        ? m.list.filter((h) =>
+            [h.buyer, h.contact].some((value) => String(value || "").toLowerCase().includes(buyerQuery.toLowerCase())),
+          )
+        : m.list;
+      if (buyerQuery && !list.length) return "";
+      const reviewed = state.reviewedMonths.includes(m.key),
+        payout = state.monthPayouts[m.key] || [];
+      return `<div class="mhead"><h2>${m.label}</h2><button class="btn small" data-mpdf="${m.key}">${t("btn_mpdf")}</button>
+    <button class="btn small" data-review-month="${m.key}">${t(reviewed ? "reopen_month" : "mark_reviewed")}</button>${reviewed ? `<span class="chip">${t("month_reviewed")}</span>` : ""}
+    <div class="msum num">${m.list.length ? `<b>${price(m.price)}</b> ${t("per_coconut")} · <b>${N(m.loaded)}</b> ${t("bought_s")} · ${N(m.total)} ${t("harvested")} · ` : ""}${t("total_income")} <b>${money(m.inc)}</b> · ${t("deductions")} <b>${money(m.ded)}</b> · ${t("balance")} <b>${money(m.net)}</b> · ${t("amount_received")} <b>${money(m.received)}</b> · ${t("amount_due")} <b>${money(m.due)}</b>${m.credit ? ` · ${t("credit")} <b>${money(m.credit)}</b>` : ""}${state.shares > 1 ? ` · ${m.shareNet.map((v, i) => `${esc(shareNameAt(i))}: <b>${money(v)}</b>`).join(" · ")}` : ` · ${esc(shareNameAt(0))}: <b>${money(m.shareNet[0])}</b>`}</div>
+    ${reviewed ? `<p class="hint">${t("review_editable_hint")}</p>` : ""}</div>
+  ${!buyerQuery ? `<details class="card payout-box"><summary>${t("share_payouts")}</summary><div class="fields payout-fields">
+    ${m.shareNet.map((share, i) => {
+      const paid = Number(payout[i]) || 0;
+      return `<label class="fld"><span>${esc(shareNameAt(i))} · ${t("paid_to_date")} (${esc(state.cur)})</span><input type="number" inputmode="decimal" min="0" step="0.01" data-payout-month="${m.key}" data-payout-index="${i}" value="${paid || ""}">
+        <small>${t("balance")}: ${money(share)} · ${t("remaining")}: ${money(Math.max(0, share - paid))}</small></label>`;
+    }).join("")}
+    <button class="btn small" data-save-payout="${m.key}">${t("save_payouts")}</button></div></details>` : ""}
   <div class="rows">` +
-          m.list
-            .slice()
-            .reverse()
-            .map((h, i) => {
-              const dl = CATS.filter((c) => h.dv[c] > 0)
-                .map((c) => [catName(c, h), h.dv[c]])
-                .concat(customDedEntries(h).map((d) => [d.name, d.amount]))
-                .filter((d) => d[1] > 0);
-              return `<div class="card hrow" style="animation-delay:${Math.min(i, 10) * 30}ms">
+        list
+          .slice()
+          .reverse()
+          .map((h, i) => {
+            const dl = CATS.filter((c) => h.dv[c] > 0)
+              .map((c) => [catName(c, h), h.dv[c]])
+              .concat(customDedEntries(h).map((d) => [d.name, d.amount]))
+              .filter((d) => d[1] > 0);
+            return `<div class="card hrow" style="animation-delay:${Math.min(i, 10) * 30}ms">
     <div class="when"><b>${fd(h.date)}</b>${h.gap != null ? `<span class="chip">${t("days_after", h.gap)}</span>` : `<span class="chip">${t("first_rec")}</span>`}<span style="flex:1"></span><button class="btn small" data-edit="${esc(h.id)}">${t("edit")}</button></div>
     <div class="hgrid">${F(t("price"), price(h.price), "key")}${F(t("loaded"), N(h.loaded), "key")}${F(t("harvested"), N(h.total))}${F(t("free"), N(h.free))}${F(t("rejected"), N(h.rejected))}${F(t("home"), N(h.home))}
-      ${F(t("income"), money(h.inc))}${F(t("deductions"), "− " + N(h.dedT))}<div class="f"><span>${t("balance")}</span><b class="num ${h.net < 0 ? "neg-t" : "pos-t"}">${money(h.net)}</b></div></div>
+      ${F(t("income"), money(h.inc))}${F(t("deductions"), "− " + N(h.dedT))}${F(t("amount_received"), money(h.received))}${F(t("amount_due"), money(h.due))}${h.credit ? F(t("credit"), money(h.credit)) : ""}<div class="f"><span>${t("balance")}</span><b class="num ${h.net < 0 ? "neg-t" : "pos-t"}">${money(h.net)}</b></div></div>
+    ${h.payments.length ? `<details class="dd"><summary>${t("payments_title")}</summary><ul class="num">${h.payments.slice().sort((a, b) => a.date.localeCompare(b.date)).map((payment) => `<li><span>${fd(payment.date)}${payment.note ? " · " + esc(payment.note) : ""}</span><b>${money(Number(payment.amount) || 0)}</b></li>`).join("")}</ul></details>` : ""}
     ${dl.length ? `<details class="dd"><summary>${t("ded_break")}</summary><ul class="num">${dl.map((d) => `<li><span>${esc(d[0])}</span><b>${N(d[1])}</b></li>`).join("")}</ul></details>` : ""}
     ${h.shareDeds.some((d) => d > 0) || h.shareAdds.some((a) => a > 0) ? `<details class="dd"><summary>${t("share_after_ded")}</summary><ul class="num">${h.shareDeds.map((d, j) => `<li><span>${esc(t("share_result", esc(shareNameAt(j)), money(h.share), money(d), money(h.shareAdds[j]), money(h.shareNet[j])))}</span><b>${money(h.shareNet[j])}</b></li>`).join("")}</ul></details>` : ""}
     <div class="who"><span>${t("buyer")}: <b>${h.buyer ? esc(h.buyer) : t("not_rec")}</b></span>${h.contact ? `<span>${t("contact")}: <a href="tel:${esc(String(h.contact).replace(/[^\d+]/g, ""))}">${esc(h.contact)}</a></span>` : ""}<span>${t("entered_by")}: <b>${h.by ? esc(h.by) : t("not_rec")}</b></span></div>
     ${h.note ? `<p class="note">${esc(h.note)}</p>` : ""}</div>`;
-            })
-            .join("") +
-          m.incomes
-            .slice()
-            .sort((a, b) => b.date.localeCompare(a.date))
-            .map(
-              (income) => `<div class="card hrow">
+          })
+          .join("") +
+        (!buyerQuery
+          ? m.incomes
+              .slice()
+              .sort((a, b) => b.date.localeCompare(a.date))
+              .map(
+                (income) => `<div class="card hrow">
     <div class="when"><b>${incomeMonthLabel(income.date)}</b><span class="chip">${t("other_income")}</span><span style="flex:1"></span><button class="btn small" data-edit-income="${esc(income.id)}">${t("edit")}</button></div>
     <div class="hgrid">${F(t("income_amount"), money(income.amount), "key")}${F(t("income_note"), esc(income.note))}</div>
   </div>`,
-            )
-            .join("") +
-          `</div>`,
-      )
-      .join("")
+              )
+              .join("")
+          : "") +
+        `</div>`;
+    })
+    .join("");
+  return (
+    banner() +
+    `<div class="btnrow" style="margin-bottom:14px"><button class="btn primary" data-add-income>${t("add_income")}</button></div>
+    <div class="card buyer-search"><div class="fields"><label class="fld wide"><span>${t("buyer_search")}</span><input id="buyerSearchInput" type="search" value="${esc(buyerQuery)}"></label></div>
+      <div class="btnrow"><button class="btn" id="buyerSearch">${t("search_buyer")}</button>${buyerQuery ? `<button class="btn" id="clearBuyerSearch">${t("clear_search")}</button>` : ""}</div>
+      ${buyerQuery ? `<p class="hint">${t("buyer_search_hint")}</p>` : ""}</div>
+    ${buyerQuery && !rows ? `<div class="card empty">${t("buyer_none")}</div>` : rows}`
   );
 }
 function vInsights(all) {
@@ -4898,6 +5126,14 @@ function legal() {
     <p class="legal-made">${t("made")}</p>
   </footer>`;
 }
+function remindersCard() {
+  if (!UPD || typeof NB.scheduleReminders !== "function" || typeof NB.requestNotificationPermission !== "function")
+    return "";
+  const enabled = !!SH.notificationsEnabled;
+  return `<div class="card"><h2>${t("reminders_title")}</h2><p class="hint">${t("reminders_hint")}</p>
+    <p>${t(enabled ? "reminders_enabled" : "reminders_disabled")}</p>
+    <button class="btn${enabled ? "" : " primary"}" id="enableReminders" ${enabled ? "disabled" : ""}>${t("enable_reminders")}</button></div>`;
+}
 function vData() {
   return (
     banner() +
@@ -4906,6 +5142,7 @@ function vData() {
     <div class="btnrow"><button class="btn primary" data-exp="share">${t("btn_share")}</button><button class="btn" data-pdf>${t("btn_pdf")}</button><button class="btn" data-exp="csv">${t("btn_csv")}</button><button class="btn" data-exp="json">${t("btn_json")}</button><button class="btn" data-exp="copy">${t("btn_copy")}</button><a class="btn" href="https://drive.google.com/drive/my-drive" target="_blank" rel="noopener">${t("open_drive")}</a></div>
     <p class="hint" style="margin:10px 0 0">${t("bk_note")}</p>
     ${((ms) => (ms.length ? `<div class="btnrow" style="margin-top:12px;align-items:center"><label class="fld" style="flex:1 1 180px">${t("rep_pick")}<select id="mpick">${ms.map((m) => `<option value="${m.key}">${m.label}</option>`).join("")}</select></label><button class="btn" data-mpick style="align-self:flex-end">${t("rep_open")}</button></div>` : ""))(monthly(calc()).reverse())}</div>
+  ${remindersCard()}
   ${updCard()}
   <div class="card"><h2>${t("set_h")}</h2><p class="hint">${t("set_hint")}</p><div class="fields">
     <label class="fld">${t("estate_name")}<input id="s-name" type="text" maxlength="40" value="${esc(state.estate)}"></label>
@@ -4916,10 +5153,10 @@ function vData() {
     <label class="fld wide">${t("trans_rate")} (${esc(state.cur)})<input id="s-trans" type="number" inputmode="decimal" min="0" step="0.01" value="${esc(state.transRate)}"></label></div>
     <div class="btnrow" style="margin-top:12px"><button class="btn primary" id="s-save">${t("save_details")}</button></div></div>
   <div class="card" style="grid-column:1/-1"><h2>${t("imp_h")}</h2><p class="hint">${t("imp_hint")}</p>
-    <p style="margin:0 0 10px"><code>date, harvested, rejected, home use, price, harvesting, cart, transport, church, my money, fertilizer, power, other, buyer name, buyer contact, entered by, note, other note, free to buyer, loaded, custom deductions JSON, per-share deductions JSON, record type, income amount, income note, income ID, per-share additions JSON</code></p>
+    <p style="margin:0 0 10px"><code>date, harvested, rejected, home use, price, harvesting, cart, transport, church, my money, fertilizer, power, other, buyer name, buyer contact, entered by, note, other note, free to buyer, loaded, custom deductions JSON, per-share deductions JSON, record type, income amount, income note, income ID, per-share additions JSON, buyer payments JSON</code></p>
     <p class="hint">${t("imp_ex")}</p>
     <textarea class="box" id="imp" rows="5" placeholder="${esc(t("imp_ph"))}" aria-label="${esc(t("imp_h"))}"></textarea>
-    <div class="btnrow" style="margin-top:10px"><button class="btn primary" id="impGo">${t("imp_go")}</button><label class="btn">${t("choose_file")}<input type="file" id="impFile" accept=".csv,.json,.txt,text/csv,text/comma-separated-values,application/json,text/plain" hidden></label></div>
+    <div class="btnrow" style="margin-top:10px"><button class="btn" id="backupCheck">${t("check_backup")}</button><button class="btn primary" id="impGo">${t("imp_go")}</button><label class="btn">${t("choose_file")}<input type="file" id="impFile" accept=".csv,.json,.txt,text/csv,text/comma-separated-values,application/json,text/plain" hidden></label></div>
     <p class="err" id="impErr"></p></div>
   <div class="card" style="grid-column:1/-1"><h2>${t("wipe_h")}</h2><p class="hint">${t("wipe_hint")}</p><button class="btn danger" data-wipe>${t("wipe_btn")}</button></div>
   ${legal()}
@@ -5224,6 +5461,42 @@ function renderCustomDedFields(rows) {
     )
     .join("");
 }
+function paymentRow(payment) {
+  payment = payment || {};
+  return `<div class="payment-row" data-payment-row data-payment-id="${esc(payment.id || "")}">
+    <label class="fld"><span>${t("payment_date")}</span><input type="date" data-payment-date value="${esc(payment.date || "")}"></label>
+    <label class="fld"><span>${t("payment_amount")} (${esc(state.cur)})</span><input type="number" inputmode="decimal" min="0.01" step="0.01" data-payment-amount value="${esc(payment.amount || "")}"></label>
+    <label class="fld"><span>${t("payment_note")}</span><input type="text" maxlength="80" data-payment-note value="${esc(payment.note || "")}"></label>
+    <button type="button" class="btn small custom-remove" data-remove-payment>${t("remove_payment")}</button>
+  </div>`;
+}
+function renderPaymentFields(payments) {
+  $("#paymentFields").innerHTML = (payments || []).map(paymentRow).join("");
+}
+function readPaymentFields() {
+  const rows = Array.from($("#paymentFields").querySelectorAll("[data-payment-row]"));
+  const payments = [];
+  for (const row of rows) {
+    const date = row.querySelector("[data-payment-date]").value,
+      amountText = row.querySelector("[data-payment-amount]").value.trim(),
+      note = row.querySelector("[data-payment-note]").value.trim();
+    if (!date && !amountText && !note) continue;
+    const amount = Number(amountText);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(amount) || amount <= 0) return null;
+    payments.push({ id: row.dataset.paymentId || uid(), date, amount, note });
+  }
+  return payments;
+}
+function renderPresetOptions(selectedId) {
+  $("#presetSelect").innerHTML =
+    `<option value="">${t("choose_preset")}</option>` +
+    state.deductionPresets
+      .map(
+        (preset) =>
+          `<option value="${esc(preset.id)}" ${preset.id === selectedId ? "selected" : ""}>${esc(preset.name)}</option>`,
+      )
+      .join("");
+}
 function readShareDedFields() {
   return Array.from($("#shareDedFields").querySelectorAll("[data-share-ded]"), (input) => {
     const amount = input.value.trim() === "" ? 0 : parseFloat(input.value);
@@ -5358,6 +5631,8 @@ function openForm(id) {
   $("#f-buyer").value = h ? h.buyer || "" : prev ? prev.buyer || "" : "";
   $("#f-contact").value = h ? h.contact || "" : prev ? prev.contact || "" : "";
   $("#f-by").value = h ? h.by || "" : me;
+  renderPaymentFields(h ? h.payments : []);
+  renderPresetOptions();
   CATS.forEach((c) => ($("#d-" + c).value = dedInputValue(h, c)));
   renderCustomDedFields(h ? customDedEntries(h) : []);
   renderShareDedFields(h ? shareDedEntries(h) : []);
@@ -5391,6 +5666,7 @@ $("#hform").addEventListener("submit", (e) => {
   const customDeds = readCustomDedFields();
   const shareDeds = readShareDedFields(),
     shareAdds = readShareAddFields();
+  const payments = readPaymentFields();
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return (err.textContent = t("e_date"));
   if (pr <= 0) return (err.textContent = t("e_price"));
   if (total <= 0) return (err.textContent = t("e_total"));
@@ -5401,6 +5677,7 @@ $("#hform").addEventListener("submit", (e) => {
   if (customDeds.some((d) => d.amount > 0 && !d.name)) return (err.textContent = t("e_custom_name"));
   if (shareDeds.some((d) => d < 0)) return (err.textContent = t("e_custom_amount"));
   if (shareAdds.some((a) => a < 0)) return (err.textContent = t("e_custom_amount"));
+  if (!payments) return (err.textContent = t("payment_invalid"));
   if (state.harvests.some((h) => h.date === date && h.id !== editId) && !state.sample)
     return (err.textContent = t("e_dup"));
   if (state.sample) {
@@ -5431,6 +5708,7 @@ $("#hform").addEventListener("submit", (e) => {
     }),
     shareDeds,
     shareAdds,
+    payments,
     otherNote: $("#f-othernote").value.trim(),
     buyer: $("#f-buyer").value.trim(),
     contact: $("#f-contact").value.trim(),
@@ -5512,7 +5790,7 @@ function toCSV() {
   const header =
       "date,harvested,rejected,home_use,price," +
       CATS.join(",") +
-      ",buyer_name,buyer_contact,entered_by,note,other_note,free_to_buyer,loaded,custom_deductions,share_deductions,record_type,income_amount,income_note,income_id,share_additions",
+      ",buyer_name,buyer_contact,entered_by,note,other_note,free_to_buyer,loaded,custom_deductions,share_deductions,record_type,income_amount,income_note,income_id,share_additions,buyer_payments",
     harvestRows = calc().map((h) =>
       [h.date, h.total, h.rejected, h.home, h.price]
         .concat(
@@ -5532,6 +5810,7 @@ function toCSV() {
             "",
             "",
             q(JSON.stringify(h.shareAdds)),
+            q(JSON.stringify(h.payments)),
           ],
         )
         .join(","),
@@ -5539,7 +5818,7 @@ function toCSV() {
     incomeRows = state.otherIncome.map((income) => {
       const row = Array(22).fill("");
       row[0] = income.date;
-      return row.concat("income", income.amount, q(income.note), q(income.id), "").join(",");
+      return row.concat("income", income.amount, q(income.note), q(income.id), "", "").join(",");
     });
   return "﻿" + [header].concat(harvestRows, incomeRows).join("\n");
 }
@@ -5599,6 +5878,109 @@ function parseDate(s) {
   if (m) return m[3] + "-" + m[2].padStart(2, "0") + "-" + m[1].padStart(2, "0");
   return null;
 }
+function validIsoDate(date) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;
+  const parsed = new Date(date + "T00:00:00Z");
+  return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 10) === date;
+}
+function validateFullBackup(backup) {
+  if (!backup || typeof backup !== "object" || Array.isArray(backup) || !Array.isArray(backup.harvests))
+    throw t("i_notbk");
+  const otherIncome = backup.otherIncome == null ? [] : backup.otherIncome,
+    monthPayouts = backup.monthPayouts == null ? {} : backup.monthPayouts,
+    reviewedMonths = backup.reviewedMonths == null ? [] : backup.reviewedMonths,
+    deductionPresets = backup.deductionPresets == null ? [] : backup.deductionPresets,
+    validMonth = (month) => /^\d{4}-(0[1-9]|1[0-2])$/.test(month);
+  if (
+    !Array.isArray(otherIncome) ||
+    !monthPayouts ||
+    typeof monthPayouts !== "object" ||
+    Array.isArray(monthPayouts) ||
+    !Array.isArray(reviewedMonths) ||
+    !Array.isArray(deductionPresets)
+  )
+    throw t("i_bad");
+  for (const harvest of backup.harvests) {
+    if (
+      !harvest ||
+      typeof harvest !== "object" ||
+      !validIsoDate(harvest.date) ||
+      !Number.isFinite(Number(harvest.total)) ||
+      Number(harvest.total) <= 0 ||
+      !Number.isFinite(Number(harvest.price)) ||
+      Number(harvest.price) < 0 ||
+      !harvest.ded ||
+      typeof harvest.ded !== "object" ||
+      Array.isArray(harvest.ded)
+    )
+      throw t("i_bad");
+    if (harvest.payments != null) {
+      if (!Array.isArray(harvest.payments)) throw t("i_bad");
+      for (const payment of harvest.payments) {
+        if (
+          !payment ||
+          !validIsoDate(payment.date) ||
+          !Number.isFinite(Number(payment.amount)) ||
+          Number(payment.amount) <= 0
+        )
+          throw t("i_bad");
+      }
+      for (const [month, amounts] of Object.entries(monthPayouts)) {
+        if (
+          !validMonth(month) ||
+          !Array.isArray(amounts) ||
+          amounts.some((amount) => !Number.isFinite(Number(amount)) || Number(amount) < 0)
+        )
+          throw t("i_bad");
+      }
+      if (reviewedMonths.some((month) => !validMonth(month))) throw t("i_bad");
+      for (const preset of deductionPresets) {
+        if (
+          !preset ||
+          typeof preset !== "object" ||
+          typeof preset.name !== "string" ||
+          !preset.name.trim() ||
+          !preset.ded ||
+          typeof preset.ded !== "object" ||
+          Array.isArray(preset.ded) ||
+          (preset.customDeds != null &&
+            (!Array.isArray(preset.customDeds) ||
+              preset.customDeds.some((deduction) => !deduction || !String(deduction.name || "").trim() ||
+                !Number.isFinite(Number(deduction.amount)) || Number(deduction.amount) < 0))) ||
+          (preset.shareDeds != null &&
+            (!Array.isArray(preset.shareDeds) ||
+              preset.shareDeds.some((amount) => !Number.isFinite(Number(amount)) || Number(amount) < 0))) ||
+          !Number.isFinite(Number(preset.roundingAdjustment || 0)) ||
+          Number(preset.roundingAdjustment || 0) < 0
+        )
+          throw t("i_bad");
+        if (
+          CATS.some(
+            (category) =>
+              !blank(preset.ded[category]) &&
+              (!Number.isFinite(Number(preset.ded[category])) || Number(preset.ded[category]) < 0),
+          )
+        )
+          throw t("i_bad");
+        preset.id = String(preset.id || uid());
+      }
+    }
+  }
+  for (const income of otherIncome) {
+    if (
+      !income ||
+      !validIsoDate(income.date) ||
+      !Number.isFinite(Number(income.amount)) ||
+      Number(income.amount) <= 0 ||
+      typeof income.note !== "string"
+    )
+      throw t("i_bad");
+  }
+  return {
+    replace: Object.assign(backup, { sample: false, otherIncome, monthPayouts, reviewedMonths, deductionPresets }),
+    count: backup.harvests.length + otherIncome.length,
+  };
+}
 function splitRow(line) {
   const d = line.includes("\t") ? "\t" : line.includes(";") && !line.includes(",") ? ";" : ",",
     out = [];
@@ -5632,11 +6014,7 @@ function importText(txt) {
     } catch (e) {
       throw t("i_bad");
     }
-    if (!o || !Array.isArray(o.harvests)) throw t("i_notbk");
-    return {
-      replace: Object.assign(o, { sample: false }),
-      count: o.harvests.length + (Array.isArray(o.otherIncome) ? o.otherIncome.length : 0),
-    };
+    return validateFullBackup(o);
   }
   const out = [],
     otherIncome = [];
@@ -5648,6 +6026,7 @@ function importText(txt) {
       if (ln === 0) return;
       throw t("i_date", ln + 1, c[0]);
     }
+    if (!validIsoDate(date)) throw t("i_date", ln + 1, c[0]);
     const n = (i) => {
       const v = parseFloat((c[i] || "").replace(/[^\d.\-]/g, ""));
       return isFinite(v) ? v : 0;
@@ -5698,6 +6077,31 @@ function importText(txt) {
         throw t("i_bad");
       }
     }
+    let payments = [];
+    if ((c[27] || "").trim()) {
+      try {
+        const parsed = JSON.parse(c[27]);
+        if (
+          !Array.isArray(parsed) ||
+          parsed.some(
+            (payment) =>
+              !payment ||
+              !validIsoDate(payment.date) ||
+              !Number.isFinite(Number(payment.amount)) ||
+              Number(payment.amount) <= 0,
+          )
+        )
+          throw new Error("Buyer payments must have valid dates and positive amounts.");
+        payments = parsed.map((payment) => ({
+          id: String(payment.id || uid()),
+          date: payment.date,
+          amount: Number(payment.amount),
+          note: String(payment.note || ""),
+        }));
+      } catch (e) {
+        throw t("i_bad");
+      }
+    }
     const ded = {};
     CATS.forEach((k, i) => (ded[k] = k === "transport" && (c[5 + i] || "") === "" ? null : n(5 + i)));
     out.push({
@@ -5713,6 +6117,7 @@ function importText(txt) {
       customDeds,
       shareDeds,
       shareAdds,
+      payments,
       buyer: c[13] || "",
       contact: c[14] || "",
       by: c[15] || "",
@@ -5742,6 +6147,8 @@ function doImport(txt) {
     if (state.sample) {
       state.harvests = [];
       state.otherIncome = [];
+      state.monthPayouts = {};
+      state.reviewedMonths = [];
       state.sample = false;
     }
     r.rows.forEach((x) => {
@@ -5774,6 +6181,9 @@ function openReport() {
   const tot = S((h) => h.total),
     loaded = S((h) => h.loaded),
     paid = S((h) => h.paid),
+    received = S((h) => h.received),
+    due = S((h) => h.due),
+    credit = S((h) => h.credit),
     harvestInc = S((h) => h.inc),
     inc = harvestInc + sum(state.otherIncome.map((income) => income.amount)),
     ded = S((h) => h.dedT),
@@ -5798,7 +6208,7 @@ function openReport() {
   <div class="page"><div class="rhead"><div><h1>${esc(state.estate)}</h1><p>${t("rep_title")} · ${fd(dates[0])} – ${fd(dates[dates.length - 1])} · ${t("n_harvests", hs.length)}</p></div><p class="rmeta">${t("rep_made", fd(todayMs()))}<br>${t("version", VER)}</p></div>
   <div class="rk num">${last ? T(t("rep_latest"), price(last.price)) : ""}${T(t("avg_price"), price(paid ? harvestInc / paid : 0))}${T(t("loaded"), N(loaded))}${T(t("harvested"), N(tot))}
     ${T(t("free"), N(S((h) => h.free)))}${T(t("rejected"), N(S((h) => h.rejected)))}${T(t("home"), N(S((h) => h.home)))}
-    ${T(t("income"), money(inc))}${T(t("deductions"), money(ded))}${T(t("balance"), money(net))}${shareNets.map((v, i) => T(esc(shareNameAt(i)), money(v))).join("")}</div>
+    ${T(t("income"), money(inc))}${T(t("amount_received"), money(received))}${T(t("amount_due"), money(due))}${T(t("credit"), money(credit))}${T(t("deductions"), money(ded))}${T(t("balance"), money(net))}${shareNets.map((v, i) => T(esc(shareNameAt(i)), money(v))).join("")}</div>
   ${hs.length ? `<div class="card"><h2>${t("price_chart_h")}</h2><div class="chart" id="r-price"></div></div><div class="card"><h2>${t("per_harvest_h")}</h2>${LEG()}<div class="chart" id="r-nuts"></div></div>` : ""}
   <div class="card"><h2>${t("mbm")}</h2><div class="tbl"><table class="num"><thead><tr><th>${t("th_month")}</th><th>${t("price")}</th><th>${t("harvested")}</th><th>${t("th_loaded")}</th><th>${t("th_free")}</th><th>${t("th_rej")}</th><th>${t("th_home")}</th><th>${t("income")}</th><th>${t("deductions")}</th><th>${t("balance")}</th>${shareNets.map((_, i) => `<th>${esc(shareNameAt(i))}</th>`).join("")}</tr></thead>
     <tbody>${ms.map((m) => `<tr><td>${m.label}</td><td class="pr">${price(m.price)}</td><td>${N(m.total)}</td><td>${N(m.loaded)}</td><td>${N(m.free)}</td><td>${N(m.rej)}</td><td>${N(m.home)}</td><td>${N(m.inc)}</td><td>${N(m.ded)}</td><td><b>${N(m.net)}</b></td>${m.shareNet.map((v) => `<td>${N(v)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div>
@@ -5814,15 +6224,16 @@ function openReport() {
       })
       .join("")}</tbody></table></div></div>
   ${hs.length ? `<div class="card"><h2>${t("bal_per_h")}</h2><div class="chart" id="r-net"></div></div>` : ""}
-  <div class="card"><h2>${t("rep_all")}</h2><div class="tbl"><table class="num"><thead><tr><th>${t("f_date")}</th><th>${t("price")}</th><th>${t("harvested")}</th><th>${t("th_loaded")}</th><th>${t("th_rej")}</th><th>${t("th_home")}</th><th>${t("th_free")}</th><th>${t("income")}</th><th>${t("deductions")}</th><th>${t("balance")}</th>${shareNets.map((_, i) => `<th>${esc(shareNameAt(i))}</th>`).join("")}<th>${t("buyer")}</th></tr></thead>
+  <div class="card"><h2>${t("rep_all")}</h2><div class="tbl"><table class="num"><thead><tr><th>${t("f_date")}</th><th>${t("price")}</th><th>${t("harvested")}</th><th>${t("th_loaded")}</th><th>${t("th_rej")}</th><th>${t("th_home")}</th><th>${t("th_free")}</th><th>${t("income")}</th><th>${t("amount_received")}</th><th>${t("amount_due")}</th><th>${t("credit")}</th><th>${t("deductions")}</th><th>${t("balance")}</th>${shareNets.map((_, i) => `<th>${esc(shareNameAt(i))}</th>`).join("")}<th>${t("buyer")}</th></tr></thead>
     <tbody>${hs
       .slice()
       .reverse()
       .map(
         (h) =>
-          `<tr><td>${fd(h.date)}</td><td class="pr">${price(h.price)}</td><td>${N(h.total)}</td><td>${N(h.loaded)}</td><td>${N(h.rejected)}</td><td>${N(h.home)}</td><td>${N(h.free)}</td><td>${N(h.inc)}</td><td>${N(h.dedT)}</td><td><b>${N(h.net)}</b></td>${h.shareNet.map((v) => `<td>${N(v)}</td>`).join("")}<td>${esc(h.buyer || "")}</td></tr>`,
+          `<tr><td>${fd(h.date)}</td><td class="pr">${price(h.price)}</td><td>${N(h.total)}</td><td>${N(h.loaded)}</td><td>${N(h.rejected)}</td><td>${N(h.home)}</td><td>${N(h.free)}</td><td>${N(h.inc)}</td><td>${N(h.received)}</td><td>${N(h.due)}</td><td>${N(h.credit)}</td><td>${N(h.dedT)}</td><td><b>${N(h.net)}</b></td>${h.shareNet.map((v) => `<td>${N(v)}</td>`).join("")}<td>${esc(h.buyer || "")}</td></tr>`,
       )
       .join("")}</tbody></table></div></div>
+  ${hs.some((h) => h.payments.length) ? `  <div class="card"><h2>${t("payments_title")}</h2><div class="tbl"><table class="num"><thead><tr><th>${t("f_date")}</th><th>${t("buyer")}</th><th>${t("payment_date")}</th><th>${t("payment_amount")}</th><th>${t("payment_note")}</th></tr></thead><tbody>${hs.flatMap((h) => h.payments.slice().sort((a, b) => a.date.localeCompare(b.date)).map((payment) => `<tr><td>${fd(h.date)}</td><td>${esc(h.buyer || "")}</td><td>${fd(payment.date)}</td><td>${money(Number(payment.amount) || 0)}</td><td>${esc(payment.note || "")}</td></tr>`)).join("")}</tbody></table></div></div>` : ""}
   ${state.otherIncome.length ? `<div class="card"><h2>${t("rep_income")}</h2><div class="tbl"><table class="num"><thead><tr><th>${t("income_month")}</th><th>${t("income_note")}</th><th>${t("income_amount")}</th></tr></thead><tbody>${state.otherIncome.slice().sort((a, b) => a.date.localeCompare(b.date)).map((income) => `<tr><td>${incomeMonthLabel(income.date)}</td><td>${esc(income.note)}</td><td>${money(income.amount)}</td></tr>`).join("")}</tbody></table></div></div>` : ""}
   ${fc ? `<div class="card"><h2>${t("next3")}</h2><p class="hint">${t("rep_fc_note")}</p><div class="fc-list">${fc.steps.map((x) => `<div class="fc-item"><h3>${t("around", fd(x.date))}</h3><p class="num">≈ ${price(Math.round(x.price))} ${t("per_coconut")}</p><p class="num">≈ ${N(x.nuts)} ${t("harvested")} · ${t("n_loaded", N(x.loaded)).replace("≈ ", "")}</p><p class="num">≈ ${money(x.net)} · ${t("balance")}</p></div>`).join("")}</div></div>` : ""}
   </div>`;
@@ -5860,6 +6271,9 @@ function agg(l, otherIncome) {
   CATS.forEach((c) => (dv[c] = S((h) => h.dv[c])));
   const loaded = S((h) => h.loaded),
     harvestInc = S((h) => h.inc),
+    received = S((h) => h.received || 0),
+    due = S((h) => h.due || 0),
+    credit = S((h) => h.credit || 0),
     dedT = S((h) => h.dedT),
     inc = harvestInc + sum(otherIncome.map((income) => income.amount));
   const shareDeds = Array.from({ length: state.shares }, (_, i) =>
@@ -5878,6 +6292,9 @@ function agg(l, otherIncome) {
     free: S((h) => h.free),
     inc,
     harvestInc,
+    received,
+    due,
+    credit,
     otherIncome,
     dv,
     customDeds: customDedSummary(l),
@@ -5906,6 +6323,9 @@ function moneyTable(o) {
   return `<table class="st num"><thead><tr><th>${t("rep_item")}</th><th>${t("rep_note")}</th><th>${t("rep_amount", esc(state.cur))}</th><th>${t("rep_pct")}</th></tr></thead><tbody>
   <tr class="sub"><td>${t("income")}</td><td>${N(o.loaded)} × ${price(o.price)}</td><td>${N(o.harvestInc)}</td><td>${o.inc ? pc(o.harvestInc) : "–"}</td></tr>
   ${o.otherIncome.length ? `<tr><td>${t("other_income")}</td><td>${o.otherIncome.map((income) => esc(income.note)).join("; ")}</td><td>${N(sum(o.otherIncome.map((income) => income.amount)))}</td><td>${pc(sum(o.otherIncome.map((income) => income.amount)))}</td></tr>` : ""}
+  <tr><td>${t("amount_received")}</td><td>${t("payments_title")}</td><td>${N(o.received)}</td><td>–</td></tr>
+  <tr><td>${t("amount_due")}</td><td>${t("payment_due_note")}</td><td>${N(o.due)}</td><td>–</td></tr>
+  ${o.credit ? `<tr><td>${t("credit")}</td><td>${t("payments_title")}</td><td>${N(o.credit)}</td><td>–</td></tr>` : ""}
   ${CATS.map((c) => `<tr><td>${t("cat_" + c)}</td><td>${c === "transport" && o.transAuto ? t("per_harv_x", N(o.total), price(state.transRate)) : c === "other" ? esc(o.otherNote) : ""}</td><td>${o.dv[c] ? "− " + N(o.dv[c]) : "0"}</td><td>${bar(o.dv[c])}${pc(o.dv[c])}</td></tr>`).join("")}
   ${o.customDeds.map((d) => `<tr><td>${esc(d.name)}</td><td></td><td>− ${N(d.amount)}</td><td>${bar(d.amount)}${pc(d.amount)}</td></tr>`).join("")}
   <tr class="sub"><td>${t("rep_totded")}</td><td></td><td>− ${N(o.dedT)}</td><td>${pc(o.dedT)}</td></tr>
@@ -5923,7 +6343,7 @@ function openMonthReport(key) {
     multi = m.list.length > 1;
   const T = (l, v) => `<div class="rt"><span>${l}</span><b>${v}</b></div>`;
   const det = (h) =>
-    `<p class="rdet">${t("f_date")}: <b>${fd(h.date)}</b>${h.gap != null ? ` (${t("days_after", h.gap)})` : ""} · ${t("buyer")}: <b>${h.buyer ? esc(h.buyer) : t("not_rec")}</b>${h.contact ? ` · ${t("contact")}: <b>${esc(h.contact)}</b>` : ""} · ${t("entered_by")}: <b>${h.by ? esc(h.by) : t("not_rec")}</b>${h.note ? `<br>${esc(h.note)}` : ""}</p>`;
+    `<p class="rdet">${t("f_date")}: <b>${fd(h.date)}</b>${h.gap != null ? ` (${t("days_after", h.gap)})` : ""} · ${t("buyer")}: <b>${h.buyer ? esc(h.buyer) : t("not_rec")}</b>${h.contact ? ` · ${t("contact")}: <b>${esc(h.contact)}</b>` : ""} · ${t("entered_by")}: <b>${h.by ? esc(h.by) : t("not_rec")}</b>${h.note ? `<br>${esc(h.note)}` : ""}${h.payments.length ? `<br>${t("payments_title")}: ${h.payments.slice().sort((a, b) => a.date.localeCompare(b.date)).map((payment) => `${fd(payment.date)} ${money(Number(payment.amount) || 0)}${payment.note ? " (" + esc(payment.note) + ")" : ""}`).join("; ")}` : ""}</p>`;
   const detIncome = (income) =>
     `<p class="rdet">${t("income_month")}: <b>${incomeMonthLabel(income.date)}</b> · ${t("other_income")}: <b>${money(income.amount)}</b><br>${esc(income.note)}</p>`;
   const block = (x, includeCoconuts) =>
@@ -5933,7 +6353,7 @@ function openMonthReport(key) {
   <div class="page"><div class="rhead"><div><h1>${esc(state.estate)}</h1><p>${t("rep_month")} · <b>${m.label}</b> · ${m.list.length ? t("n_harvests", m.list.length) : t("income_records", m.incomes.length)}</p></div><p class="rmeta">${t("rep_made", fd(todayMs()))}<br>${t("version", VER)}</p></div>
   <h3 class="sec">${t("rep_sum")}</h3>
   <div class="rk num">${m.list.length ? `${T(t("price_lab"), price(o.price))}${T(t("loaded"), N(o.loaded))}${T(t("harvested"), N(o.total))}${T(t("rejected"), N(o.rejected))}` : ""}
-    ${T(t("income"), money(o.inc))}${T(t("deductions"), money(o.dedT))}${T(t("balance"), money(o.net))}${o.shareNet.map((v, i) => T(esc(shareNameAt(i)), money(v))).join("")}</div>
+    ${T(t("income"), money(o.inc))}${T(t("amount_received"), money(o.received))}${T(t("amount_due"), money(o.due))}${T(t("credit"), money(o.credit))}${T(t("deductions"), money(o.dedT))}${T(t("balance"), money(o.net))}${o.shareNet.map((v, i) => T(esc(shareNameAt(i)), money(v))).join("")}</div>
   ${po ? `<div class="card rcmp"><b>${t("rep_cmp", pm.label)}</b><span>${t("price")} ${delta(o.price, po.price)}</span><span>${t("loaded")} ${delta(o.loaded, po.loaded)}</span><span>${t("income")} ${delta(o.inc, po.inc)}</span><span>${t("balance")} ${delta(o.net, po.net)}</span></div>` : ""}
   ${m.list.length === 0 ? `${m.incomes.map(detIncome).join("")}${block(o, false)}` : multi ? `<h3 class="sec">${t("rep_mtotal")}</h3>${block(o, true)}` + m.list.map((h) => `<h3 class="sec">${t("rep_harv_on", fd(h.date))}</h3>${det(h)}${block(agg([h]), true)}`).join("") : `<h3 class="sec">${t("rep_details")}</h3>${det(m.list[0])}${block(o, true)}`}
   <p class="rfoot">Coconut Estate Ledger · ${t("version", VER)} · ${t("rep_made", fd(todayMs()))}</p>
@@ -5987,9 +6407,18 @@ document.addEventListener("click", async (e) => {
     lang = b.dataset.lang;
     LS.set("coconut-ledger-lang", lang);
     mirror();
+    syncNativeReminders();
     return render({ dir: still() ? "" : "fade" });
   }
   if (b.id === "skinBtn") return toggleSkin(e);
+  if (b.id === "addPayment") {
+    $("#paymentFields").insertAdjacentHTML("beforeend", paymentRow({ date: iso(todayMs()) }));
+    return;
+  }
+  if (b.hasAttribute("data-remove-payment")) {
+    b.closest("[data-payment-row]").remove();
+    return;
+  }
   if (b.id === "addCustomDed") {
     renderCustomDedFields(readCustomDedFields().concat({ name: "", amount: "" }));
     return;
@@ -5998,6 +6427,52 @@ document.addEventListener("click", async (e) => {
     b.closest(".custom-ded-row").remove();
     live();
     return;
+  }
+  if (b.id === "savePreset") {
+    const name = $("#presetName").value.trim();
+    if (!name) return toast(t("preset_name_required"));
+    const old = state.deductionPresets.find((preset) => preset.name.toLowerCase() === name.toLowerCase());
+    const preset = {
+      id: old ? old.id : uid(),
+      name,
+      ded: Object.fromEntries(
+        CATS.map((category) => [
+          category,
+          category === "transport" && $("#d-transport").value.trim() === "" ? null : val("d-" + category),
+        ]),
+      ),
+      customDeds: readCustomDedFields(),
+      shareDeds: readShareDedFields(),
+      roundingAdjustment,
+    };
+    if (old) state.deductionPresets[state.deductionPresets.indexOf(old)] = preset;
+    else state.deductionPresets.push(preset);
+    persist();
+    renderPresetOptions(preset.id);
+    toast(t("preset_saved"));
+    return;
+  }
+  if (b.id === "applyPreset") {
+    const preset = state.deductionPresets.find((item) => item.id === $("#presetSelect").value);
+    if (!preset) return toast(t("preset_required"));
+    CATS.forEach((category) => {
+      const amount = preset.ded && preset.ded[category];
+      $("#d-" + category).value = category === "transport" && blank(amount) ? "" : amount || "";
+    });
+    renderCustomDedFields(preset.customDeds || []);
+    renderShareDedFields(preset.shareDeds || []);
+    roundingAdjustment = Math.max(0, Number(preset.roundingAdjustment) || 0);
+    $("#f-ded-target").value = roundingBaseDeduction() + roundingAdjustment || "";
+    live();
+    return toast(t("preset_applied"));
+  }
+  if (b.id === "deletePreset") {
+    const id = $("#presetSelect").value;
+    if (!id) return toast(t("preset_required"));
+    state.deductionPresets = state.deductionPresets.filter((preset) => preset.id !== id);
+    persist();
+    renderPresetOptions();
+    return toast(t("preset_deleted"));
   }
   if (b.dataset.upd && UPD) {
     const k = b.dataset.upd,
@@ -6021,6 +6496,33 @@ document.addEventListener("click", async (e) => {
   if (b.hasAttribute("data-mpick")) return openMonthReport($("#mpick").value);
   if (b.id === "repPrint") return printReport();
   if (b.id === "repClose") return closeReport();
+  if (b.id === "buyerSearch") {
+    buyerQuery = $("#buyerSearchInput").value.trim();
+    return render();
+  }
+  if (b.id === "clearBuyerSearch") {
+    buyerQuery = "";
+    return render();
+  }
+  if (b.dataset.reviewMonth) {
+    const key = b.dataset.reviewMonth,
+      index = state.reviewedMonths.indexOf(key);
+    if (index >= 0) state.reviewedMonths.splice(index, 1);
+    else state.reviewedMonths.push(key);
+    persist();
+    return render();
+  }
+  if (b.dataset.savePayout) {
+    const key = b.dataset.savePayout,
+      inputs = Array.from(document.querySelectorAll(`[data-payout-month="${key}"]`)),
+      amounts = inputs.map((input) => (input.value.trim() === "" ? 0 : Number(input.value)));
+    if (amounts.some((amount) => !Number.isFinite(amount) || amount < 0))
+      return toast(t("e_custom_amount"));
+    state.monthPayouts[key] = amounts;
+    persist();
+    render();
+    return toast(t("payouts_saved"));
+  }
   if (b.hasAttribute("data-add-income")) return openIncomeForm();
   if (b.dataset.editIncome) return openIncomeForm(b.dataset.editIncome);
   if (b.hasAttribute("data-close-income")) return closeD(incomeDlg);
@@ -6035,6 +6537,8 @@ document.addEventListener("click", async (e) => {
     if (await confirmBox(t("c_clear_h"), t("c_clear_p"), t("clear"))) {
       state.harvests = [];
       state.otherIncome = [];
+      state.monthPayouts = {};
+      state.reviewedMonths = [];
       state.sample = false;
       persist();
       render();
@@ -6045,6 +6549,9 @@ document.addEventListener("click", async (e) => {
     if (await confirmBox(t("c_wipe_h"), t("c_wipe_p"), t("delete_all"))) {
       state.harvests = [];
       state.otherIncome = [];
+      state.monthPayouts = {};
+      state.reviewedMonths = [];
+      state.deductionPresets = [];
       state.sample = false;
       persist();
       go("overview");
@@ -6076,6 +6583,25 @@ document.addEventListener("click", async (e) => {
     return toast(t("t_details"));
   }
   if (b.id === "impGo") return doImport($("#imp").value);
+  if (b.id === "backupCheck") {
+    const text = $("#imp").value.trim();
+    if (!text.startsWith("{")) {
+      $("#impErr").textContent = t("backup_invalid");
+      return;
+    }
+    try {
+      const backup = importText(text);
+      if (!backup.replace) throw t("backup_invalid");
+      $("#impErr").textContent = t("backup_valid", backup.count);
+    } catch (error) {
+      $("#impErr").textContent = typeof error === "string" ? error : t("i_fail");
+    }
+    return;
+  }
+  if (b.id === "enableReminders" && UPD && NB.requestNotificationPermission) {
+    NB.requestNotificationPermission();
+    return;
+  }
 });
 document.addEventListener("change", (e) => {
   if (e.target.id === "impFile" && e.target.files[0]) {
@@ -6126,6 +6652,7 @@ readShell();
   }
   initCloud();
   mirror();
+  syncNativeReminders();
   showPendingNote();
 })();
 /* An update applied while the app was in the background is announced when the person comes back. */

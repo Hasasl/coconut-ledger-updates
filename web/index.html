@@ -233,11 +233,30 @@
             ><input id="f-contact" type="tel" maxlength="30" autocomplete="off" data-tp="phone_ph"
           /></label>
         </div>
+        <div class="sect"><span data-t="payments_title"></span></div>
+        <div class="btnrow" style="margin-bottom:10px">
+          <button type="button" class="btn small" id="addPayment" data-t="add_payment"></button>
+        </div>
+        <div class="custom-ded-list" id="paymentFields"></div>
         <div class="sect">
           <span><span data-t="deductions"></span> (<span class="curlab"></span>)</span
           ><button type="button" class="btn small" id="copyLast" data-t="copy_prev"></button>
         </div>
         <div class="fields ded" id="dedFields"></div>
+        <div class="custom-ded-head"><b data-t="deduction_presets"></b></div>
+        <div class="fields">
+          <label class="fld wide"
+            ><span data-t="choose_preset"></span><select id="presetSelect"></select>
+          </label>
+          <label class="fld wide"
+            ><span data-t="preset_name"></span><input id="presetName" type="text" maxlength="40"
+          /></label>
+        </div>
+        <div class="btnrow" style="margin:8px 0 12px">
+          <button type="button" class="btn small" id="applyPreset" data-t="apply_preset"></button>
+          <button type="button" class="btn small" id="savePreset" data-t="save_preset"></button>
+          <button type="button" class="btn small danger" id="deletePreset" data-t="delete_preset"></button>
+        </div>
         <div class="custom-ded-head">
           <b data-t="custom_ded"></b>
           <button type="button" class="btn small" id="addCustomDed" data-t="add_custom_ded"></button>

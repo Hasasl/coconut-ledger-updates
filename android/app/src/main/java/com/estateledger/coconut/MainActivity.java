@@ -1,9 +1,11 @@
 package com.estateledger.coconut;
 
 import android.app.Activity;
+import android.Manifest;
 import android.content.ClipData;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
@@ -57,6 +59,7 @@ public class MainActivity extends Activity {
     /** Public half of the signing key in ledger.keystore. Only files signed by the private half are accepted. */
     static final String PUBKEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsJJ21UlllRg9r2tLxWSeJIi5XUa7Aoe0AT59DxEKg+Sl7MYOQI8ocQzimRlY+1shQ2F75W8kxfGpibFHHwlDayoXH2CVSpW62U2JfqN4WZkcCdZGI7qa8IU0XoI1WZ2vOdsE8oe5EA3w9KPo4jaAAbJCHUpHzArwX9SgyG3Gvr9PTBUSv5LfFZpDJNyOlaDYKSs716MNEqVXeQ1V+7Z4Tw6PjfWMy78EPPft4dhNVBghHNyamblrTi+xGJjGKvAQjXFmgnHhfNbfOQPwWEGIXolNLwmKH+kXBqjHUAiAsVNPoCUGO23mqNKh9LP9+9wn+bBlRMBQosDtrJr2ySa0fQIDAQAB";
     private static final int REQ_PICK = 1, REQ_SAVE = 2;
+    private static final int REQ_NOTIFICATIONS = 3;
     private static final long AUTO_CHECK_EVERY = 5L * 60L * 1000L;
 
     private WebView web;
@@ -216,6 +219,37 @@ public class MainActivity extends Activity {
     }
 
     @Override protected void onPause() { web.onPause(); super.onPause(); }
+
+    private boolean notificationsEnabled() {
+        return Build.VERSION.SDK_INT < 33
+                || checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestNotifications() {
+        if (Build.VERSION.SDK_INT < 33 || notificationsEnabled()) {
+            ReminderReceiver.scheduleFromPrefs(this);
+            sendNotificationPermission(true);
+            return;
+        }
+        requestPermissions(new String[] { Manifest.permission.POST_NOTIFICATIONS }, REQ_NOTIFICATIONS);
+    }
+
+    private void sendNotificationPermission(final boolean enabled) {
+        if (web == null) return;
+        runOnUiThread(new Runnable() {
+            @Override public void run() {
+                web.evaluateJavascript("window.onNotificationPermission&&window.onNotificationPermission(" + enabled + ")", null);
+            }
+        });
+    }
+
+    @Override public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode != REQ_NOTIFICATIONS) return;
+        boolean enabled = notificationsEnabled();
+        if (enabled) ReminderReceiver.scheduleFromPrefs(this);
+        sendNotificationPermission(enabled);
+    }
 
     @Override protected void onStop() {
         super.onStop();
@@ -647,6 +681,7 @@ public class MainActivity extends Activity {
             try {
                 JSONObject o = new JSONObject();
                 o.put("versionCode", shellCode()).put("versionName", shellName())
+                 .put("notificationsEnabled", notificationsEnabled())
                  .put("page", activePage).put("bundledPage", bundledPage).put("justApplied", justApplied)
                  .put("updateUrl", updateUrl())
                  .put("lastCheck", prefs.getLong("lastCheck", 0))
@@ -670,6 +705,29 @@ public class MainActivity extends Activity {
         }
 
         @JavascriptInterface public void checkForUpdates() { startCheck(true); }
+
+        @JavascriptInterface public void requestNotificationPermission() {
+            runOnUiThread(new Runnable() {
+                @Override public void run() { MainActivity.this.requestNotifications(); }
+            });
+        }
+
+        @JavascriptInterface public void scheduleReminders(
+                final String harvestDate,
+                final String twoDayTitle,
+                final String twoDayBody,
+                final String oneDayTitle,
+                final String oneDayBody,
+                final String backupTitle,
+                final String backupBody) {
+            runOnUiThread(new Runnable() {
+                @Override public void run() {
+                    ReminderReceiver.savePlanAndSchedule(
+                            MainActivity.this, harvestDate, twoDayTitle, twoDayBody,
+                            oneDayTitle, oneDayBody, backupTitle, backupBody);
+                }
+            });
+        }
 
         @JavascriptInterface public void installUpdate() {
             runOnUiThread(new Runnable() {
