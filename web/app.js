@@ -1142,7 +1142,7 @@ const t = (k, ...a) => {
   return s;
 };
 
-const VER = "1.9.0";
+const VER = "1.9.2";
 const SECURITY_NOTICE_VERSION = "1.8.5";
 /* Your company, shown at the bottom of the Data tab. Leave it empty to show the app name instead. */
 const COMPANY = "CyberTech Lanka";
@@ -1346,7 +1346,8 @@ let estateSyncTimer = 0,
   estateSyncRunning = false,
   estateSyncQueued = false,
   estateSyncQueuedToast = false,
-  estateRequestsEstateId = "";
+  estateRequestsEstateId = "",
+  estateInviteRunning = false;
 const MEMBER_ROLES = ["member_1", "member_2", "member_3", "member_4", "member_5"],
   MEMBER_FEATURES = ["overview", "months", "insights", "forecast"],
   FEATURE_LABELS = {
@@ -1388,7 +1389,9 @@ async function copyTextToClipboard(text) {
   if (!copied) throw new Error(t("sync_copy_failed"));
 }
 function defaultEstateRoute() {
-  return activeEstateId ? "months" : "overview";
+  if (!activeEstateId) return "overview";
+  if (!accessReady || !estateSyncState.active) return "months";
+  return ["owner", "manager"].includes(estateSyncState.active.role) ? "overview" : "months";
 }
 function estateErrorText(error) {
   const message = error && error.message ? error.message : String(error);
@@ -1794,7 +1797,7 @@ async function syncEstateNow(showToast) {
     estateSyncState.error = estateErrorText(error);
     invalidateAllViews();
     header();
-    go(canViewEstateRoute(route) ? route : "months");
+    if (accessReady) go(canViewEstateRoute(route) ? route : defaultEstateRoute());
     setSync("", "sync_fail");
     if (route === "data") render();
     if (showToast) toast(estateSyncState.error);
@@ -1870,7 +1873,6 @@ async function activateEstate(estateId, migrateLocal = true) {
   estateSyncState.features = [];
   invalidateAllViews();
   header();
-  if (route !== "months") go("months");
   stateStorageKey = targetKey;
   LS.set(ESTATE_ACTIVE_KEY, estateId);
   const userId = ESTATE_SYNC.publicStatus().user?.id;
@@ -1882,6 +1884,7 @@ async function activateEstate(estateId, migrateLocal = true) {
   persist(false);
   await syncEstateNow(false);
   await refreshEstatePanel();
+  go(defaultEstateRoute());
   render();
 }
 async function useLocalLedger() {
@@ -2042,7 +2045,7 @@ function estateSyncCard() {
       ${activeEstateId && estateSyncState.active ? `<div class="sync-estate-controls">
         <h3>${t("sync_active")}: ${esc(estateSyncState.active.estates.name)}</h3>
         <div class="btnrow"><button class="btn" id="estateSyncNow" ${estateSyncState.busy ? "disabled" : ""}>${t("sync_sync_now")}</button>
-          ${estateSyncState.active.role === "owner" ? `<button class="btn" id="estateNewInvite">${t("sync_new_invite")}</button>` : ""}</div>
+          ${estateSyncState.active.role === "owner" ? `<button class="btn" id="estateNewInvite" ${estateInviteRunning ? "disabled" : ""}>${t("sync_new_invite")}</button>` : ""}</div>
         ${estateSyncState.invite ? `<p>${t("sync_invite_created")}</p><p><code>${esc(estateSyncState.invite.invite_code)}</code> <button class="btn small" data-copy-invite>${t("sync_copy_invite")}</button></p><p class="hint">${t("sync_invite_expires", esc(new Date(estateSyncState.invite.expires_at).toLocaleString()))}</p>` : ""}
         ${estateSyncState.active.role === "owner" && estateSyncState.invites.length ? `<h3>${t("sync_invites")}</h3>${estateSyncState.invites.map((invite) => `<div class="fields member-row"><span>${esc(new Date(invite.expires_at).toLocaleString())}</span><button class="btn small danger" data-revoke-invite="${esc(invite.invite_id)}">${t("sync_revoke_invite")}</button></div>`).join("")}` : ""}
         ${estateSyncState.error ? `<p class="err">${esc(estateSyncState.error)}</p>` : ""}
@@ -4955,17 +4958,33 @@ document.addEventListener("click", async (e) => {
     });
   if (b.id === "estateActivate") return runEstateAction(() => activateEstate($("#estateSelect").value));
   if (b.id === "estateSyncNow") return runEstateAction(() => syncEstateNow(true));
-  if (b.dataset.copyInvite)
+  if (b.hasAttribute("data-copy-invite"))
     return runEstateAction(async () => {
       if (!estateSyncState.invite) throw new Error(t("sync_copy_failed"));
       await copyTextToClipboard(estateSyncState.invite.invite_code);
     }, "sync_invite_copied");
-  if (b.id === "estateNewInvite")
+  if (b.id === "estateNewInvite") {
+    if (estateInviteRunning) return;
+    estateInviteRunning = true;
+    b.disabled = true;
     return runEstateAction(async () => {
-      estateSyncState.invite = await ESTATE_SYNC.createInvite(activeEstateId);
-      if (!estateSyncState.invite) throw new Error("The server did not return an invitation.");
+      const estateId = activeEstateId,
+        previousInvite = estateSyncState.invite;
+      estateSyncState.invite = null;
+      const invite = await ESTATE_SYNC.createInvite(estateId);
+      if (activeEstateId !== estateId) return;
+      if (
+        previousInvite &&
+        (invite.invite_id === previousInvite.invite_id || invite.invite_code === previousInvite.invite_code)
+      )
+        throw new Error("The estate service did not return a new invitation.");
+      estateSyncState.invite = invite;
       await refreshEstatePanel();
-    }, "sync_invite_created");
+    }, "sync_invite_created").finally(() => {
+      estateInviteRunning = false;
+      if (route === "data") render();
+    });
+  }
   if (b.dataset.revokeInvite)
     return runEstateAction(async () => {
       if (!(await confirmBox(t("sync_revoke_invite"), t("sync_revoke_invite_confirm"), t("sync_revoke_invite")))) return;
@@ -5289,7 +5308,12 @@ document.addEventListener("change", (e) => {
 });
 
 if (LS.get("coconut-ledger-skin") === "light") setSkin("light");
-route = activeEstateId ? "months" : ROUTES.indexOf(location.hash.slice(1)) >= 0 ? location.hash.slice(1) : "overview";
+route = "overview";
+if (location.hash !== "#overview") {
+  try {
+    history.replaceState(null, "", "#overview");
+  } catch (error) {}
+}
 readShell();
 /* Start-up: the loading screen plays while every tab is built and kept in memory. */
 (async function boot() {

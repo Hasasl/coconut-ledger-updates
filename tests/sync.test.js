@@ -5,6 +5,7 @@ const test = require("node:test");
 const vm = require("node:vm");
 
 const source = fs.readFileSync(path.join(__dirname, "..", "web", "sync.js"), "utf8");
+const appSource = fs.readFileSync(path.join(__dirname, "..", "web", "app.js"), "utf8");
 
 function createClient(fetch) {
   const values = new Map(),
@@ -152,6 +153,56 @@ test("join requests submit the invite and require server confirmation", async ()
     { p_invite_code: "a".repeat(64), p_display_name: "Member" },
     { p_invite_code: "b".repeat(64), p_display_name: "Member" },
   ]);
+});
+
+test("each invite creation returns a fresh server-generated code", async () => {
+  const calls = [],
+    { client } = createClient(async (url, options) => {
+      if (url.endsWith("/auth/v1/token?grant_type=password"))
+        return response({
+          access_token: "access",
+          refresh_token: "refresh",
+          expires_in: 3600,
+          user: { id: "owner-1" },
+        });
+      if (url.endsWith("/rest/v1/rpc/create_estate_invite")) {
+        calls.push(JSON.parse(options.body));
+        const index = calls.length;
+        return response([
+          {
+            invite_id: `invite-${index}`,
+            invite_code: String(index).repeat(64),
+            expires_at: `2026-11-${17 + index}T00:00:00Z`,
+          },
+        ]);
+      }
+      return response(null);
+    });
+  client.setConfig({ url: "https://estate.supabase.co", anonKey: "public" });
+  await client.signIn("owner@example.test", "long-password");
+
+  const first = await client.createInvite("estate-1");
+  const second = await client.createInvite("estate-1");
+  assert.notEqual(first.invite_code, second.invite_code);
+  assert.notEqual(first.invite_id, second.invite_id);
+  assert.deepEqual(calls, [{ p_estate_id: "estate-1" }, { p_estate_id: "estate-1" }]);
+  const invalidClient = createClient(async (url) =>
+    url.endsWith("/auth/v1/token?grant_type=password")
+      ? response({
+          access_token: "access",
+          refresh_token: "refresh",
+          expires_in: 3600,
+          user: { id: "owner-1" },
+        })
+      : response([{ invite_id: "invite-bad", invite_code: "old-code", expires_at: "2026-11-18T00:00:00Z" }]),
+  ).client;
+  invalidClient.setConfig({ url: "https://estate.supabase.co", anonKey: "public" });
+  await invalidClient.signIn("owner@example.test", "long-password");
+  await assert.rejects(invalidClient.createInvite("estate-1"), /valid invitation/);
+});
+
+test("copy-invite handler recognizes its valueless HTML data attribute", () => {
+  assert.match(appSource, /if \(b\.hasAttribute\("data-copy-invite"\)\)/);
 });
 
 test("role controls use the authorized RPCs for memberships, features, and status changes", async () => {

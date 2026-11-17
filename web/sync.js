@@ -205,7 +205,15 @@
   }
   async function createInvite(estateId) {
     const rows = await rpc("create_estate_invite", { p_estate_id: estateId });
-    return rows && rows[0];
+    const invite = Array.isArray(rows) ? rows[0] : null;
+    if (
+      !invite ||
+      !invite.invite_id ||
+      !/^[0-9a-f]{64}$/i.test(invite.invite_code || "") ||
+      !invite.expires_at
+    )
+      throw new Error("The estate service did not return a valid invitation.");
+    return invite;
   }
   async function listInvites(estateId) {
     return rpc("list_estate_invites", { p_estate_id: estateId });

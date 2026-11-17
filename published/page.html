@@ -1404,6 +1404,7 @@ label.fld {
   color: var(--ink-2);
   justify-content: flex-end;
 }
+.password-input-wrap input,
 label.fld input,
 label.fld textarea,
 textarea.box {
@@ -1417,12 +1418,61 @@ textarea.box {
   width: 100%;
   min-width: 0;
 }
+.password-field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+}
+.password-field > label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.password-input-wrap {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+.password-field .password-input-wrap input {
+  padding-right: 44px;
+}
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  place-items: center;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.password-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+.password-toggle .eye-slash {
+  opacity: 0;
+}
+.password-toggle[aria-pressed="true"] .eye-slash {
+  opacity: 1;
+}
+.password-toggle:hover {
+  color: var(--ink);
+}
 label.fld.lead input {
   font-family: var(--display);
   font-size: 22px;
   font-weight: 700;
   color: var(--accent);
 }
+.password-input-wrap input:not([type="checkbox"]):focus,
 label.fld input:not([type="checkbox"]):focus,
 textarea:focus {
   outline: 2px solid var(--accent);
@@ -3034,7 +3084,15 @@ html:not([lang="si"]) .ld-tag .si {
   }
   async function createInvite(estateId) {
     const rows = await rpc("create_estate_invite", { p_estate_id: estateId });
-    return rows && rows[0];
+    const invite = Array.isArray(rows) ? rows[0] : null;
+    if (
+      !invite ||
+      !invite.invite_id ||
+      !/^[0-9a-f]{64}$/i.test(invite.invite_code || "") ||
+      !invite.expires_at
+    )
+      throw new Error("The estate service did not return a valid invitation.");
+    return invite;
   }
   async function listInvites(estateId) {
     return rpc("list_estate_invites", { p_estate_id: estateId });
@@ -3044,7 +3102,10 @@ html:not([lang="si"]) .ld-tag .si {
   }
   async function requestAccess(code, displayName) {
     const rows = await rpc("request_estate_access", { p_invite_code: code, p_display_name: displayName });
-    return rows && rows[0];
+    const request = Array.isArray(rows) ? rows[0] : null;
+    if (!request || !request.estate_id || !request.estate_name || request.request_status !== "pending")
+      throw new Error("The server did not confirm the join request.");
+    return request;
   }
   async function listRequests(estateId) {
     const rows = await rpc("list_estate_join_requests", { p_estate_id: estateId });
@@ -3238,6 +3299,8 @@ const L = {
     sync_connection_settings: "Supabase connection settings",
     sync_email: "Email",
     sync_password: "Password",
+    sync_show_password: "Show password",
+    sync_hide_password: "Hide password",
     sync_signin: "Sign in",
     sync_login_success: "Signed in",
     sync_signup: "Create account",
@@ -3252,6 +3315,7 @@ const L = {
     sync_display_name: "Your name for the estate",
     sync_join: "Send join request",
     sync_pending_owner: "Request sent. An owner must approve it before this device can access records.",
+    sync_new_join_request: "New join request from {0}. Open Data to review.",
     sync_estates: "Your approved estates",
     sync_select_estate: "Select estate",
     sync_set_active: "Open estate",
@@ -3777,6 +3841,8 @@ const L = {
     sync_connection_settings: "Supabase සම්බන්ධතා සැකසුම්",
     sync_email: "විද්‍යුත් තැපෑල",
     sync_password: "මුරපදය",
+    sync_show_password: "මුරපදය පෙන්වන්න",
+    sync_hide_password: "මුරපදය සඟවන්න",
     sync_signin: "ඇතුළු වන්න",
     sync_login_success: "ඇතුළු වුණා",
     sync_signup: "ගිණුමක් සාදන්න",
@@ -3791,6 +3857,7 @@ const L = {
     sync_display_name: "වත්තේ පෙන්වන ඔබේ නම",
     sync_join: "එක්වීමේ ඉල්ලීම යවන්න",
     sync_pending_owner: "ඉල්ලීම යැවුණා. මෙම උපාංගයට දත්ත ලබාගැනීමට පෙර හිමිකරු අනුමත කළ යුතුය.",
+    sync_new_join_request: "{0} වෙතින් එක්වීමේ නව ඉල්ලීමක්. සමාලෝචනය කිරීමට දත්ත පිටුව විවෘත කරන්න.",
     sync_estates: "ඔබට අනුමත වතු",
     sync_select_estate: "වත්ත තෝරන්න",
     sync_set_active: "වත්ත විවෘත කරන්න",
@@ -4341,7 +4408,7 @@ const t = (k, ...a) => {
   return s;
 };
 
-const VER = "1.9.1";
+const VER = "1.9.2";
 const SECURITY_NOTICE_VERSION = "1.8.5";
 /* Your company, shown at the bottom of the Data tab. Leave it empty to show the app name instead. */
 const COMPANY = "CyberTech Lanka";
@@ -4544,7 +4611,9 @@ let estateSyncState = {
 let estateSyncTimer = 0,
   estateSyncRunning = false,
   estateSyncQueued = false,
-  estateSyncQueuedToast = false;
+  estateSyncQueuedToast = false,
+  estateRequestsEstateId = "",
+  estateInviteRunning = false;
 const MEMBER_ROLES = ["member_1", "member_2", "member_3", "member_4", "member_5"],
   MEMBER_FEATURES = ["overview", "months", "insights", "forecast"],
   FEATURE_LABELS = {
@@ -4586,7 +4655,9 @@ async function copyTextToClipboard(text) {
   if (!copied) throw new Error(t("sync_copy_failed"));
 }
 function defaultEstateRoute() {
-  return activeEstateId ? "months" : "overview";
+  if (!activeEstateId) return "overview";
+  if (!accessReady || !estateSyncState.active) return "months";
+  return ["owner", "manager"].includes(estateSyncState.active.role) ? "overview" : "months";
 }
 function estateErrorText(error) {
   const message = error && error.message ? error.message : String(error);
@@ -4992,7 +5063,7 @@ async function syncEstateNow(showToast) {
     estateSyncState.error = estateErrorText(error);
     invalidateAllViews();
     header();
-    go(canViewEstateRoute(route) ? route : "months");
+    if (accessReady) go(canViewEstateRoute(route) ? route : defaultEstateRoute());
     setSync("", "sync_fail");
     if (route === "data") render();
     if (showToast) toast(estateSyncState.error);
@@ -5068,7 +5139,6 @@ async function activateEstate(estateId, migrateLocal = true) {
   estateSyncState.features = [];
   invalidateAllViews();
   header();
-  if (route !== "months") go("months");
   stateStorageKey = targetKey;
   LS.set(ESTATE_ACTIVE_KEY, estateId);
   const userId = ESTATE_SYNC.publicStatus().user?.id;
@@ -5080,11 +5150,13 @@ async function activateEstate(estateId, migrateLocal = true) {
   persist(false);
   await syncEstateNow(false);
   await refreshEstatePanel();
+  go(defaultEstateRoute());
   render();
 }
 async function useLocalLedger() {
   if (activeEstateId) LS.set(stateStorageKey, JSON.stringify(state));
   activeEstateId = "";
+  estateRequestsEstateId = "";
   accessReady = true;
   estateSyncState.active = null;
   estateSyncState.features = [];
@@ -5129,8 +5201,13 @@ async function refreshEstatePanel() {
   const nextScope = active ? active.role + ":" + estateSyncState.features.slice().sort().join(",") : "";
   if (previousScope && previousScope !== nextScope) invalidateAllViews();
   if (active) prepareMemberAccess(estateId, active.role, estateSyncState.features);
-  estateSyncState.requests = active && active.role === "owner" ? await ESTATE_SYNC.listRequests(estateId) : [];
+  const requests = active && active.role === "owner" ? await ESTATE_SYNC.listRequests(estateId) : [];
   if (activeEstateId !== estateId) return;
+  if (active && active.role === "owner") updateEstateRequests(estateId, requests);
+  else {
+    estateSyncState.requests = [];
+    estateRequestsEstateId = "";
+  }
   estateSyncState.invites = active && active.role === "owner" ? await ESTATE_SYNC.listInvites(estateId) : [];
   if (activeEstateId !== estateId) return;
   if (
@@ -5142,8 +5219,38 @@ async function refreshEstatePanel() {
     active && ["owner", "manager"].includes(active.role) ? await ESTATE_SYNC.listMembers(estateId) : [];
   if (activeEstateId !== estateId) return;
   header();
+  estateSyncState.error = "";
   if (!canViewEstateRoute(route)) go(defaultEstateRoute());
   else if (previousScope && previousScope !== nextScope) render();
+}
+function updateEstateRequests(estateId, requests) {
+  const hasSnapshot = estateRequestsEstateId === estateId,
+    previousIds = hasSnapshot ? new Set(estateSyncState.requests.map((request) => request.id)) : new Set(),
+    newRequest = hasSnapshot ? requests.find((request) => !previousIds.has(request.id)) : null;
+  estateSyncState.requests = requests;
+  estateRequestsEstateId = estateId;
+  if (newRequest)
+    toast(t("sync_new_join_request", newRequest.display_name || newRequest.email || t("sync_request_join")));
+}
+async function refreshOwnerRequests() {
+  if (!ESTATE_SYNC || !activeEstateId || estateSyncState.active?.role !== "owner") return;
+  const estateId = activeEstateId,
+    requests = await ESTATE_SYNC.listRequests(estateId);
+  if (activeEstateId !== estateId || estateSyncState.active?.role !== "owner") return;
+  updateEstateRequests(estateId, requests);
+}
+function refreshEstatePanelOnOpen() {
+  if (!ESTATE_SYNC || !ESTATE_SYNC.publicStatus().signedIn || estateSyncState.active?.role !== "owner") return;
+  const estateId = activeEstateId;
+  void refreshEstatePanel()
+    .then(() => {
+      if (route === "data" && activeEstateId === estateId) render();
+    })
+    .catch((error) => {
+      if (activeEstateId !== estateId) return;
+      estateSyncState.error = estateErrorText(error);
+      if (route === "data") render();
+    });
 }
 function recordLabel(type, id) {
   const local = estateRecords(state).get(type + ":" + id);
@@ -5175,7 +5282,17 @@ function estateSyncCard() {
     <h2>${t("estate_sync_title")}</h2><p class="hint">${t("estate_sync_hint")}</p>
     ${config.url && !status.signedIn ? `<p>${t("sync_not_signed_in")}</p><div class="fields">
       <label class="fld"><span>${t("sync_email")}</span><input id="estateSyncEmail" type="email" autocomplete="email"></label>
-      <label class="fld"><span>${t("sync_password")}</span><input id="estateSyncPassword" type="password" autocomplete="current-password"></label>
+      <div class="password-field">
+        <label class="fld" for="estateSyncPassword">${t("sync_password")}</label>
+        <span class="password-input-wrap">
+        <input id="estateSyncPassword" type="password" autocomplete="current-password">
+        <button class="password-toggle" type="button" data-toggle-password="estateSyncPassword" aria-label="${t("sync_show_password")}" title="${t("sync_show_password")}" aria-pressed="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="eye-slash" d="m3 3 18 18"/>
+          </svg>
+        </button>
+        </span>
+      </div>
       <div class="btnrow"><button class="btn primary" id="estateSyncSignIn">${t("sync_signin")}</button><button class="btn" id="estateSyncSignUp">${t("sync_signup")}</button></div>
       </div>` : ""}
     ${status.signedIn ? `<p>${t("sync_signed_in", esc(status.user.email || ""))}</p>
@@ -5194,7 +5311,7 @@ function estateSyncCard() {
       ${activeEstateId && estateSyncState.active ? `<div class="sync-estate-controls">
         <h3>${t("sync_active")}: ${esc(estateSyncState.active.estates.name)}</h3>
         <div class="btnrow"><button class="btn" id="estateSyncNow" ${estateSyncState.busy ? "disabled" : ""}>${t("sync_sync_now")}</button>
-          ${estateSyncState.active.role === "owner" ? `<button class="btn" id="estateNewInvite">${t("sync_new_invite")}</button>` : ""}</div>
+          ${estateSyncState.active.role === "owner" ? `<button class="btn" id="estateNewInvite" ${estateInviteRunning ? "disabled" : ""}>${t("sync_new_invite")}</button>` : ""}</div>
         ${estateSyncState.invite ? `<p>${t("sync_invite_created")}</p><p><code>${esc(estateSyncState.invite.invite_code)}</code> <button class="btn small" data-copy-invite>${t("sync_copy_invite")}</button></p><p class="hint">${t("sync_invite_expires", esc(new Date(estateSyncState.invite.expires_at).toLocaleString()))}</p>` : ""}
         ${estateSyncState.active.role === "owner" && estateSyncState.invites.length ? `<h3>${t("sync_invites")}</h3>${estateSyncState.invites.map((invite) => `<div class="fields member-row"><span>${esc(new Date(invite.expires_at).toLocaleString())}</span><button class="btn small danger" data-revoke-invite="${esc(invite.invite_id)}">${t("sync_revoke_invite")}</button></div>`).join("")}` : ""}
         ${estateSyncState.error ? `<p class="err">${esc(estateSyncState.error)}</p>` : ""}
@@ -6913,6 +7030,7 @@ function moveInd() {
 function go(r) {
   if (ROUTES.indexOf(r) < 0) r = "overview";
   if (!canViewEstateRoute(r)) r = defaultEstateRoute();
+  if (r === "data") refreshEstatePanelOnOpen();
   if (r === route && pages[r] && pages[r].classList.contains("on")) return scrollTo(0, 0);
   const dir = r === route ? "" : ROUTES.indexOf(r) > ROUTES.indexOf(route) ? "fwd" : "back";
   route = r;
@@ -8050,6 +8168,17 @@ document.addEventListener("click", async (e) => {
     return render({ dir: still() ? "" : "fade" });
   }
   if (b.id === "skinBtn") return toggleSkin(e);
+  if (b.dataset.togglePassword) {
+    const input = $("#" + b.dataset.togglePassword);
+    if (!input) return;
+    const visible = input.type === "password",
+      label = t(visible ? "sync_hide_password" : "sync_show_password");
+    input.type = visible ? "text" : "password";
+    b.setAttribute("aria-label", label);
+    b.setAttribute("title", label);
+    b.setAttribute("aria-pressed", String(visible));
+    return;
+  }
   if (b.id === "estateSyncSignIn")
     return runEstateAction(async () => {
       await ESTATE_SYNC.signIn($("#estateSyncEmail").value, $("#estateSyncPassword").value);
@@ -8095,17 +8224,33 @@ document.addEventListener("click", async (e) => {
     });
   if (b.id === "estateActivate") return runEstateAction(() => activateEstate($("#estateSelect").value));
   if (b.id === "estateSyncNow") return runEstateAction(() => syncEstateNow(true));
-  if (b.dataset.copyInvite)
+  if (b.hasAttribute("data-copy-invite"))
     return runEstateAction(async () => {
       if (!estateSyncState.invite) throw new Error(t("sync_copy_failed"));
       await copyTextToClipboard(estateSyncState.invite.invite_code);
     }, "sync_invite_copied");
-  if (b.id === "estateNewInvite")
+  if (b.id === "estateNewInvite") {
+    if (estateInviteRunning) return;
+    estateInviteRunning = true;
+    b.disabled = true;
     return runEstateAction(async () => {
-      estateSyncState.invite = await ESTATE_SYNC.createInvite(activeEstateId);
-      if (!estateSyncState.invite) throw new Error("The server did not return an invitation.");
+      const estateId = activeEstateId,
+        previousInvite = estateSyncState.invite;
+      estateSyncState.invite = null;
+      const invite = await ESTATE_SYNC.createInvite(estateId);
+      if (activeEstateId !== estateId) return;
+      if (
+        previousInvite &&
+        (invite.invite_id === previousInvite.invite_id || invite.invite_code === previousInvite.invite_code)
+      )
+        throw new Error("The estate service did not return a new invitation.");
+      estateSyncState.invite = invite;
       await refreshEstatePanel();
-    }, "sync_invite_created");
+    }, "sync_invite_created").finally(() => {
+      estateInviteRunning = false;
+      if (route === "data") render();
+    });
+  }
   if (b.dataset.revokeInvite)
     return runEstateAction(async () => {
       if (!(await confirmBox(t("sync_revoke_invite"), t("sync_revoke_invite_confirm"), t("sync_revoke_invite")))) return;
@@ -8429,7 +8574,12 @@ document.addEventListener("change", (e) => {
 });
 
 if (LS.get("coconut-ledger-skin") === "light") setSkin("light");
-route = activeEstateId ? "months" : ROUTES.indexOf(location.hash.slice(1)) >= 0 ? location.hash.slice(1) : "overview";
+route = "overview";
+if (location.hash !== "#overview") {
+  try {
+    history.replaceState(null, "", "#overview");
+  } catch (error) {}
+}
 readShell();
 /* Start-up: the loading screen plays while every tab is built and kept in memory. */
 (async function boot() {
@@ -8469,7 +8619,15 @@ readShell();
   initCloud();
   initializeEstateSync();
   setInterval(() => {
-    if (document.visibilityState === "visible") syncEstateNow(false);
+    if (document.visibilityState !== "visible") return;
+    syncEstateNow(false);
+    if (route !== "data") {
+      const estateId = activeEstateId;
+      refreshOwnerRequests().catch((error) => {
+        if (activeEstateId === estateId && estateSyncState.active?.role === "owner")
+          estateSyncState.error = estateErrorText(error);
+      });
+    }
   }, 30000);
   mirror();
   syncNativeReminders();
