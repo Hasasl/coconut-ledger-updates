@@ -36,7 +36,6 @@ KEY = ROOT / "signing" / "ledger.keystore"
 PUB = ROOT / "published"
 MANIFEST = ROOT / "update.json"
 PACKAGE = "com.estateledger.coconut"
-DEFAULT_PASSWORD = "coconut-ledger"
 
 
 def stop(msg):
@@ -93,7 +92,9 @@ def main():
         if pp.get("sha256") == sha256(page_bytes) and pa.get("sha256") == sha256(apk_bytes):
             stop("Nothing changed since the last release.")
 
-    pw = getpass.getpass("Signing key password (press Enter to use the default): ") or DEFAULT_PASSWORD
+    pw = getpass.getpass("Signing key password: ")
+    if not pw:
+        stop("A signing key password is required.")
     try:
         key, _cert, _ = pkcs12.load_key_and_certificates(KEY.read_bytes(), pw.encode())
     except ValueError:

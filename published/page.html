@@ -3241,6 +3241,7 @@ const L = {
     upd_err_file: "The downloaded file did not match, so it was not used. Try again later.",
     upd_err_bad: "The link does not point to a valid update.json file.",
     upd_applied: "Updated to version {0}",
+    upd_security_applied: "Major security update {0} installed automatically. No action is needed.",
     upd_banner: "Android app version {0} is ready to install.",
     upd_saved: "Link saved",
     upd_badlink: "The link must start with https://",
@@ -3662,6 +3663,7 @@ const L = {
     upd_err_file: "බාගත කළ ගොනුව නොගැළපුණු නිසා භාවිත කළේ නැත. පසුව නැවත උත්සාහ කරන්න.",
     upd_err_bad: "සබැඳිය වලංගු update.json ගොනුවකට යොමු නොවේ.",
     upd_applied: "සංස්කරණය {0} දක්වා යාවත්කාලීන විය",
+    upd_security_applied: "ප්‍රධාන ආරක්ෂක යාවත්කාලීනය {0} ස්වයංක්‍රීයව ස්ථාපනය විය. ඔබට කිසිවක් කිරීමට අවශ්‍ය නැත.",
     upd_banner: "Android යෙදුම් සංස්කරණය {0} ස්ථාපනයට සූදානම්.",
     upd_saved: "සබැඳිය සුරැකුණා",
     upd_badlink: "සබැඳිය https:// වලින් පටන් ගත යුතුයි.",
@@ -3726,7 +3728,8 @@ const t = (k, ...a) => {
   return s;
 };
 
-const VER = "1.8.4";
+const VER = "1.8.5";
+const SECURITY_NOTICE_VERSION = "1.8.5";
 /* Your company, shown at the bottom of the Data tab. Leave it empty to show the app name instead. */
 const COMPANY = "CyberTech Lanka";
 const FIRST_YEAR = 2026;
@@ -3859,7 +3862,7 @@ function norm() {
   if (state.freePer == null || !isFinite(state.freePer)) state.freePer = 100;
   if (!(state.shares >= 1)) state.shares = 2;
   if (!state.shareName) state.shareName = "child";
-  if (!state.cur) state.cur = "Rs";
+  if (typeof state.cur !== "string" || !state.cur.trim() || state.cur.length > 6) state.cur = "Rs";
   if (!state.estate) state.estate = "My coconut estate";
   if (!(state.transRate >= 0)) state.transRate = 2;
   state.rejInLoaded = !!state.rejInLoaded;
@@ -3957,8 +3960,8 @@ function pushCloud() {
 const NF0 = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }),
   NF2 = new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 });
 const N = (v) => NF0.format(Math.round(v));
-const money = (v) => (v < 0 ? "−" : "") + state.cur + " " + N(Math.abs(v));
-const price = (v) => state.cur + " " + NF2.format(Math.round(v * 100) / 100);
+const money = (v) => (v < 0 ? "−" : "") + esc(state.cur) + " " + N(Math.abs(v));
+const price = (v) => esc(state.cur) + " " + NF2.format(Math.round(v * 100) / 100);
 const short = (v) => {
   const a = Math.abs(v);
   return a >= 1e6
@@ -5379,12 +5382,12 @@ addEventListener("resize", () => {
 });
 
 /* ---------- dialogs ---------- */
-function toast(m) {
+function toast(m, duration = 2600) {
   const el = $("#toast");
   el.textContent = m;
   el.classList.add("on");
   clearTimeout(toast.t);
-  toast.t = setTimeout(() => el.classList.remove("on"), 2600);
+  toast.t = setTimeout(() => el.classList.remove("on"), duration);
 }
 const dlg = $("#dlg"),
   ask = $("#ask"),
@@ -5785,7 +5788,11 @@ $("#incomeDel").onclick = async () => {
 };
 
 /* ---------- share, save, import ---------- */
-const q = (s) => '"' + String(s || "").replace(/"/g, '""') + '"';
+const q = (s) => {
+  let value = String(s == null ? "" : s);
+  if (/^[\s\u0000-\u001f]*[=+\-@]/.test(value)) value = "'" + value;
+  return '"' + value.replace(/"/g, '""') + '"';
+};
 function toCSV() {
   const header =
       "date,harvested,rejected,home_use,price," +
@@ -5886,6 +5893,7 @@ function validIsoDate(date) {
 function validateFullBackup(backup) {
   if (!backup || typeof backup !== "object" || Array.isArray(backup) || !Array.isArray(backup.harvests))
     throw t("i_notbk");
+  if (backup.cur != null && (typeof backup.cur !== "string" || backup.cur.length > 6)) throw t("i_bad");
   const otherIncome = backup.otherIncome == null ? [] : backup.otherIncome,
     monthPayouts = backup.monthPayouts == null ? {} : backup.monthPayouts,
     reviewedMonths = backup.reviewedMonths == null ? [] : backup.reviewedMonths,
@@ -6656,17 +6664,24 @@ readShell();
   showPendingNote();
 })();
 /* An update applied while the app was in the background is announced when the person comes back. */
-let pendingNote = "";
+let pendingNote = "",
+  pendingNoteDuration = 2600;
 function showPendingNote() {
-  pendingNote = SH.justApplied ? t("upd_applied", SH.justApplied) : "";
+  const applied = SH.justApplied;
+  pendingNoteDuration = applied === SECURITY_NOTICE_VERSION ? 8000 : 2600;
+  pendingNote = applied
+    ? applied === SECURITY_NOTICE_VERSION
+      ? t("upd_security_applied", applied)
+      : t("upd_applied", applied)
+    : "";
   if (pendingNote && document.visibilityState !== "hidden") {
-    toast(pendingNote);
+    toast(pendingNote, pendingNoteDuration);
     pendingNote = "";
   }
 }
 window.onAppResume = () => {
   if (pendingNote) {
-    setTimeout(() => toast(pendingNote), 250);
+    setTimeout(() => toast(pendingNote, pendingNoteDuration), 250);
     pendingNote = "";
   }
 };

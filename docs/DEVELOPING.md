@@ -26,6 +26,8 @@ You edit web/  ->  python tools/make_release.py  ->  GitHub Desktop: Commit + Pu
 - A **page update** needs no install. Phones switch to it by themselves.
 - An **Android shell update** shows "Install" in the app. The person taps it once.
 - Records never leave the phone. GitHub only holds the app, never anyone's data.
+- The 1.8.5 page update displays a one-time in-app security notice after it applies. Update checks run
+  when the app is opened or resumed; this is not a push notification while the app is closed.
 
 ---
 
@@ -80,7 +82,9 @@ That push also publishes page version 1.6.1, which looks the same as 1.6.0. When
 4. **Raise the version.** Near the top of `web/app.js`, change `const VER = "1.6.1";` to the next
    number, for example `"1.6.2"`. The release tool stops you if you forget.
 5. **Publish.** Choose **Terminal > Run Task > Release: publish an update**, or run
-   `python tools/make_release.py`. Press **Enter** at the password question.
+   `python tools/make_release.py`. Enter the signing key password when prompted. Use a strong, unique
+   password (at least 16 characters is recommended). Keep it private; do not put it in source code or
+   commit it.
 6. **Upload.** In GitHub Desktop, type a summary like `Release 1.6.2`, click **Commit to main**, then
    **Push origin**.
 
@@ -263,8 +267,11 @@ You need this only to change Java code, permissions, the icon, or the built-in u
 `MIN_SHELL` in `web/app.js` to the new `versionCode`. Phones still on the old shell keep their current
 page until they install the new app.
 
-**Never lose the key.** Android only installs an update over the existing app if it is signed with the
-same `ledger.keystore`. Without it, every phone would have to uninstall and lose its records.
+**Protect and preserve the key.** Android only installs an update over the existing app if it is signed
+with the same `ledger.keystore`. Without it, every phone would have to uninstall and lose its records.
+The former built-in password fallback was publicly readable. If your local keystore still uses that
+password, change it to a strong, unique password before publishing. The keystore is ignored by Git,
+but keep it and its password out of shared folders and backups that others can access.
 
 ---
 
