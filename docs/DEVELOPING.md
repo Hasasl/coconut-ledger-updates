@@ -48,7 +48,7 @@ Before using real estate data:
 2. In the Supabase SQL Editor, run these migrations in order, once each:
    `202611170001_estate_sync.sql`, `202611172001_add_member_roles.sql`,
    `202611172002_role_access_controls.sql`, `202611180001_restrict_estate_membership_visibility.sql`,
-   and `202611180002_manager_device_sync.sql`. Do not rerun an already-applied migration.
+   `202611180002_manager_device_sync.sql`, and `202611210001_bug_reports.sql`. Do not rerun an already-applied migration.
 3. The project's URL and public publishable/anon key are bundled into `web/sync.js`. They are public
    client settings, not secrets; never bundle a `service_role` or `sb_secret` key. To inspect or change
    these settings on a device, open **Data > App updates** and tap the app version line seven times.
@@ -67,6 +67,33 @@ Before using real estate data:
    coconut counts, that managers cannot edit ledger records through normal app actions or elevate users,
    and that the explicit **Use this device's data** action merges records with conflict review. Confirm
    role changes take effect on other devices during the foreground refresh.
+
+### Bug reports
+
+- Reports require an existing signed-in Supabase account. The submission RPC allows up to five reports
+  per account per hour, validates field sizes and page/version values, and redacts common secrets and
+  email addresses from error-log text. Users can read only their own reports; only developer accounts
+  can list all reports or change status. No storage bucket or service-role key in the app is needed.
+- Bug reporting has no visible button or setting for users. On supported phones, shaking opens the
+  report form; it never submits automatically. The form is ignored while another dialog, form field, or
+  report is active, requires several rapid motion peaks, and has a 30-second cooldown. Reports require
+  the user's existing Supabase sign-in.
+- iOS requires motion access to be requested from a user gesture. The app silently requests it on the
+  user's first tap after the page opens; iOS may show its native motion-permission prompt at that time.
+  If permission is denied or motion sensors are unavailable, shake reporting cannot work on that device.
+- To authorize a developer, open **Supabase Dashboard > Authentication > Users**, select the developer's
+  account, and set its **App Metadata** JSON to include `"bug_report_admin": true` (preserve any other
+  existing app metadata). Do not set this in user-editable metadata. Have the developer sign out and
+  back in so the signed JWT includes the claim. On Android, open **Data > App updates** and tap the
+  version line seven times to reveal developer options. Sign in as the authorized developer; the
+  developer-only bug-report dashboard appears there. The dashboard also checks the server-side admin
+  RPC, and database RLS is the security boundary.
+- Error logs are kept in session storage, capped at 20 entries, and include sanitized JavaScript errors,
+  unhandled rejections, and failed API paths/statuses. They omit request/response bodies, form values,
+  passwords, tokens, console output, and user-interaction history. Diagnostics are attached with a
+  submitted report; the report description and optional activity text are user-entered.
+- Motion events may be unavailable or permission-blocked in some browsers and embedded app shells.
+  There is intentionally no visible fallback report control. Screen captures and recordings are not collected.
 
 Owners can approve requests as Manager or Member 1–5. Owners control each Member role's analytical
 tabs; the monthly harvest-date and coconut-count view is always available. Members cannot open the
@@ -210,6 +237,9 @@ Press **Ctrl+Shift+O** in VS Code to jump to a function by name.
   migration removes direct authenticated record reads and adds the filtered record RPC. Incremental
   migrations restrict membership visibility and add the explicit Manager device-sync RPC without
   enabling ordinary Manager writes.
+- `supabase/migrations/202611210001_bug_reports.sql` adds the authenticated, rate-limited bug-report
+  RPC, owner/admin-only report access, and status updates guarded by the `app_metadata.bug_report_admin`
+  claim. The developer report list is capped at the latest 100 reports.
 - `supabase/functions/manage-account/index.ts` performs owner-verified global account actions. Its
   service-role key must remain a server-side Supabase secret and must never be bundled into the app.
 

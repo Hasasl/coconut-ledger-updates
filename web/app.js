@@ -16,6 +16,29 @@ const L = {
     sub_data: "Share, backup, import and settings",
     add_harvest: "+ Add harvest",
     add_short: "+ Harvest",
+    bug_report_title: "Report a problem",
+    bug_report_hint:
+      "Sign in to sync to submit. The app attaches its version, current page, browser/device type and recent redacted application errors; it never includes passwords or form contents.",
+    bug_report_problem: "What happened?",
+    bug_report_actions: "What were you doing? (optional)",
+    bug_report_submit: "Submit report",
+    bug_report_signin: "Sign in under Estate sync before submitting a report.",
+    bug_report_success: "Thank you. Your report was submitted.",
+    bug_report_dashboard: "Developer bug reports",
+    bug_report_admin_setup: "Developer access is configured with the Supabase app_metadata claim.",
+    bug_report_loading: "Checking report access…",
+    bug_report_load_failed: "Could not load bug reports: {0}",
+    bug_report_empty: "No reports match this status.",
+    bug_report_new_count: "New: {0}",
+    bug_report_unresolved: "Unresolved: {0}",
+    bug_report_count_scope: "Counts cover the latest 100 reports.",
+    bug_report_filter: "Filter reports",
+    bug_report_all: "All",
+    bug_report_refresh: "Refresh",
+    bug_report_version: "App {0} · {1} · {2}",
+    bug_report_device: "Device",
+    bug_report_logs: "Recent application errors",
+    bug_report_status: "Status",
     sync_device: "On this device",
     sync_ok: "Synced",
     sync_busy: "Syncing",
@@ -562,6 +585,29 @@ const L = {
     sub_data: "බෙදාගැනීම, උපස්ථ, ඇතුළත් කිරීම සහ සැකසුම්",
     add_harvest: "+ අස්වැන්නක් එක් කරන්න",
     add_short: "+ අස්වැන්න",
+    bug_report_title: "ගැටලුවක් වාර්තා කරන්න",
+    bug_report_hint:
+      "වාර්තාව යැවීමට සමමුහුර්ත ගිණුමට ඇතුළු වන්න. යෙදුම් අනුවාදය, පිටුව, බ්‍රවුසරය/උපාංග වර්ගය සහ රහස් ඉවත් කළ මෑත දෝෂ ඇතුළත් වේ; මුරපද හෝ පෝරමයේ අන්තර්ගතය ඇතුළත් නොවේ.",
+    bug_report_problem: "සිදු වූයේ කුමක්ද?",
+    bug_report_actions: "එවිට ඔබ කරමින් සිටියේ කුමක්ද? (විකල්ප)",
+    bug_report_submit: "වාර්තාව යවන්න",
+    bug_report_signin: "වාර්තාව යැවීමට පෙර වතු සමමුහුර්තකරණයට ඇතුළු වන්න.",
+    bug_report_success: "ස්තුතියි. ඔබේ වාර්තාව යවා ඇත.",
+    bug_report_dashboard: "සංවර්ධක දෝෂ වාර්තා",
+    bug_report_admin_setup: "සංවර්ධක ප්‍රවේශය Supabase app_metadata මඟින් සකසා ඇත.",
+    bug_report_loading: "වාර්තා ප්‍රවේශය පරීක්ෂා කරමින්…",
+    bug_report_load_failed: "දෝෂ වාර්තා ලබාගත නොහැක: {0}",
+    bug_report_empty: "මෙම තත්ත්වයට ගැළපෙන වාර්තා නොමැත.",
+    bug_report_new_count: "අලුත්: {0}",
+    bug_report_unresolved: "විසඳී නැති: {0}",
+    bug_report_count_scope: "ගණන් කරන්නේ නවතම වාර්තා 100ක් තුළ පමණි.",
+    bug_report_filter: "වාර්තා පෙරන්න",
+    bug_report_all: "සියල්ල",
+    bug_report_refresh: "නැවුම් කරන්න",
+    bug_report_version: "යෙදුම {0} · {1} · {2}",
+    bug_report_device: "උපාංගය",
+    bug_report_logs: "මෑත යෙදුම් දෝෂ",
+    bug_report_status: "තත්ත්වය",
     sync_device: "මේ උපාංගයේ",
     sync_ok: "සුරැකුණා",
     sync_busy: "සුරකිමින්",
@@ -1150,7 +1196,7 @@ const t = (k, ...a) => {
   return s;
 };
 
-const VER = "1.9.3";
+const VER = "1.9.5";
 const SECURITY_NOTICE_VERSION = "1.8.5";
 /* Your company, shown at the bottom of the Data tab. Leave it empty to show the app name instead. */
 const COMPANY = "CyberTech Lanka";
@@ -3169,7 +3215,8 @@ const devTools = () =>
     ${ESTATE_SYNC ? `<h3>${t("dev_sync_settings")}</h3><p class="hint">${t("sync_connection_public")}</p>
     <label class="fld">${t("supabase_url")}<input id="devSyncUrl" type="url" autocomplete="off" value="${esc(ESTATE_SYNC.getConfig().url)}"></label>
     <label class="fld">${t("supabase_key")}<input id="devSyncKey" type="text" autocomplete="off" spellcheck="false" value="${esc(ESTATE_SYNC.getConfig().anonKey)}"></label>
-    <div class="btnrow" style="margin-top:10px"><button class="btn primary" data-dev-sync="save">${t("sync_save_config")}</button><button class="btn" data-dev-sync="reset">${t("sync_reset_config")}</button></div>` : ""}</div>`
+    <div class="btnrow" style="margin-top:10px"><button class="btn primary" data-dev-sync="save">${t("sync_save_config")}</button><button class="btn" data-dev-sync="reset">${t("sync_reset_config")}</button></div>` : ""}
+    <section class="card bug-report-report" id="bugReportAdminCard" aria-live="polite" hidden></section></div>`
     : "";
 const updCard = () =>
   UPD
@@ -3675,7 +3722,144 @@ function remindersCard() {
     <p>${t(enabled ? "reminders_enabled" : "reminders_disabled")}</p>
     <button class="btn${enabled ? "" : " primary"}" id="enableReminders" ${enabled ? "disabled" : ""}>${t("enable_reminders")}</button></div>`;
 }
+const bugReportDialog = $("#bugReportDialog"),
+  bugReportDashboardState = {
+    userId: "",
+    checked: false,
+    authorized: false,
+    loading: false,
+    error: "",
+    reports: [],
+    filter: "ALL",
+  };
+function bugReportCanShakeOpen() {
+  const active = document.activeElement;
+  return (
+    document.visibilityState === "visible" &&
+    !document.querySelector("dialog[open]") &&
+    !document.body.classList.contains("rep") &&
+    !(active && active.matches("input,textarea,select,[contenteditable='true']"))
+  );
+}
+function openBugReport() {
+  if (!bugReportDialog || bugReportDialog.open) return;
+  $("#bugReportForm").reset();
+  $("#bugReportError").textContent = "";
+  openD(bugReportDialog);
+  setTimeout(() => $("#bugReportDescription").focus(), 0);
+}
+function bugReportDashboardHtml() {
+  const reports = bugReportDashboardState.reports.filter(
+      (report) => bugReportDashboardState.filter === "ALL" || report.status === bugReportDashboardState.filter,
+    ),
+    newCount = bugReportDashboardState.reports.filter((report) => report.status === "NEW").length,
+    unresolvedCount = bugReportDashboardState.reports.filter((report) =>
+      ["NEW", "INVESTIGATING"].includes(report.status),
+    ).length;
+  return `<h2>${t("bug_report_dashboard")}</h2>
+    <p class="hint">${t("bug_report_new_count", newCount)} · ${t("bug_report_unresolved", unresolvedCount)} · ${t("bug_report_count_scope")}</p>
+    <div class="btnrow">
+      <label class="fld">${t("bug_report_filter")}<select id="bugReportFilter">
+        ${["ALL", "NEW", "INVESTIGATING", "FIXED", "CLOSED"].map((status) =>
+          `<option value="${status}" ${status === bugReportDashboardState.filter ? "selected" : ""}>${status === "ALL" ? t("bug_report_all") : status}</option>`,
+        ).join("")}
+      </select></label>
+      <button class="btn small" id="bugReportRefresh">${t("bug_report_refresh")}</button>
+    </div>
+    ${bugReportDashboardState.error ? `<p class="err">${esc(bugReportDashboardState.error)}</p>` : ""}
+    ${reports.length ? reports.map((report) => {
+      const device = report.device_info || {},
+        details = [
+          t("bug_report_version", report.app_version, t("nav_" + report.current_page), report.created_at ? new Date(report.created_at).toLocaleString() : ""),
+          [device.browser, device.operating_system, device.device_type].filter(Boolean).join(" · "),
+        ].filter(Boolean);
+      return `<article class="card bug-report-item">
+        <h3>${esc(report.description)}</h3>
+        <p class="hint">${details.map(esc).join(" · ")}</p>
+        ${report.user_actions ? `<p><b>${t("bug_report_actions")}</b><br>${esc(report.user_actions)}</p>` : ""}
+        <details><summary>${t("bug_report_logs")} (${(report.error_logs || []).length})</summary>
+          <pre>${esc(JSON.stringify(report.error_logs || [], null, 2))}</pre>
+        </details>
+        <label class="fld">${t("bug_report_status")}<select data-bug-report-status data-report-id="${esc(report.id)}">
+          ${["NEW", "INVESTIGATING", "FIXED", "CLOSED"].map((status) =>
+            `<option value="${status}" ${status === report.status ? "selected" : ""}>${status}</option>`,
+          ).join("")}
+        </select></label>
+      </article>`;
+    }).join("") : `<p class="hint">${t("bug_report_empty")}</p>`}`;
+}
+function renderBugReportDashboard() {
+  const card = $("#bugReportAdminCard");
+  if (!card) return;
+  if (!bugReportDashboardState.authorized) {
+    if (!bugReportDashboardState.error) {
+      card.hidden = true;
+      return;
+    }
+    card.innerHTML = `<h2>${t("bug_report_dashboard")}</h2><p class="err">${esc(bugReportDashboardState.error)}</p>`;
+    card.hidden = false;
+    return;
+  }
+  card.innerHTML = bugReportDashboardHtml();
+  card.hidden = false;
+}
+async function loadBugReportDashboard(force = false) {
+  const card = $("#bugReportAdminCard"),
+    user = ESTATE_SYNC && ESTATE_SYNC.publicStatus().user,
+    userId = user && user.id;
+  if (!card) return;
+  if (!ESTATE_SYNC || !userId) {
+    bugReportDashboardState.userId = "";
+    bugReportDashboardState.checked = true;
+    bugReportDashboardState.authorized = false;
+    bugReportDashboardState.error = "";
+    bugReportDashboardState.reports = [];
+    card.hidden = true;
+    return;
+  }
+  if (bugReportDashboardState.userId !== userId) {
+    bugReportDashboardState.checked = false;
+    bugReportDashboardState.authorized = false;
+    bugReportDashboardState.error = "";
+    bugReportDashboardState.reports = [];
+    bugReportDashboardState.filter = "ALL";
+  }
+  if (user.bugReportAdmin !== true) {
+    bugReportDashboardState.userId = userId;
+    bugReportDashboardState.checked = true;
+    bugReportDashboardState.authorized = false;
+    bugReportDashboardState.error = "";
+    bugReportDashboardState.reports = [];
+    card.hidden = true;
+    return;
+  }
+  if (bugReportDashboardState.loading) return;
+  if (!force && bugReportDashboardState.checked && bugReportDashboardState.userId === userId) {
+    renderBugReportDashboard();
+    return;
+  }
+  bugReportDashboardState.loading = true;
+  bugReportDashboardState.userId = userId;
+  bugReportDashboardState.error = "";
+  card.hidden = false;
+  card.innerHTML = `<h2>${t("bug_report_dashboard")}</h2><p class="hint">${t("bug_report_loading")}</p>`;
+  try {
+    const authorized = await ESTATE_SYNC.isBugReportAdmin();
+    if (ESTATE_SYNC.publicStatus().user?.id !== userId) return;
+    bugReportDashboardState.authorized = authorized === true;
+    bugReportDashboardState.reports = authorized ? await ESTATE_SYNC.listBugReports() : [];
+    bugReportDashboardState.checked = true;
+  } catch (error) {
+    bugReportDashboardState.error = t("bug_report_load_failed", estateErrorText(error));
+    bugReportDashboardState.authorized = false;
+    bugReportDashboardState.checked = true;
+  } finally {
+    bugReportDashboardState.loading = false;
+    if (ESTATE_SYNC?.publicStatus().user?.id === userId) renderBugReportDashboard();
+  }
+}
 function vData() {
+  setTimeout(() => void loadBugReportDashboard(), 0);
   return (
     banner() +
     `<div class="grid datagrid stag">
@@ -4988,11 +5172,20 @@ document.addEventListener("click", (e) => {
     const c = $("#updCard");
     if (c) c.insertAdjacentHTML("beforeend", devTools());
     toast(t("dev_on"));
+    void loadBugReportDashboard();
   }
 });
 document.addEventListener("click", async (e) => {
   const b = e.target.closest("button,[data-go]");
   if (!b) return;
+  if (b.hasAttribute("data-close-bug-report")) {
+    closeD(bugReportDialog);
+    return;
+  }
+  if (b.id === "bugReportRefresh") {
+    void loadBugReportDashboard(true);
+    return;
+  }
   if (b.dataset.go) return go(b.dataset.go);
   if (b.dataset.lang) {
     if (b.dataset.lang === lang) return;
@@ -5017,8 +5210,10 @@ document.addEventListener("click", async (e) => {
   if (b.id === "estateSyncSignIn")
     return runEstateAction(async () => {
       await ESTATE_SYNC.signIn($("#estateSyncEmail").value, $("#estateSyncPassword").value);
+      window.CoconutBugReports.setUserScope(ESTATE_SYNC.publicStatus().user?.id);
       estateSyncState.error = "";
       await initializeEstateSync();
+      void loadBugReportDashboard();
     }, "sync_login_success");
   if (b.id === "estateSyncSignUp")
     return runEstateAction(async () => {
@@ -5027,7 +5222,9 @@ document.addEventListener("click", async (e) => {
         estateSyncState.error = "";
         toast(t("sync_email_confirm"));
       } else {
+        window.CoconutBugReports.setUserScope(ESTATE_SYNC.publicStatus().user?.id);
         await initializeEstateSync();
+        void loadBugReportDashboard();
       }
     });
   if (b.id === "estateSyncSignOut")
@@ -5038,7 +5235,14 @@ document.addEventListener("click", async (e) => {
       } catch (error) {
         logoutError = error;
       }
+      window.CoconutBugReports.setUserScope("");
       estateSyncState = { estates: [], active: null, requests: [], invites: [], members: [], invite: null, error: "", busy: false };
+      bugReportDashboardState.userId = "";
+      bugReportDashboardState.checked = true;
+      bugReportDashboardState.authorized = false;
+      bugReportDashboardState.error = "";
+      bugReportDashboardState.reports = [];
+      if ($("#bugReportAdminCard")) $("#bugReportAdminCard").hidden = true;
       await useLocalLedger();
       setSync("", "sync_device");
       if (logoutError) throw logoutError;
@@ -5381,7 +5585,65 @@ document.addEventListener("click", async (e) => {
     return;
   }
 });
+$("#bugReportForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const description = $("#bugReportDescription").value.trim(),
+    userActions = $("#bugReportActions").value.trim(),
+    errorElement = $("#bugReportError"),
+    submitButton = $("#bugReportSubmit");
+  if (description.length < 5) {
+    errorElement.textContent = t("bug_report_problem") + " (5 characters minimum)";
+    $("#bugReportDescription").focus();
+    return;
+  }
+  if (!ESTATE_SYNC || !ESTATE_SYNC.publicStatus().signedIn) {
+    errorElement.textContent = t("bug_report_signin");
+    return;
+  }
+  submitButton.disabled = true;
+  errorElement.textContent = "";
+  try {
+    await ESTATE_SYNC.submitBugReport({
+      description,
+      user_actions: userActions,
+      app_version: VER,
+      current_page: route,
+      device_info: window.CoconutBugReports.deviceInfo(),
+      error_logs: window.CoconutBugReports.recentErrors(),
+    });
+    closeD(bugReportDialog);
+    toast(t("bug_report_success"));
+    if (bugReportDashboardState.authorized) void loadBugReportDashboard(true);
+  } catch (error) {
+    errorElement.textContent = estateErrorText(error);
+  } finally {
+    submitButton.disabled = false;
+  }
+});
 document.addEventListener("change", (e) => {
+  if (e.target.id === "bugReportFilter") {
+    bugReportDashboardState.filter = e.target.value;
+    renderBugReportDashboard();
+    return;
+  }
+  if (e.target.matches("[data-bug-report-status]")) {
+    const control = e.target,
+      reportId = control.dataset.reportId,
+      status = control.value;
+    control.disabled = true;
+    void ESTATE_SYNC.updateBugReportStatus(reportId, status)
+      .then((updated) => {
+        bugReportDashboardState.reports = bugReportDashboardState.reports.map((report) =>
+          report.id === reportId ? updated : report,
+        );
+        bugReportDashboardState.error = "";
+      })
+      .catch((error) => {
+        bugReportDashboardState.error = estateErrorText(error);
+      })
+      .finally(() => renderBugReportDashboard());
+    return;
+  }
   if (e.target.id === "impFile" && e.target.files[0]) {
     const r = new FileReader();
     r.onload = () => doImport(String(r.result));
@@ -5459,7 +5721,9 @@ readShell();
     setTimeout(() => loader.remove(), 450);
   }
   initCloud();
+  window.CoconutBugReports.setUserScope(ESTATE_SYNC?.publicStatus().user?.id);
   initializeEstateSync();
+  window.CoconutBugReports.startShake(openBugReport, bugReportCanShakeOpen);
   setInterval(() => {
     if (document.visibilityState !== "visible") return;
     syncEstateNow(false, { queueIfBusy: false });

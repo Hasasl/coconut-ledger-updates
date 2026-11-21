@@ -55,13 +55,14 @@ test("developer reset restores the bundled connection and clears the local sessi
           access_token: "access",
           refresh_token: "refresh",
           expires_in: 3600,
-          user: { id: "user-1" },
+          user: { id: "user-1", app_metadata: { bug_report_admin: true } },
         })
       : response({}),
   );
   client.setConfig({ url: "https://other.supabase.co", anonKey: "public" });
   await client.signIn("owner@example.test", "long-password");
   assert.equal(client.publicStatus().signedIn, true);
+  assert.equal(client.publicStatus().user.bugReportAdmin, true);
   client.resetConfig();
   assert.equal(client.getConfig().url, "https://ukmyztfewlklzitmpccc.supabase.co");
   assert.match(client.getConfig().anonKey, /^sb_publishable_/);
@@ -388,6 +389,58 @@ test("device-data publishing uses its dedicated RPC", async () => {
   ]);
   assert.equal(result.ok, true);
   assert.deepEqual(rpcPaths, ["sync_estate_records_from_device"]);
+});
+
+test("bug report submission, admin listing, and status updates use existing authenticated sync", async () => {
+  const calls = [],
+    { client } = createClient(async (url, options) => {
+      if (url.endsWith("/auth/v1/token?grant_type=password"))
+        return response({
+          access_token: "access",
+          refresh_token: "refresh",
+          expires_in: 3600,
+          user: { id: "developer-1" },
+        });
+      calls.push({ url, options });
+      if (url.endsWith("/rpc/is_bug_report_admin")) return response(true);
+      if (url.endsWith("/rpc/submit_bug_report")) return response("report-id");
+      if (options.method === "PATCH")
+        return response([{ id: "123e4567-e89b-12d3-a456-426614174000", status: "INVESTIGATING" }]);
+      return response([{ id: "123e4567-e89b-12d3-a456-426614174000", status: "NEW" }]);
+    });
+  client.setConfig({ url: "https://estate.supabase.co", anonKey: "public" });
+  await client.signIn("developer@example.test", "long-password");
+  assert.equal(await client.isBugReportAdmin(), true);
+  const report = {
+    description: "The chart is blank",
+    user_actions: "I opened Insights",
+    app_version: "1.9.4",
+    current_page: "insights",
+    device_info: { browser: "Chrome", operating_system: "Android", device_type: "mobile" },
+    error_logs: [],
+  };
+  assert.equal(await client.submitBugReport(report), "report-id");
+  const reports = await client.listBugReports();
+  assert.equal(reports[0].status, "NEW");
+  const updated = await client.updateBugReportStatus("123e4567-e89b-12d3-a456-426614174000", "INVESTIGATING");
+  assert.equal(updated.status, "INVESTIGATING");
+  assert.equal(calls[0].url.endsWith("/rpc/is_bug_report_admin"), true);
+  assert.deepEqual(JSON.parse(calls[1].options.body), {
+    p_description: report.description,
+    p_user_actions: report.user_actions,
+    p_app_version: report.app_version,
+    p_current_page: report.current_page,
+    p_device_info: report.device_info,
+    p_error_logs: report.error_logs,
+  });
+  assert.match(calls[2].url, /\/rest\/v1\/bug_reports\?/);
+  assert.equal(calls[3].options.method, "PATCH");
+  assert.deepEqual(JSON.parse(calls[3].options.body), { status: "INVESTIGATING" });
+  await assert.rejects(client.updateBugReportStatus("not-a-uuid", "CLOSED"), /identifier/);
+  await assert.rejects(
+    client.updateBugReportStatus("123e4567-e89b-12d3-a456-426614174000", "INVALID"),
+    /valid bug report status/,
+  );
 });
 
 test("sync requests report a clear error when the network request times out", async () => {

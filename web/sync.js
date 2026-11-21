@@ -96,7 +96,13 @@
     return {
       configured: !!config,
       signedIn: !!(session && session.access_token),
-      user: session && session.user ? { id: session.user.id, email: session.user.email || "" } : null,
+      user: session && session.user
+        ? {
+            id: session.user.id,
+            email: session.user.email || "",
+            bugReportAdmin: session.user.app_metadata?.bug_report_admin === true,
+          }
+        : null,
     };
   }
   function authHeaders(token) {
@@ -107,7 +113,23 @@
       "Content-Type": "application/json",
     };
   }
-  async function responseJson(response) {
+  function recordApiFailure(status, path) {
+    if (typeof window.dispatchEvent !== "function" || typeof CustomEvent !== "function") return;
+    window.dispatchEvent(
+      new CustomEvent("coconut-api-error", {
+        detail: { status, path: String(path || "").split("?")[0].slice(0, 200) },
+      }),
+    );
+  }
+  async function trackedFetch(url, options, path) {
+    try {
+      return await fetchWithTimeout(url, options);
+    } catch (error) {
+      recordApiFailure(0, path);
+      throw error;
+    }
+  }
+  async function responseJson(response, path) {
     const text = await response.text();
     let data = null;
     if (text) {
@@ -118,6 +140,7 @@
       }
     }
     if (!response.ok) {
+      recordApiFailure(response.status, path);
       const message = data && (data.msg || data.message || data.error_description || data.error);
       throw new Error(message || `Sync request failed (${response.status}).`);
     }
@@ -125,12 +148,13 @@
   }
   async function authRequest(path, body) {
     if (!config) throw new Error("Configure the estate sync connection first.");
-    const response = await fetchWithTimeout(config.url + "/auth/v1/" + path, {
+    const requestPath = "/auth/v1/" + path,
+      response = await trackedFetch(config.url + requestPath, {
       method: "POST",
       headers: authHeaders(),
       body: JSON.stringify(body),
-    });
-    return responseJson(response);
+    }, requestPath);
+    return responseJson(response, requestPath);
   }
   async function saveSession(next) {
     session = next && next.access_token ? next : null;
@@ -157,28 +181,28 @@
   async function api(path, options, includeResponse) {
     const active = await currentSession();
     if (!active) throw new Error("Sign in to sync this estate.");
-    const response = await fetchWithTimeout(config.url + path, {
+    const response = await trackedFetch(config.url + path, {
       ...options,
       headers: {
         ...authHeaders(active.access_token),
         ...(options && options.headers ? options.headers : {}),
       },
-    });
+    }, path);
     if (response.status === 401 && session && session.refresh_token) {
       session.expires_at = 0;
       const renewed = await currentSession();
       if (!renewed) throw new Error("Your session expired. Sign in again to sync this estate.");
-      const retry = await fetchWithTimeout(config.url + path, {
+      const retry = await trackedFetch(config.url + path, {
         ...options,
         headers: {
           ...authHeaders(renewed.access_token),
           ...(options && options.headers ? options.headers : {}),
         },
-      });
-      const data = await responseJson(retry);
+      }, path);
+      const data = await responseJson(retry, path);
       return includeResponse ? { data, response: retry } : data;
     }
-    const data = await responseJson(response);
+    const data = await responseJson(response, path);
     return includeResponse ? { data, response } : data;
   }
   async function rpc(name, args) {
@@ -201,11 +225,12 @@
     let logoutError;
     try {
       if (session && session.access_token && config) {
-        const response = await fetchWithTimeout(config.url + "/auth/v1/logout", {
+        const path = "/auth/v1/logout",
+          response = await trackedFetch(config.url + path, {
           method: "POST",
           headers: authHeaders(session.access_token),
-        });
-        if (!response.ok && response.status !== 401) await responseJson(response);
+        }, path);
+        if (!response.ok && response.status !== 401) await responseJson(response, path);
       }
     } catch (error) {
       logoutError = error;
@@ -319,6 +344,43 @@
       body: JSON.stringify({ action, estate_id: estateId, user_id: userId }),
     });
   }
+  async function isBugReportAdmin() {
+    return rpc("is_bug_report_admin");
+  }
+  async function submitBugReport(report) {
+    return rpc("submit_bug_report", {
+      p_description: report.description,
+      p_user_actions: report.user_actions || "",
+      p_app_version: report.app_version,
+      p_current_page: report.current_page,
+      p_device_info: report.device_info,
+      p_error_logs: report.error_logs,
+    });
+  }
+  async function listBugReports() {
+    const rows = await api(
+      "/rest/v1/bug_reports?select=id,description,user_actions,app_version,current_page,device_info,error_logs,status,created_at&order=created_at.desc&limit=100",
+    );
+    if (!Array.isArray(rows)) throw new Error("The bug-report service returned invalid report data.");
+    return rows;
+  }
+  async function updateBugReportStatus(reportId, status) {
+    if (!/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(reportId || ""))
+      throw new Error("Invalid bug report identifier.");
+    if (!["NEW", "INVESTIGATING", "FIXED", "CLOSED"].includes(status))
+      throw new Error("Choose a valid bug report status.");
+    const rows = await api(
+      "/rest/v1/bug_reports?id=eq." + encodeURIComponent(reportId),
+      {
+        method: "PATCH",
+        headers: { Prefer: "return=representation" },
+        body: JSON.stringify({ status }),
+      },
+    );
+    if (!Array.isArray(rows) || rows.length !== 1)
+      throw new Error("The bug report was not updated. Check developer access and try again.");
+    return rows[0];
+  }
   async function listRecords(estateId) {
     const path = "/rest/v1/rpc/list_estate_records",
       pageSize = 500;
@@ -417,6 +479,10 @@
     listRoleFeatures,
     setRoleFeatures,
     manageAccount,
+    isBugReportAdmin,
+    submitBugReport,
+    listBugReports,
+    updateBugReportStatus,
     listRecords,
     submitChanges,
     submitDeviceChanges: (estateId, changes) =>

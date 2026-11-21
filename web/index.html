@@ -328,8 +328,29 @@
         </footer>
       </div>
     </dialog>
+    <dialog id="bugReportDialog" aria-labelledby="bugReportTitle">
+      <form class="sheet" id="bugReportForm" novalidate>
+        <header>
+          <h2 id="bugReportTitle" data-t="bug_report_title"></h2>
+          <button type="button" class="x" data-close-bug-report aria-label="Close">×</button>
+        </header>
+        <p class="hint" data-t="bug_report_hint"></p>
+        <label class="fld"><span data-t="bug_report_problem"></span>
+          <textarea id="bugReportDescription" rows="4" maxlength="4000" required aria-required="true"></textarea>
+        </label>
+        <label class="fld"><span data-t="bug_report_actions"></span>
+          <textarea id="bugReportActions" rows="3" maxlength="2000"></textarea>
+        </label>
+        <p class="err" id="bugReportError" aria-live="polite"></p>
+        <footer>
+          <button type="button" class="btn" data-close-bug-report data-t="cancel"></button>
+          <button type="submit" class="btn primary" id="bugReportSubmit" data-t="bug_report_submit"></button>
+        </footer>
+      </form>
+    </dialog>
 
     <script src="sync.js"></script>
+    <script src="bug-report.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
