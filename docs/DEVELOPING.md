@@ -397,6 +397,8 @@ You need this only to change Java code, permissions, the icon, or the built-in u
    The app lands in `android/app/release/app-release.apk`.
 6. Run `python tools/make_release.py`. When it asks to use the new app from Android Studio, type `y`.
 7. Commit and push in GitHub Desktop. Phones show **Install**.
+   On Android 8 and newer, the first install may ask you to allow Coconut Ledger to install apps.
+   Approve it; the app resumes the installer when you return.
 8. On GitHub, create a new **Release** (for example `v1.7.0`) and attach `published/CoconutLedger.apk`,
    so new users download the new version.
 

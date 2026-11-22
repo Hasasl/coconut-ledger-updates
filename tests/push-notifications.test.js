@@ -68,7 +68,7 @@ test("Android handles data-only FCM messages and protects account notifications 
     ),
     true,
   );
-  assert.match(app, /const VER = "1\.9\.6"/);
+  assert.match(app, /const VER = "1\.9\.7"/);
   assert.match(app, /const MIN_SHELL = 12/);
   assert.match(appGradle, /firebase-bom:35\.2\.0/);
 });

@@ -12,6 +12,7 @@ keystore.properties
 *service-account*.json
 *serviceAccount*.json
 *firebase-adminsdk*.json
+google-services.json
 
 # ---- Made by tools, rebuilt any time ----
 android/app/src/main/assets/

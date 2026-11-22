@@ -563,6 +563,7 @@ const L = {
     upd_err_net: "Could not reach the update link. Check the internet connection and the link.",
     upd_err_sig: "This update is not signed with your key, so it was not used.",
     upd_err_file: "The downloaded file did not match, so it was not used. Try again later.",
+    upd_err_permission: "Allow Coconut Ledger to install apps in Android settings, then tap Install again.",
     upd_err_bad: "The link does not point to a valid update.json file.",
     upd_applied: "Updated to version {0}",
     upd_security_applied: "Major security update {0} installed automatically. No action is needed.",
@@ -1196,7 +1197,7 @@ const t = (k, ...a) => {
   return s;
 };
 
-const VER = "1.9.6";
+const VER = "1.9.7";
 const SECURITY_NOTICE_VERSION = "1.8.5";
 /* Your company, shown at the bottom of the Data tab. Leave it empty to show the app name instead. */
 const COMPANY = "CyberTech Lanka";
@@ -3219,6 +3220,7 @@ function updStatusHtml() {
           net: "upd_err_net",
           sig: "upd_err_sig",
           file: "upd_err_file",
+          permission: "upd_err_permission",
         }[s.code] || "upd_err_bad",
       ),
     );

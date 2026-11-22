@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.print.PrintAttributes;
 import android.print.PrintManager;
+import android.provider.Settings;
 import android.util.Base64;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,6 +63,7 @@ public class MainActivity extends Activity {
     static final String PUBKEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsJJ21UlllRg9r2tLxWSeJIi5XUa7Aoe0AT59DxEKg+Sl7MYOQI8ocQzimRlY+1shQ2F75W8kxfGpibFHHwlDayoXH2CVSpW62U2JfqN4WZkcCdZGI7qa8IU0XoI1WZ2vOdsE8oe5EA3w9KPo4jaAAbJCHUpHzArwX9SgyG3Gvr9PTBUSv5LfFZpDJNyOlaDYKSs716MNEqVXeQ1V+7Z4Tw6PjfWMy78EPPft4dhNVBghHNyamblrTi+xGJjGKvAQjXFmgnHhfNbfOQPwWEGIXolNLwmKH+kXBqjHUAiAsVNPoCUGO23mqNKh9LP9+9wn+bBlRMBQosDtrJr2ySa0fQIDAQAB";
     private static final int REQ_PICK = 1, REQ_SAVE = 2;
     private static final int REQ_NOTIFICATIONS = 3;
+    private static final int REQ_INSTALL_PERMISSION = 4;
     private static final long AUTO_CHECK_EVERY = 5L * 60L * 1000L;
     private static volatile MainActivity currentActivity;
 
@@ -437,6 +439,18 @@ public class MainActivity extends Activity {
         if (busy) return;
         final String url = prefs.getString("apkUrl", ""), sha = prefs.getString("apkSha", "");
         if (url.isEmpty()) { status("error", "bad", true, ""); return; }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                && !getPackageManager().canRequestPackageInstalls()) {
+            try {
+                Intent settings = new Intent(
+                        Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                        Uri.parse("package:" + getPackageName()));
+                startActivityForResult(settings, REQ_INSTALL_PERMISSION);
+            } catch (Exception ex) {
+                status("error", "permission", true, "");
+            }
+            return;
+        }
         busy = true;
         status("downloading", "", true, "");
         new Thread(new Runnable() {
@@ -622,6 +636,13 @@ public class MainActivity extends Activity {
             }
             pendingText = null;
             tellPage(ok);
+        } else if (req == REQ_INSTALL_PERMISSION) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                    && getPackageManager().canRequestPackageInstalls()) {
+                installUpdate();
+            } else {
+                status("error", "permission", true, "");
+            }
         }
     }
 
