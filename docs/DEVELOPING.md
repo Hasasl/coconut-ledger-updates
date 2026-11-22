@@ -207,6 +207,18 @@ The page switches after an app check; installing the signed APK completes the sh
 you can undo a commit with right-click > **Revert changes in commit**. Commits only reach the phones
 after you run `make_release.py`.
 
+### Windows desktop app
+
+1. Install Node.js 22 or newer and run `npm install` once from the repository folder.
+2. To run it locally, use `npm run desktop:dev`.
+3. To build the Windows installer, use `npm run desktop:installer`. It creates an x64 installer in
+   `dist\windows\`. The build reads the shared version from `apk/apk_info.json`.
+
+The desktop app keeps its local ledger data in the current Windows user's app data and can sync when
+online. Windows releases are manual: install the newer setup over the old version. The first installer
+is unsigned, so Windows may show a SmartScreen warning. Android-only notifications and APK update
+controls are not available in the desktop app.
+
 ---
 
 ## 5. Try an update on your phone before everyone gets it

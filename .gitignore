@@ -26,6 +26,7 @@ gradle-wrapper.properties
 *.iml
 __pycache__/
 node_modules/
+dist/
 
 # ---- Computer clutter ----
 .DS_Store

@@ -5,10 +5,29 @@ plugins {
 
 // The app's version lives in one place: apk/apk_info.json (make_release.py reads it too).
 def apkInfo = new groovy.json.JsonSlurper().parse(rootProject.file('../apk/apk_info.json'))
+def ciStoreFile = System.getenv('ANDROID_KEYSTORE_PATH')
+def ciStorePassword = System.getenv('ANDROID_KEYSTORE_PASSWORD')
+def ciKeyAlias = System.getenv('ANDROID_KEY_ALIAS')
+def ciKeyPassword = System.getenv('ANDROID_KEY_PASSWORD')
+def ciSigningConfigured = [ciStoreFile, ciStorePassword, ciKeyAlias, ciKeyPassword].any { it != null }
+if (ciSigningConfigured && [ciStoreFile, ciStorePassword, ciKeyAlias, ciKeyPassword].any { !it }) {
+    throw new GradleException('Android release signing requires ANDROID_KEYSTORE_PATH, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, and ANDROID_KEY_PASSWORD.')
+}
 
 android {
     namespace 'com.estateledger.coconut'
     compileSdk 34
+
+    if (ciSigningConfigured) {
+        signingConfigs {
+            ciRelease {
+                storeFile file(ciStoreFile)
+                storePassword ciStorePassword
+                keyAlias ciKeyAlias
+                keyPassword ciKeyPassword
+            }
+        }
+    }
 
     defaultConfig {
         applicationId 'com.estateledger.coconut'
@@ -21,6 +40,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            if (ciSigningConfigured) signingConfig signingConfigs.ciRelease
         }
     }
 

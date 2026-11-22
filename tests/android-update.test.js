@@ -35,3 +35,14 @@ test("Android updater resumes installation after install-source permission is gr
   assert.match(installFlow, /startActivityForResult\(settings, REQ_INSTALL_PERMISSION\)/);
   assert.match(permissionResult, /req == REQ_INSTALL_PERMISSION[\s\S]*canRequestPackageInstalls\(\)[\s\S]*installUpdate\(\)/);
 });
+
+test("Android updater migrates its default feed to the release-only repository", () => {
+  const updateUrl = mainActivity.slice(
+    mainActivity.indexOf("private String updateUrl()"),
+    mainActivity.indexOf("private void autoCheck()"),
+  );
+
+  assert.match(mainActivity, /DEFAULT_UPDATE_URL = "https:\/\/raw\.githubusercontent\.com\/Hasasl\/coconut-ledger-releases\/refs\/heads\/main\/update\.json"/);
+  assert.match(updateUrl, /LEGACY_UPDATE_URL\.equals\(saved\)/);
+  assert.match(updateUrl, /remove\("updateUrl"\)\.putLong\("lastCheck", 0\)/);
+});

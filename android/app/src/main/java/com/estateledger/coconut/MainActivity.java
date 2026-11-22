@@ -58,7 +58,8 @@ import org.json.JSONObject;
 public class MainActivity extends Activity {
     static final String ASSET_URL = "file:///android_asset/index.html";
     /** Where updates come from unless the person sets another link in the Data tab. */
-    static final String DEFAULT_UPDATE_URL = "https://raw.githubusercontent.com/Hasasl/coconut-ledger-updates/refs/heads/main/update.json";
+    static final String DEFAULT_UPDATE_URL = "https://raw.githubusercontent.com/Hasasl/coconut-ledger-releases/refs/heads/main/update.json";
+    private static final String LEGACY_UPDATE_URL = "https://raw.githubusercontent.com/Hasasl/coconut-ledger-updates/refs/heads/main/update.json";
     /** Public half of the signing key in ledger.keystore. Only files signed by the private half are accepted. */
     static final String PUBKEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsJJ21UlllRg9r2tLxWSeJIi5XUa7Aoe0AT59DxEKg+Sl7MYOQI8ocQzimRlY+1shQ2F75W8kxfGpibFHHwlDayoXH2CVSpW62U2JfqN4WZkcCdZGI7qa8IU0XoI1WZ2vOdsE8oe5EA3w9KPo4jaAAbJCHUpHzArwX9SgyG3Gvr9PTBUSv5LfFZpDJNyOlaDYKSs716MNEqVXeQ1V+7Z4Tw6PjfWMy78EPPft4dhNVBghHNyamblrTi+xGJjGKvAQjXFmgnHhfNbfOQPwWEGIXolNLwmKH+kXBqjHUAiAsVNPoCUGO23mqNKh9LP9+9wn+bBlRMBQosDtrJr2ySa0fQIDAQAB";
     private static final int REQ_PICK = 1, REQ_SAVE = 2;
@@ -343,7 +344,14 @@ public class MainActivity extends Activity {
 
     // ---------- update check ----------
 
-    private String updateUrl() { return prefs.getString("updateUrl", DEFAULT_UPDATE_URL).trim(); }
+    private String updateUrl() {
+        String saved = prefs.getString("updateUrl", "").trim();
+        if (saved.isEmpty() || LEGACY_UPDATE_URL.equals(saved)) {
+            if (!saved.isEmpty()) prefs.edit().remove("updateUrl").putLong("lastCheck", 0).apply();
+            return DEFAULT_UPDATE_URL;
+        }
+        return saved;
+    }
 
     private void autoCheck() {
         if (updateUrl().isEmpty()) return;

@@ -1,0 +1,49 @@
+{
+  "name": "coconut-ledger-desktop",
+  "version": "1.9.8",
+  "private": true,
+  "author": "CyberTech Lanka",
+  "description": "Windows desktop app for Coconut Ledger",
+  "main": "desktop/main.cjs",
+  "scripts": {
+    "test": "node --test",
+    "desktop:dev": "node tools/sync_desktop_version.cjs && python tools/build_page.py && electron .",
+    "desktop:installer": "node tools/sync_desktop_version.cjs && python tools/build_page.py && electron-builder --win nsis --x64"
+  },
+  "devDependencies": {
+    "electron": "45.4.1",
+    "electron-builder": "26.18.0"
+  },
+  "build": {
+    "appId": "com.estateledger.coconut.desktop",
+    "productName": "Coconut Ledger",
+    "directories": {
+      "output": "dist\\windows"
+    },
+    "files": [
+      "desktop\\**\\*",
+      "android\\app\\src\\main\\assets\\index.html"
+    ],
+    "win": {
+      "icon": "desktop\\assets\\coconut.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "CoconutLedger-Setup-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "desktop\\assets\\coconut.ico",
+      "uninstallerIcon": "desktop\\assets\\coconut.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}

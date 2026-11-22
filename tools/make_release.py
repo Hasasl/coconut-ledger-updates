@@ -10,8 +10,9 @@ What it does
   3. Writes update.json (the shared release version plus file fingerprints) and signs it with your key
      (signing/ledger.keystore) into update.json.sig.
 
-Then commit and push with GitHub Desktop. Phones read update.json from GitHub, check the signature,
-and update themselves. Never edit update.json, update.json.sig or published/ by hand.
+Set UPDATE_SIGNING_PASSWORD to run without an interactive prompt. CI should publish only update.json,
+update.json.sig, published/page.html and published/CoconutLedger.apk to the public release repository.
+Never publish the source tree or edit generated release files by hand.
 
 Needs once:  pip install cryptography
 """
@@ -20,6 +21,7 @@ import datetime
 import getpass
 import hashlib
 import json
+import os
 import re
 import shutil
 import sys
@@ -49,6 +51,17 @@ def sha256(data):
 
 def vtuple(v):
     return tuple(int(x) for x in re.findall(r"\d+", v or ""))
+
+
+def read_signing_password():
+    password = os.environ.get("UPDATE_SIGNING_PASSWORD")
+    if password is None:
+        if not sys.stdin.isatty():
+            stop("Set UPDATE_SIGNING_PASSWORD when running without an interactive terminal.")
+        password = getpass.getpass("Signing key password: ")
+    if not password:
+        stop("A signing key password is required.")
+    return password
 
 
 def main():
@@ -99,9 +112,7 @@ def main():
             stop("apk/CoconutLedger.apk changed but apk/apk_info.json still has the old versionCode.\n"
                  "Raise versionCode (and versionName) in apk/apk_info.json, rebuild the app in Android Studio, and try again.")
 
-    pw = getpass.getpass("Signing key password: ")
-    if not pw:
-        stop("A signing key password is required.")
+    pw = read_signing_password()
     try:
         key, _cert, _ = pkcs12.load_key_and_certificates(KEY.read_bytes(), pw.encode())
     except ValueError:
@@ -125,10 +136,9 @@ def main():
     MANIFEST.write_bytes(data)
     (ROOT / "update.json.sig").write_bytes(base64.b64encode(sig) + b"\n")
 
-    print("\nDone. Ready to publish:")
+    print("\nRelease artifacts built:")
     print(f"  app version         {ver}")
     print(f"  Android install code {info['versionCode']} (internal)")
-    print("\nNext: in GitHub Desktop, write a summary like 'Release " + ver + "', click Commit to main, then Push origin.")
 
 
 if __name__ == "__main__":

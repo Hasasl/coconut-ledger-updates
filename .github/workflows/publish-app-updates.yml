@@ -1,0 +1,229 @@
+name: Build and publish app updates
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_legacy_feed:
+        description: Keep the old public source-repository feed updated during Android migration
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: coconut-ledger-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: windows-latest
+    outputs:
+      version: ${{ steps.release-version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check out the public release repository
+        uses: actions/checkout@v4
+        with:
+          repository: Hasasl/coconut-ledger-releases
+          token: ${{ secrets.RELEASE_REPO_TOKEN }}
+          path: release-repo
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: android-actions/setup-android@v3
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Android SDK packages
+        shell: pwsh
+        run: sdkmanager --install "platforms;android-34" "build-tools;34.0.0"
+
+      - name: Install build dependencies
+        run: |
+          npm ci
+          python -m pip install cryptography
+
+      - name: Run tests
+        run: |
+          npm test
+          python -m unittest discover -s tests -p "test_*.py"
+
+      - name: Read shared release version
+        id: release-version
+        shell: pwsh
+        run: |
+          $info = Get-Content apk\apk_info.json -Raw | ConvertFrom-Json
+          if ($info.versionName -notmatch '^\d+\.\d+(\.\d+)?$') {
+            throw 'apk\apk_info.json must contain a valid shared versionName.'
+          }
+          "version=$($info.versionName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+      - name: Restore Android signing key
+        shell: pwsh
+        env:
+          ANDROID_SIGNING_KEY_BASE64: ${{ secrets.ANDROID_SIGNING_KEY_BASE64 }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:ANDROID_SIGNING_KEY_BASE64)) {
+            throw 'Configure the ANDROID_SIGNING_KEY_BASE64 Actions secret.'
+          }
+          $keyPath = Join-Path $env:RUNNER_TEMP 'ledger.keystore'
+          $keyBytes = [Convert]::FromBase64String($env:ANDROID_SIGNING_KEY_BASE64)
+          [IO.File]::WriteAllBytes($keyPath, $keyBytes)
+          "ANDROID_KEYSTORE_PATH=$keyPath" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Build signed Android APK
+        shell: pwsh
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_SIGNING_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
+        run: |
+          .\android\gradlew.bat --no-daemon :app:assembleRelease
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $apk = 'android\app\build\outputs\apk\release\app-release.apk'
+          $sdk = if ($env:ANDROID_HOME) { $env:ANDROID_HOME } else { $env:ANDROID_SDK_ROOT }
+          $buildTools = Get-ChildItem (Join-Path $sdk 'build-tools') -Directory | Sort-Object Name -Descending | Select-Object -First 1
+          $apksigner = Join-Path $buildTools.FullName 'apksigner.bat'
+          & $apksigner verify --verbose $apk
+          if ($LASTEXITCODE -ne 0) { throw 'The Android release APK is not signed correctly.' }
+          Copy-Item $apk apk\CoconutLedger.apk -Force
+
+      - name: Use the latest published manifest as the release baseline
+        shell: pwsh
+        run: |
+          if (Test-Path release-repo\update.json) {
+            Copy-Item release-repo\update.json update.json -Force
+          }
+
+      - name: Build and sign update manifest
+        shell: pwsh
+        env:
+          UPDATE_SIGNING_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
+        run: python tools\make_release.py
+
+      - name: Build Windows installer
+        run: npm run desktop:installer
+
+      - name: Upload release-only build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: coconut-ledger-release
+          path: |
+            update.json
+            update.json.sig
+            published/page.html
+            published/CoconutLedger.apk
+            dist/windows/CoconutLedger-Setup-${{ steps.release-version.outputs.version }}-x64.exe
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    needs: build
+    runs-on: windows-latest
+    env:
+      RELEASE_REPOSITORY: Hasasl/coconut-ledger-releases
+    steps:
+      - name: Check out the public release repository
+        uses: actions/checkout@v4
+        with:
+          repository: Hasasl/coconut-ledger-releases
+          token: ${{ secrets.RELEASE_REPO_TOKEN }}
+          path: release-repo
+
+      - name: Check out the legacy Android feed during migration
+        if: ${{ inputs.publish_legacy_feed }}
+        uses: actions/checkout@v4
+        with:
+          repository: Hasasl/coconut-ledger-updates
+          token: ${{ secrets.RELEASE_REPO_TOKEN }}
+          ref: main
+          path: legacy-feed
+
+      - name: Download release-only build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: coconut-ledger-release
+          path: release-output
+
+      - name: Publish Android updater files to the public release repository
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force release-repo\published | Out-Null
+          Copy-Item release-output\update.json release-repo\update.json -Force
+          Copy-Item release-output\update.json.sig release-repo\update.json.sig -Force
+          Copy-Item release-output\published\page.html release-repo\published\page.html -Force
+          Copy-Item release-output\published\CoconutLedger.apk release-repo\published\CoconutLedger.apk -Force
+          git -C release-repo add -- update.json update.json.sig published\page.html published\CoconutLedger.apk
+          if ($LASTEXITCODE -ne 0) { throw 'Could not stage release files.' }
+          git -C release-repo diff --cached --quiet
+          if ($LASTEXITCODE -ne 0) {
+            git -C release-repo config user.name 'github-actions[bot]'
+            git -C release-repo config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git -C release-repo commit -m "Release ${{ needs.build.outputs.version }}"
+            if ($LASTEXITCODE -ne 0) { throw 'Could not commit release files.' }
+            git -C release-repo push origin HEAD:main
+            if ($LASTEXITCODE -ne 0) { throw 'Could not publish release files.' }
+          }
+
+      - name: Mirror the transition update to the old Android feed
+        if: ${{ inputs.publish_legacy_feed }}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force legacy-feed\published | Out-Null
+          Copy-Item release-output\update.json legacy-feed\update.json -Force
+          Copy-Item release-output\update.json.sig legacy-feed\update.json.sig -Force
+          Copy-Item release-output\published\page.html legacy-feed\published\page.html -Force
+          Copy-Item release-output\published\CoconutLedger.apk legacy-feed\published\CoconutLedger.apk -Force
+          git -C legacy-feed add -- update.json update.json.sig published\page.html published\CoconutLedger.apk
+          if ($LASTEXITCODE -ne 0) { throw 'Could not stage the legacy feed update.' }
+          git -C legacy-feed diff --cached --quiet
+          if ($LASTEXITCODE -ne 0) {
+            git -C legacy-feed config user.name 'github-actions[bot]'
+            git -C legacy-feed config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git -C legacy-feed commit -m "Publish Android migration update ${{ needs.build.outputs.version }}"
+            if ($LASTEXITCODE -ne 0) { throw 'Could not commit the legacy feed update.' }
+            git -C legacy-feed push origin HEAD:main
+            if ($LASTEXITCODE -ne 0) { throw 'Could not publish the legacy feed update.' }
+          }
+
+      - name: Publish Windows installer as a GitHub Release asset
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_REPO_TOKEN }}
+        run: |
+          $version = '${{ needs.build.outputs.version }}'
+          $tag = "v$version"
+          $installer = "release-output\dist\windows\CoconutLedger-Setup-$version-x64.exe"
+          if (-not (Test-Path $installer)) { throw "Windows installer not found: $installer" }
+          gh release view $tag --repo $env:RELEASE_REPOSITORY *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $tag $installer --repo $env:RELEASE_REPOSITORY --clobber
+          } else {
+            gh release create $tag $installer --repo $env:RELEASE_REPOSITORY --title "Coconut Ledger $version" --notes "Windows desktop installer for Coconut Ledger $version." --target main
+          }
+          if ($LASTEXITCODE -ne 0) { throw 'Could not publish the Windows installer.' }
+
+  notify:
+    needs: [build, publish]
+    uses: ./.github/workflows/release-push-notification.yml
+    with:
+      version: ${{ needs.build.outputs.version }}
+    secrets:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      PUSH_RELEASE_SECRET: ${{ secrets.PUSH_RELEASE_SECRET }}

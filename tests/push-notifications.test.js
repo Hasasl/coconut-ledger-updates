@@ -16,6 +16,10 @@ const workflow = fs.readFileSync(
   path.join(root, ".github", "workflows", "release-push-notification.yml"),
   "utf8",
 );
+const releaseWorkflow = fs.readFileSync(
+  path.join(root, ".github", "workflows", "publish-app-updates.yml"),
+  "utf8",
+);
 const mainActivity = fs.readFileSync(
   path.join(root, "android", "app", "src", "main", "java", "com", "estateledger", "coconut", "MainActivity.java"),
   "utf8",
@@ -72,8 +76,18 @@ test("Android handles data-only FCM messages and protects account notifications 
   assert.match(appGradle, /firebase-bom:35\.2\.0/);
 });
 
-test("release workflow only runs for published update manifest changes and uses a secret", () => {
-  assert.match(workflow, /paths:[\s\S]*- update\.json/);
+test("release publishing sends only signed update artifacts and notifies Android users", () => {
+  assert.match(releaseWorkflow, /workflow_dispatch/);
+  assert.match(releaseWorkflow, /Hasasl\/coconut-ledger-releases/);
+  assert.match(releaseWorkflow, /secrets\.RELEASE_REPO_TOKEN/);
+  assert.match(releaseWorkflow, /actions\/upload-artifact@v4/);
+  assert.match(releaseWorkflow, /Copy-Item release-output\\update\.json release-repo\\update\.json/);
+  assert.match(releaseWorkflow, /Copy-Item release-output\\published\\page\.html/);
+  assert.match(releaseWorkflow, /Copy-Item release-output\\published\\CoconutLedger\.apk/);
+  assert.match(releaseWorkflow, /publish_legacy_feed/);
+  assert.match(releaseWorkflow, /gh release create/);
+  assert.match(workflow, /workflow_call/);
+  assert.match(workflow, /inputs\.version/);
   assert.match(workflow, /secrets\.PUSH_RELEASE_SECRET/);
   assert.match(workflow, /X-Release-Token/);
   assert.match(workflow, /event: "release"/);
