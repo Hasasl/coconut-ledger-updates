@@ -12,7 +12,6 @@ keystore.properties
 *service-account*.json
 *serviceAccount*.json
 *firebase-adminsdk*.json
-google-services.json
 
 # ---- Made by tools, rebuilt any time ----
 android/app/src/main/assets/
@@ -23,6 +22,7 @@ android/app/build/
 android/local.properties
 android/.idea/
 android/.kotlin/
+android/app/google-services.json
 gradle-wrapper.properties
 *.iml
 __pycache__/

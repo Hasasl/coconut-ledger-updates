@@ -4203,13 +4203,13 @@ const L = {
     upd_link: "Update link",
     upd_save: "Save link",
     upd_check: "Check for updates",
-    upd_cur: "This app: version {0} (Android app {1})",
+    upd_cur: "This app: version {0}",
     upd_none: "No update link. Paste one above, or leave it empty and tap Save link to use the built-in one.",
     upd_checking: "Checking…",
     upd_ok: "Up to date. Last checked {0}.",
     upd_ready: "Version {0} is downloaded. It switches on by itself after you leave the app and come back.",
     upd_restart: "Use it now",
-    upd_apk: "Android app version {0} is available.",
+    upd_apk: "App version {0} is available.",
     upd_install: "Install",
     upd_dl: "Downloading…",
     upd_opened: "The installer is open. Tap Install. If Android asks, allow Coconut Ledger to install apps.",
@@ -4220,7 +4220,7 @@ const L = {
     upd_err_bad: "The link does not point to a valid update.json file.",
     upd_applied: "Updated to version {0}",
     upd_security_applied: "Major security update {0} installed automatically. No action is needed.",
-    upd_banner: "Update available: Android version {0}. Tap Install to get the latest app.",
+    upd_banner: "Update available: version {0}. Tap Install to get the latest app.",
     upd_saved: "Link saved",
     upd_badlink: "The link must start with https://",
     dev_sync_settings: "Estate sync connection",
@@ -4767,14 +4767,14 @@ const L = {
     upd_link: "යාවත්කාලීන සබැඳිය",
     upd_save: "සබැඳිය සුරකින්න",
     upd_check: "යාවත්කාලීන පරීක්ෂා කරන්න",
-    upd_cur: "මෙම යෙදුම: සංස්කරණය {0} (Android යෙදුම {1})",
+    upd_cur: "මෙම යෙදුම: සංස්කරණය {0}",
     upd_none:
       "යාවත්කාලීන සබැඳියක් නැත. ඉහත එකක් අලවන්න, නැත්නම් හිස්ව තබා සබැඳිය සුරකින්න ඔබා යෙදුමේ ඇතුළත් සබැඳිය භාවිත කරන්න.",
     upd_checking: "පරීක්ෂා කරමින්…",
     upd_ok: "අලුත්ම සංස්කරණයයි. අවසන් වරට පරීක්ෂා කළේ {0}.",
     upd_ready: "සංස්කරණය {0} බාගත විය. ඔබ යෙදුමෙන් ඉවත් වී නැවත පැමිණි පසු එය ඉබේම ක්‍රියාත්මක වේ.",
     upd_restart: "දැන් භාවිත කරන්න",
-    upd_apk: "Android යෙදුම් සංස්කරණය {0} ලබා ගත හැක.",
+    upd_apk: "යෙදුම් සංස්කරණය {0} ලබා ගත හැක.",
     upd_install: "ස්ථාපනය කරන්න",
     upd_dl: "බාගත කරමින්…",
     upd_opened:
@@ -4785,7 +4785,7 @@ const L = {
     upd_err_bad: "සබැඳිය වලංගු update.json ගොනුවකට යොමු නොවේ.",
     upd_applied: "සංස්කරණය {0} දක්වා යාවත්කාලීන විය",
     upd_security_applied: "ප්‍රධාන ආරක්ෂක යාවත්කාලීනය {0} ස්වයංක්‍රීයව ස්ථාපනය විය. ඔබට කිසිවක් කිරීමට අවශ්‍ය නැත.",
-    upd_banner: "යාවත්කාලීනයක් ඇත: Android සංස්කරණය {0}. නවතම යෙදුම ලබා ගැනීමට ස්ථාපනය කරන්න ඔබන්න.",
+    upd_banner: "යාවත්කාලීනයක් ඇත: සංස්කරණය {0}. නවතම යෙදුම ලබා ගැනීමට ස්ථාපනය කරන්න ඔබන්න.",
     upd_saved: "සබැඳිය සුරැකුණා",
     upd_badlink: "සබැඳිය https:// වලින් පටන් ගත යුතුයි.",
     dev_sync_settings: "වතු සමමුහුර්ත සම්බන්ධතාව",
@@ -4850,7 +4850,7 @@ const t = (k, ...a) => {
   return s;
 };
 
-const VER = "1.9.7";
+const VER = "1.9.8";
 const SECURITY_NOTICE_VERSION = "1.8.5";
 /* Your company, shown at the bottom of the Data tab. Leave it empty to show the app name instead. */
 const COMPANY = "CyberTech Lanka";
@@ -6898,7 +6898,7 @@ const devTools = () =>
 const updCard = () =>
   UPD
     ? `<div class="card" id="updCard"><h2>${t("upd_h")}</h2><p class="hint">${t("upd_hint")}</p>
-    <p class="num upd-ver" data-devtap style="margin:0;font-weight:600">${t("upd_cur", VER, esc(SH.versionName || ""))}</p>
+    <p class="num upd-ver" data-devtap style="margin:0;font-weight:600">${t("upd_cur", VER)}</p>
     <p class="updst" id="updSt" aria-live="polite">${updStatusHtml()}</p>${devTools()}</div>`
     : "";
 window.onUpdateStatus = (j) => {
@@ -7387,7 +7387,7 @@ function legal() {
   return `<footer class="legal">
     <div class="legal-mark">${esc(owner)}<sup>™</sup></div>
     <p>© ${years} ${esc(owner)}. ${t("rights")}</p>
-    <p class="num">${t("version", VER)}${UPD && SH.versionName ? " · Android " + esc(SH.versionName) : ""}</p>
+    <p class="num">${t("version", VER)}</p>
     <p class="legal-made">${t("made")}</p>
   </footer>`;
 }

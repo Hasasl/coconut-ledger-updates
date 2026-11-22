@@ -23,8 +23,9 @@ You edit web/  ->  python tools/make_release.py  ->  GitHub Desktop: Commit + Pu
                      and switch to it after the person leaves the app and comes back.
 ```
 
-- A **page update** needs no install. Phones switch to it by themselves.
-- An **Android shell update** shows "Install" in the app. The person taps it once.
+- The page component downloads and switches automatically.
+- To keep one shared version, every published release also includes a signed Android APK. Android users
+  will see **Install** and need to install it for the shell version to match the page version.
 - Records stay on the phone unless optional estate sync is configured. GitHub only holds the app, never anyone's data.
 - The current page update displays a one-time in-app security notice after it applies. Update checks run
   when the app is opened or resumed; this is not a push notification while the app is closed.
@@ -120,8 +121,8 @@ Before using real estate data:
 - In **GitHub > repository Settings > Secrets and variables > Actions**, add `SUPABASE_URL` and the
   same `PUSH_RELEASE_SECRET`. The workflow sends a release alert whenever `update.json` is pushed to
   `main`.
-- Build and publish the Android shell update (version code 12 / version 1.8.5) as well as the page.
-  The page's `MIN_SHELL` is 12 because the previous shell cannot receive FCM tokens. Install the new
+- Build and publish the Android shell update (shared version 1.9.8 / version code 14) as well as the page.
+  The page's `MIN_SHELL` is 12 because older shells cannot receive FCM tokens. Install the new
   signed APK, enable notifications, sign in, and verify release, estate-change, and developer-report
   notifications on separate test devices. Delivery cannot be verified until the migration, Edge
   Function secrets, function deployment, and GitHub Actions secrets are configured.
@@ -177,8 +178,8 @@ When you open the project folder, VS Code suggests three extensions. Install the
    (Git ignores the `signing` folder). Type the summary `Move project into the repository`, click
    **Commit to main**, then **Push origin**.
 
-That push also publishes page version 1.6.1, which looks the same as 1.6.0. When the phones switch to
-1.6.1, you know the whole chain works.
+That push publishes the shared page and Android version. When the phones switch to that version, you
+know the whole update chain works.
 
 ---
 
@@ -190,8 +191,9 @@ That push also publishes page version 1.6.1, which looks the same as 1.6.0. When
    own sample records in the browser, so nothing touches real data.
 3. **Edit** `web/app.js` (ledger logic and screens), `web/sync.js` (Supabase auth and requests),
    `web/styles.css` (looks) or `web/index.html` (the outer frame and harvest form).
-4. **Raise the version.** Near the top of `web/app.js`, change `const VER = "1.6.1";` to the next
-   number, for example `"1.6.2"`. The release tool stops you if you forget.
+4. **Raise the shared version.** In `apk/apk_info.json`, set `versionName` to the next release number
+   and increment `versionCode`. The page build uses that same version automatically. Every shared
+   release includes a newly signed Android APK so both components keep one version label.
 5. **Publish.** Choose **Terminal > Run Task > Release: publish an update**, or run
    `python tools/make_release.py`. Enter the signing key password when prompted. Use a strong, unique
    password (at least 16 characters is recommended). Keep it private; do not put it in source code or
@@ -199,7 +201,7 @@ That push also publishes page version 1.6.1, which looks the same as 1.6.0. When
 6. **Upload.** In GitHub Desktop, type a summary like `Release 1.6.2`, click **Commit to main**, then
    **Push origin**.
 
-A few minutes later, every phone picks it up.
+The page switches after an app check; installing the signed APK completes the shared-version update.
 
 **Commit often, even without releasing.** GitHub Desktop's History tab shows every saved version, and
 you can undo a commit with right-click > **Revert changes in commit**. Commits only reach the phones
@@ -210,7 +212,9 @@ after you run `make_release.py`.
 ## 5. Try an update on your phone before everyone gets it
 
 1. In GitHub Desktop: **Current branch > New branch**, name it `test`.
-2. Make your change, raise `VER`, run `make_release.py`, then commit and click **Publish branch**.
+2. Make your change, set the next shared `versionName` and increment `versionCode` in
+   `apk/apk_info.json`, build a new signed APK, then run `make_release.py`. Commit and click
+   **Publish branch**.
 3. On your own phone, open **Data > App updates** and tap the line **This app: version ...** 7 times.
    The hidden developer options appear. In **Update link**, paste
    `https://raw.githubusercontent.com/Hasasl/coconut-ledger-updates/refs/heads/test/update.json`,
@@ -232,7 +236,7 @@ Press **Ctrl+Shift+O** in VS Code to jump to a function by name.
 | Section | What is there |
 |---|---|
 | `const L = { en: {...}, si: {...} }` | **Every word on screen**, in English and Sinhala. The same key appears in both. |
-| `VER`, `MIN_SHELL` | Page version, and the oldest Android shell (version code) this page runs on |
+| `VER`, `MIN_SHELL` | `VER` comes from `apk/apk_info.json`; `MIN_SHELL` is the oldest Android shell (version code) this page runs on |
 | `CATS` | The 8 deduction types, in order |
 | `sample()` | The sample records a new user sees |
 | `state`, `norm()`, `persist()`, `mirror()` | Saved data: loading, fixing older records, saving, and the backup copy kept inside the Android app |
@@ -376,15 +380,17 @@ To check a change, open the Forecast tab: the "How much to trust this" card show
 
 ---
 
-## 8. Changing the Android shell (rare)
+## 8. Building the signed Android APK for a release
 
-You need this only to change Java code, permissions, the icon, or the built-in update link.
+Every shared-version release needs a new signed APK, even when only the page changed. Make native
+code, permission, icon, or update-link changes here too.
 
 1. Install **Android Studio**. Choose **Open** and pick the `android` folder.
    The first sync downloads Gradle and the Android SDK, which can take 10 to 20 minutes.
    If it offers to upgrade the Android Gradle Plugin, you can choose not to. The project works as it is.
-2. Make your change.
-3. In `apk/apk_info.json`, raise `versionCode` by 1 and set a new `versionName`, for example
+2. Make any native Android changes, if needed.
+3. Before each release, in `apk/apk_info.json`, raise `versionCode` by 1 and set the next shared
+   `versionName`, for example
    `{"versionCode": 9, "versionName": "1.7.0"}`.
 4. Build the page into the app: run `python tools/build_page.py`, or the VS Code task
    **Android: build the page into the app**. Android Studio refuses to build without it.
@@ -427,7 +433,7 @@ but keep it and its password out of shared folders and backups that others can a
 
 | Problem | Fix |
 |---|---|
-| `make_release.py` says the version did not change | Raise `const VER` in `web/app.js` |
+| `make_release.py` says the version did not change | Raise `versionName` in `apk/apk_info.json`, increment `versionCode`, and build a new signed APK |
 | `make_release.py` says `cryptography` is missing | `pip install cryptography` |
 | `make_release.py` cannot find the key | Copy `ledger.keystore` into `signing/` |
 | Phones say "not signed with your key" | Always run `make_release.py` and push all its files in one commit |

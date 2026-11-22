@@ -4,10 +4,10 @@ Coconut Ledger: publish an update.
     python tools/make_release.py
 
 What it does
-  1. Builds the single-file page from web/ (see build_page.py) into published/page.html.
+  1. Builds the single-file page from web/ using the shared version in apk/apk_info.json.
   2. Copies the Android app from apk/CoconutLedger.apk into published/.
      If Android Studio has made a newer android/app/release/app-release.apk, it offers to use that first.
-  3. Writes update.json (versions and fingerprints of both files) and signs it with your key
+  3. Writes update.json (the shared release version plus file fingerprints) and signs it with your key
      (signing/ledger.keystore) into update.json.sig.
 
 Then commit and push with GitHub Desktop. Phones read update.json from GitHub, check the signature,
@@ -74,6 +74,8 @@ def main():
         stop("apk/CoconutLedger.apk or apk/apk_info.json is missing.")
     apk_bytes = APK.read_bytes()
     info = json.loads(APK_INFO.read_text(encoding="utf-8"))
+    if info.get("versionName") != ver:
+        stop("The page and Android app must use the same versionName from apk/apk_info.json.")
 
     prev = None
     if MANIFEST.exists():
@@ -83,14 +85,19 @@ def main():
             prev = None
     if prev:
         pp, pa = prev.get("page", {}), prev.get("apk", {})
-        if pp.get("sha256") != sha256(page_bytes) and vtuple(ver) <= vtuple(pp.get("version")):
-            stop(f'The page changed but its version is still {ver} (last release: {pp.get("version")}).\n'
-                 f'Open web/app.js, find  const VER = "{ver}"  and raise it, for example to the next number.')
-        if pa.get("sha256") != sha256(apk_bytes) and int(info["versionCode"]) <= int(pa.get("versionCode", 0)):
+        page_changed = pp.get("sha256") != sha256(page_bytes)
+        apk_changed = pa.get("sha256") != sha256(apk_bytes)
+        if not page_changed and not apk_changed:
+            stop("Nothing changed since the last release.")
+        previous_version = max(vtuple(pp.get("version")), vtuple(pa.get("versionName")))
+        if vtuple(ver) <= previous_version:
+            stop(f"The shared version must be higher than the last release ({pp.get('version')} / {pa.get('versionName')}).\n"
+                 "Set versionName in apk/apk_info.json to the next version.")
+        if not apk_changed:
+            stop("The shared version changed but the signed Android APK did not. Increment versionCode, rebuild the signed APK, and try again.")
+        if int(info["versionCode"]) <= int(pa.get("versionCode", 0)):
             stop("apk/CoconutLedger.apk changed but apk/apk_info.json still has the old versionCode.\n"
                  "Raise versionCode (and versionName) in apk/apk_info.json, rebuild the app in Android Studio, and try again.")
-        if pp.get("sha256") == sha256(page_bytes) and pa.get("sha256") == sha256(apk_bytes):
-            stop("Nothing changed since the last release.")
 
     pw = getpass.getpass("Signing key password: ")
     if not pw:
@@ -119,8 +126,8 @@ def main():
     (ROOT / "update.json.sig").write_bytes(base64.b64encode(sig) + b"\n")
 
     print("\nDone. Ready to publish:")
-    print(f"  page (screens)      version {ver}")
-    print(f"  Android app         version {info['versionName']} (code {info['versionCode']})")
+    print(f"  app version         {ver}")
+    print(f"  Android install code {info['versionCode']} (internal)")
     print("\nNext: in GitHub Desktop, write a summary like 'Release " + ver + "', click Commit to main, then Push origin.")
 
 
