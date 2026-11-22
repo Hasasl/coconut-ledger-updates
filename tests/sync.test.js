@@ -443,6 +443,32 @@ test("bug report submission, admin listing, and status updates use existing auth
   );
 });
 
+test("push device registration and removal use the authenticated notification function", async () => {
+  const calls = [],
+    { client } = createClient(async (url, options) => {
+      if (url.endsWith("/auth/v1/token?grant_type=password"))
+        return response({
+          access_token: "access",
+          refresh_token: "refresh",
+          expires_in: 3600,
+          user: { id: "user-1" },
+        });
+      calls.push({ url, options });
+      return response({ registered: options.body.includes("register_device") });
+    });
+  client.setConfig({ url: "https://estate.supabase.co", anonKey: "public" });
+  await client.signIn("owner@example.test", "long-password");
+  const token = "f".repeat(160);
+  await client.registerPushDevice(token);
+  await client.unregisterPushDevice(token);
+  assert.equal(calls.length, 2);
+  assert.ok(calls.every((call) => call.url.endsWith("/functions/v1/push-notifications")));
+  assert.equal(JSON.parse(calls[0].options.body).event, "register_device");
+  assert.equal(JSON.parse(calls[0].options.body).token, token);
+  assert.equal(JSON.parse(calls[1].options.body).event, "unregister_device");
+  await assert.rejects(client.registerPushDevice("short"), /token/);
+});
+
 test("sync requests report a clear error when the network request times out", async () => {
   const { client } = createClient(
     (url, options) =>

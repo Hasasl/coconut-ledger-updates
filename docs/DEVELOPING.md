@@ -26,7 +26,7 @@ You edit web/  ->  python tools/make_release.py  ->  GitHub Desktop: Commit + Pu
 - A **page update** needs no install. Phones switch to it by themselves.
 - An **Android shell update** shows "Install" in the app. The person taps it once.
 - Records stay on the phone unless optional estate sync is configured. GitHub only holds the app, never anyone's data.
-- The 1.8.5 page update displays a one-time in-app security notice after it applies. Update checks run
+- The current page update displays a one-time in-app security notice after it applies. Update checks run
   when the app is opened or resumed; this is not a push notification while the app is closed.
 
 ### Optional multi-device estate sync
@@ -94,6 +94,37 @@ Before using real estate data:
   submitted report; the report description and optional activity text are user-entered.
 - Motion events may be unavailable or permission-blocked in some browsers and embedded app shells.
   There is intentionally no visible fallback report control. Screen captures and recordings are not collected.
+
+### Android push notifications
+
+- Android push uses Firebase Cloud Messaging (FCM); existing harvest/backup alarms remain local Android
+  notifications. The app asks for notification permission only after a person taps **Enable push
+  notifications** in **Data > Harvest and backup reminders**. Release notices go to opted-in devices;
+  estate notices go only to other active members' registered devices, and report alerts go only to
+  accounts with the server-managed `bug_report_admin` App Metadata claim.
+- Keep `android/app/google-services.json` in the Android project with the package
+  `com.estateledger.coconut`. This Firebase client config is not a service-account credential. Do not
+  put a Firebase service-account JSON/private key or a Supabase service-role key in the repository or
+  APK.
+- Apply `202611220001_push_notifications.sql` after the estate and bug-report migrations. The migration
+  stores FCM tokens in a server-only table and rate-limits estate push events.
+- In Google Cloud Console, enable the Firebase Cloud Messaging API and create a service account with
+  permission to send FCM messages. Download its private JSON key securely; do not commit it. In
+  **Supabase Dashboard > Edge Functions > Secrets**, set `FIREBASE_PROJECT_ID`, the complete
+  `FIREBASE_SERVICE_ACCOUNT_JSON`, and a strong random `PUSH_RELEASE_SECRET`. Supabase supplies its
+  project URL, anon key, and service-role key to Edge Functions as built-in secrets; never expose the
+  service-role key to Android or the page.
+- Deploy from the project folder with `supabase functions deploy push-notifications --no-verify-jwt`.
+  The function validates signed-in users itself; release workflow requests are separately authenticated
+  with `PUSH_RELEASE_SECRET`.
+- In **GitHub > repository Settings > Secrets and variables > Actions**, add `SUPABASE_URL` and the
+  same `PUSH_RELEASE_SECRET`. The workflow sends a release alert whenever `update.json` is pushed to
+  `main`.
+- Build and publish the Android shell update (version code 12 / version 1.8.5) as well as the page.
+  The page's `MIN_SHELL` is 12 because the previous shell cannot receive FCM tokens. Install the new
+  signed APK, enable notifications, sign in, and verify release, estate-change, and developer-report
+  notifications on separate test devices. Delivery cannot be verified until the migration, Edge
+  Function secrets, function deployment, and GitHub Actions secrets are configured.
 
 Owners can approve requests as Manager or Member 1–5. Owners control each Member role's analytical
 tabs; the monthly harvest-date and coconut-count view is always available. Members cannot open the
@@ -240,6 +271,9 @@ Press **Ctrl+Shift+O** in VS Code to jump to a function by name.
 - `supabase/migrations/202611210001_bug_reports.sql` adds the authenticated, rate-limited bug-report
   RPC, owner/admin-only report access, and status updates guarded by the `app_metadata.bug_report_admin`
   claim. The developer report list is capped at the latest 100 reports.
+- `supabase/migrations/202611220001_push_notifications.sql` stores private FCM device tokens and
+  rate-limits estate notification events. `supabase/functions/push-notifications/index.ts` validates
+  user actions and sends messages through FCM HTTP v1 without exposing service credentials to clients.
 - `supabase/functions/manage-account/index.ts` performs owner-verified global account actions. Its
   service-role key must remain a server-side Supabase secret and must never be bundled into the app.
 

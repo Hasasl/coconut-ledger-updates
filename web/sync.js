@@ -208,6 +208,38 @@
   async function rpc(name, args) {
     return api("/rest/v1/rpc/" + name, { method: "POST", body: JSON.stringify(args || {}) });
   }
+  function nativePushAvailable() {
+    return typeof window.AndroidBridge?.getPushToken === "function" &&
+      typeof window.AndroidBridge?.isPushEnabled === "function" &&
+      window.AndroidBridge.isPushEnabled();
+  }
+  async function notifyPush(event) {
+    if (!nativePushAvailable() || !publicStatus().signedIn) return;
+    try {
+      await api("/functions/v1/push-notifications", {
+        method: "POST",
+        body: JSON.stringify(event),
+      });
+    } catch (error) {
+      console.warn("Push notification could not be sent:", error.message);
+    }
+  }
+  async function registerPushDevice(token) {
+    if (typeof token !== "string" || token.length < 100 || token.length > 4096)
+      throw new Error("Invalid Firebase push token.");
+    await api("/functions/v1/push-notifications", {
+      method: "POST",
+      body: JSON.stringify({ event: "register_device", token }),
+    });
+  }
+  async function unregisterPushDevice(token) {
+    if (typeof token !== "string" || token.length < 100 || token.length > 4096)
+      throw new Error("Invalid Firebase push token.");
+    await api("/functions/v1/push-notifications", {
+      method: "POST",
+      body: JSON.stringify({ event: "unregister_device", token }),
+    });
+  }
   async function signUp(email, password) {
     const result = await authRequest("signup", { email: String(email).trim(), password });
     if (result && result.access_token) await saveSession(result);
@@ -292,35 +324,42 @@
     const request = Array.isArray(rows) ? rows[0] : null;
     if (!request || !request.estate_id || !request.estate_name || request.request_status !== "pending")
       throw new Error("The server did not confirm the join request.");
+    void notifyPush({ event: "join_request", estate_id: request.estate_id });
     return request;
   }
   async function listRequests(estateId) {
     const rows = await rpc("list_estate_join_requests", { p_estate_id: estateId });
     return rows.map((request) => ({ ...request, id: request.request_id }));
   }
-  async function reviewRequest(requestId, approve, role) {
-    return rpc("review_estate_request", {
+  async function reviewRequest(requestId, approve, role, estateId) {
+    const result = await rpc("review_estate_request", {
       p_request_id: requestId,
       p_approve: !!approve,
       p_role: role || "member_1",
     });
+    if (estateId) void notifyPush({ event: "join_reviewed", estate_id: estateId, request_id: requestId });
+    return result;
   }
   async function changeRole(estateId, userId, role) {
-    return rpc("change_estate_member_role", {
+    const result = await rpc("change_estate_member_role", {
       p_estate_id: estateId,
       p_user_id: userId,
       p_role: role,
     });
+    void notifyPush({ event: "membership_change", estate_id: estateId, user_id: userId });
+    return result;
   }
   async function removeMember(estateId, userId) {
     return rpc("remove_estate_member", { p_estate_id: estateId, p_user_id: userId });
   }
   async function setMemberStatus(estateId, userId, status) {
-    return rpc("set_estate_member_status", {
+    const result = await rpc("set_estate_member_status", {
       p_estate_id: estateId,
       p_user_id: userId,
       p_status: status,
     });
+    void notifyPush({ event: "membership_change", estate_id: estateId, user_id: userId });
+    return result;
   }
   async function listMembers(estateId) {
     return rpc("list_estate_members", { p_estate_id: estateId });
@@ -452,6 +491,7 @@
       else if (result.ok) throw new Error("The sync service returned an invalid record response.");
       else throw new Error("The sync service returned an invalid conflict response.");
     }
+    if (records.length) void notifyPush({ event: "estate_change", estate_id: estateId });
     return conflicts.length ? { ok: false, records, conflicts } : { ok: true, records };
   }
   return (window.EstateSync = {
@@ -459,6 +499,9 @@
     resetConfig,
     getConfig: () => (config ? { ...config } : { url: "", anonKey: "" }),
     publicStatus,
+    notifyPush,
+    registerPushDevice,
+    unregisterPushDevice,
     signUp,
     signIn,
     signOut,

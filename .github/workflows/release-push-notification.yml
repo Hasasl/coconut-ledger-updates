@@ -1,0 +1,50 @@
+name: Notify Android users about app releases
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - update.json
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Send release notification
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          PUSH_RELEASE_SECRET: ${{ secrets.PUSH_RELEASE_SECRET }}
+        run: |
+          node <<'NODE'
+          const fs = require("node:fs");
+          const manifest = JSON.parse(fs.readFileSync("update.json", "utf8"));
+          const version = manifest.page?.version;
+          if (typeof version !== "string" || !/^\d+\.\d+(?:\.\d+)?$/.test(version)) {
+            throw new Error("update.json has no valid page version");
+          }
+          if (!process.env.SUPABASE_URL || !process.env.PUSH_RELEASE_SECRET) {
+            throw new Error("Configure SUPABASE_URL and PUSH_RELEASE_SECRET GitHub Actions secrets");
+          }
+          (async () => {
+            const response = await fetch(`${process.env.SUPABASE_URL}/functions/v1/push-notifications`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-Release-Token": process.env.PUSH_RELEASE_SECRET,
+              },
+              body: JSON.stringify({ event: "release", version }),
+            });
+            if (!response.ok) {
+              console.error(`Release notification failed (${response.status}).`);
+              process.exitCode = 1;
+            }
+          })().catch((error) => {
+            console.error("Could not send release notification:", error.message);
+            process.exitCode = 1;
+          });
+          NODE

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "580079590612",
+    "project_id": "cocout-ledger",
+    "storage_bucket": "cocout-ledger.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:580079590612:android:0dae4436bcae7daf74af41",
+        "android_client_info": {
+          "package_name": "com.estateledger.coconut"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKx_h8XxQIW4t1lS1tzs-uGNKbc4HXMJI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

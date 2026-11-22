@@ -3,6 +3,7 @@ package com.estateledger.coconut;
 import android.app.Activity;
 import android.Manifest;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -24,6 +25,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import com.google.firebase.messaging.FirebaseMessaging;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -61,6 +63,7 @@ public class MainActivity extends Activity {
     private static final int REQ_PICK = 1, REQ_SAVE = 2;
     private static final int REQ_NOTIFICATIONS = 3;
     private static final long AUTO_CHECK_EVERY = 5L * 60L * 1000L;
+    private static volatile MainActivity currentActivity;
 
     private WebView web;
     private ValueCallback<Uri[]> fileCb;
@@ -77,7 +80,9 @@ public class MainActivity extends Activity {
         super.onCreate(state);
         allowCutout();
         prefs = getSharedPreferences("ledger", MODE_PRIVATE);
+        currentActivity = this;
         bundledPage = readBundledVersion();
+        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(this, token -> updatePushToken(this, token));
         web = new WebView(this);
         web.setBackgroundColor(0xFF060A13);
         // No scroll bars: the system one showed up as a light bar on the dark theme.
@@ -227,11 +232,37 @@ public class MainActivity extends Activity {
 
     private void requestNotifications() {
         if (Build.VERSION.SDK_INT < 33 || notificationsEnabled()) {
-            ReminderReceiver.scheduleFromPrefs(this);
-            sendNotificationPermission(true);
+            enablePushNotifications();
             return;
         }
         requestPermissions(new String[] { Manifest.permission.POST_NOTIFICATIONS }, REQ_NOTIFICATIONS);
+    }
+
+    private void enablePushNotifications() {
+        FirebaseMessaging.getInstance().subscribeToTopic("app-updates").addOnCompleteListener(this, task -> {
+            if (!task.isSuccessful()) {
+                sendNotificationPermission(false);
+                return;
+            }
+            prefs.edit().putBoolean("pushEnabled", true).apply();
+            ReminderReceiver.scheduleFromPrefs(this);
+            sendNotificationPermission(true);
+        });
+    }
+
+    static void updatePushToken(Context context, String token) {
+        if (token == null || token.isEmpty()) return;
+        context.getSharedPreferences("ledger", MODE_PRIVATE).edit().putString("pushToken", token).apply();
+        MainActivity activity = currentActivity;
+        if (activity != null) activity.sendPushToken(token);
+    }
+
+    private void sendPushToken(final String token) {
+        if (web == null) return;
+        runOnUiThread(() ->
+                web.evaluateJavascript(
+                        "window.onFirebasePushToken&&window.onFirebasePushToken(" + JSONObject.quote(token) + ")",
+                        null));
     }
 
     private void sendNotificationPermission(final boolean enabled) {
@@ -247,8 +278,13 @@ public class MainActivity extends Activity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode != REQ_NOTIFICATIONS) return;
         boolean enabled = notificationsEnabled();
-        if (enabled) ReminderReceiver.scheduleFromPrefs(this);
-        sendNotificationPermission(enabled);
+        if (enabled) enablePushNotifications();
+        else sendNotificationPermission(false);
+    }
+
+    @Override protected void onDestroy() {
+        if (currentActivity == this) currentActivity = null;
+        super.onDestroy();
     }
 
     @Override protected void onStop() {
@@ -682,6 +718,7 @@ public class MainActivity extends Activity {
                 JSONObject o = new JSONObject();
                 o.put("versionCode", shellCode()).put("versionName", shellName())
                  .put("notificationsEnabled", notificationsEnabled())
+                 .put("pushEnabled", prefs.getBoolean("pushEnabled", false))
                  .put("page", activePage).put("bundledPage", bundledPage).put("justApplied", justApplied)
                  .put("updateUrl", updateUrl())
                  .put("lastCheck", prefs.getLong("lastCheck", 0))
@@ -710,6 +747,21 @@ public class MainActivity extends Activity {
             runOnUiThread(new Runnable() {
                 @Override public void run() { MainActivity.this.requestNotifications(); }
             });
+        }
+
+        @JavascriptInterface public String getPushToken() {
+            return prefs.getString("pushToken", "");
+        }
+
+        @JavascriptInterface public boolean isPushEnabled() {
+            return prefs.getBoolean("pushEnabled", false) && notificationsEnabled();
+        }
+
+        @JavascriptInterface public void setPushUserId(String userId) {
+            String value = userId == null ? "" : userId.trim();
+            if (!value.isEmpty() && !value.matches("(?i)[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}"))
+                value = "";
+            prefs.edit().putString("pushUserId", value).apply();
         }
 
         @JavascriptInterface public void scheduleReminders(

@@ -267,10 +267,10 @@ const L = {
     backup_invalid: "Paste a valid full JSON backup to check it.",
     reminders_title: "Harvest and backup reminders",
     reminders_hint:
-      "Harvest reminders are scheduled for 08:00 two days and one day before the forecast date. A monthly backup reminder is scheduled for the first day of the month.",
-    reminders_enabled: "Notifications are enabled",
-    reminders_disabled: "Allow notifications to receive reminders",
-    enable_reminders: "Enable notifications",
+      "Enable notifications for harvest and backup reminders, app updates, and estate changes. Sign in to receive estate notices.",
+    reminders_enabled: "Push notifications are enabled",
+    reminders_disabled: "Allow notifications for app updates and estate changes",
+    enable_reminders: "Enable push notifications",
     harvest_reminder_title: "Harvest reminder",
     harvest_reminder_two_days: "Your forecast harvest is in 2 days, on {0}.",
     harvest_reminder_one_day: "Your forecast harvest is tomorrow, on {0}.",
@@ -831,10 +831,10 @@ const L = {
     backup_invalid: "පරීක්ෂා කිරීමට නිවැරදි සම්පූර්ණ JSON උපස්ථයක් අලවන්න.",
     reminders_title: "අස්වනු සහ උපස්ථ මතක් කිරීම්",
     reminders_hint:
-      "අනාවැකි දිනයට දින දෙකකට සහ එක් දිනකට පෙර පෙ.ව. 8ට අස්වනු මතක් කිරීම් යෙදේ. සෑම මාසයකම පළමු දින උපස්ථ මතක් කිරීමක් යෙදේ.",
-    reminders_enabled: "දැනුම්දීම් සක්‍රියයි",
-    reminders_disabled: "මතක් කිරීම් ලැබීමට දැනුම්දීම් සඳහා අවසර දෙන්න",
-    enable_reminders: "දැනුම්දීම් සක්‍රිය කරන්න",
+      "අස්වනු සහ උපස්ථ මතක් කිරීම්, යෙදුම් යාවත්කාලීන සහ වතු වෙනස්කම් සඳහා දැනුම්දීම් සක්‍රිය කරන්න. වතු දැනුම්දීම් සඳහා ඇතුළු වන්න.",
+    reminders_enabled: "Push දැනුම්දීම් සක්‍රියයි",
+    reminders_disabled: "යෙදුම් යාවත්කාලීන සහ වතු වෙනස්කම් සඳහා දැනුම්දීම් අවසර දෙන්න",
+    enable_reminders: "Push දැනුම්දීම් සක්‍රිය කරන්න",
     harvest_reminder_title: "අස්වනු මතක් කිරීම",
     harvest_reminder_two_days: "අනාවැකි අස්වැන්නට තව දින 2යි ({0}).",
     harvest_reminder_one_day: "අනාවැකි අස්වැන්න හෙටයි ({0}).",
@@ -1196,12 +1196,12 @@ const t = (k, ...a) => {
   return s;
 };
 
-const VER = "1.9.5";
+const VER = "1.9.6";
 const SECURITY_NOTICE_VERSION = "1.8.5";
 /* Your company, shown at the bottom of the Data tab. Leave it empty to show the app name instead. */
 const COMPANY = "CyberTech Lanka";
 const FIRST_YEAR = 2026;
-const MIN_SHELL = 11; /* the oldest Android app (version code) this page works with */
+const MIN_SHELL = 12; /* the oldest Android app (version code) this page works with */
 const CATS = ["harvest", "cart", "transport", "church", "personal", "fertilizer", "power", "other"];
 const KEY = "coconut-ledger-v1",
   ESTATE_ACTIVE_KEY = "coconut-ledger-active-estate-v1",
@@ -3163,9 +3163,31 @@ function syncNativeReminders() {
 }
 window.onNotificationPermission = (enabled) => {
   readShell();
+  if (enabled) void registerPushDeviceIfReady();
   if (route === "data") render();
   toast(t(enabled ? "reminders_enabled" : "reminders_disabled"));
 };
+async function registerPushDeviceIfReady() {
+  if (
+    !UPD ||
+    !ESTATE_SYNC?.publicStatus().signedIn ||
+    !NB.isPushEnabled ||
+    !NB.isPushEnabled() ||
+    !NB.getPushToken ||
+    !NB.setPushUserId
+  ) return;
+  const token = NB.getPushToken(),
+    userId = ESTATE_SYNC.publicStatus().user?.id;
+  if (!token || !userId) return;
+  try {
+    await ESTATE_SYNC.registerPushDevice(token);
+    NB.setPushUserId(userId);
+  } catch (error) {
+    NB.setPushUserId("");
+    console.warn("This device could not register for account notifications:", error.message);
+  }
+}
+window.onFirebasePushToken = () => void registerPushDeviceIfReady();
 const fdt = (ms) => {
   const d = new Date(ms);
   return (
@@ -3717,7 +3739,7 @@ function legal() {
 function remindersCard() {
   if (!UPD || typeof NB.scheduleReminders !== "function" || typeof NB.requestNotificationPermission !== "function")
     return "";
-  const enabled = !!SH.notificationsEnabled;
+  const enabled = !!SH.pushEnabled && !!SH.notificationsEnabled;
   return `<div class="card"><h2>${t("reminders_title")}</h2><p class="hint">${t("reminders_hint")}</p>
     <p>${t(enabled ? "reminders_enabled" : "reminders_disabled")}</p>
     <button class="btn${enabled ? "" : " primary"}" id="enableReminders" ${enabled ? "disabled" : ""}>${t("enable_reminders")}</button></div>`;
@@ -5210,9 +5232,11 @@ document.addEventListener("click", async (e) => {
   if (b.id === "estateSyncSignIn")
     return runEstateAction(async () => {
       await ESTATE_SYNC.signIn($("#estateSyncEmail").value, $("#estateSyncPassword").value);
+      NB?.setPushUserId?.("");
       window.CoconutBugReports.setUserScope(ESTATE_SYNC.publicStatus().user?.id);
       estateSyncState.error = "";
       await initializeEstateSync();
+      void registerPushDeviceIfReady();
       void loadBugReportDashboard();
     }, "sync_login_success");
   if (b.id === "estateSyncSignUp")
@@ -5222,14 +5246,25 @@ document.addEventListener("click", async (e) => {
         estateSyncState.error = "";
         toast(t("sync_email_confirm"));
       } else {
+        NB?.setPushUserId?.("");
         window.CoconutBugReports.setUserScope(ESTATE_SYNC.publicStatus().user?.id);
         await initializeEstateSync();
+        void registerPushDeviceIfReady();
         void loadBugReportDashboard();
       }
     });
   if (b.id === "estateSyncSignOut")
     return runEstateAction(async () => {
       let logoutError;
+      const pushToken = NB?.getPushToken?.();
+      NB?.setPushUserId?.("");
+      if (pushToken) {
+        try {
+          await ESTATE_SYNC.unregisterPushDevice(pushToken);
+        } catch (error) {
+          console.warn("This device could not unregister its account notifications:", error.message);
+        }
+      }
       try {
         await ESTATE_SYNC.signOut();
       } catch (error) {
@@ -5312,12 +5347,12 @@ document.addEventListener("click", async (e) => {
       );
       if (!roleControl) throw new Error(t("sync_role_denied"));
       const role = roleControl.value;
-      await ESTATE_SYNC.reviewRequest(b.dataset.approveRequest, true, role);
+      await ESTATE_SYNC.reviewRequest(b.dataset.approveRequest, true, role, activeEstateId);
       await refreshEstatePanel();
     });
   if (b.dataset.rejectRequest)
     return runEstateAction(async () => {
-      await ESTATE_SYNC.reviewRequest(b.dataset.rejectRequest, false, "viewer");
+      await ESTATE_SYNC.reviewRequest(b.dataset.rejectRequest, false, "viewer", activeEstateId);
       await refreshEstatePanel();
     });
   if (b.dataset.removeMember)
@@ -5603,7 +5638,7 @@ $("#bugReportForm").addEventListener("submit", async (event) => {
   submitButton.disabled = true;
   errorElement.textContent = "";
   try {
-    await ESTATE_SYNC.submitBugReport({
+    const reportId = await ESTATE_SYNC.submitBugReport({
       description,
       user_actions: userActions,
       app_version: VER,
@@ -5611,6 +5646,7 @@ $("#bugReportForm").addEventListener("submit", async (event) => {
       device_info: window.CoconutBugReports.deviceInfo(),
       error_logs: window.CoconutBugReports.recentErrors(),
     });
+    void ESTATE_SYNC.notifyPush({ event: "bug_report", report_id: reportId });
     closeD(bugReportDialog);
     toast(t("bug_report_success"));
     if (bugReportDashboardState.authorized) void loadBugReportDashboard(true);
@@ -5723,6 +5759,7 @@ readShell();
   initCloud();
   window.CoconutBugReports.setUserScope(ESTATE_SYNC?.publicStatus().user?.id);
   initializeEstateSync();
+  void registerPushDeviceIfReady();
   window.CoconutBugReports.startShake(openBugReport, bugReportCanShakeOpen);
   setInterval(() => {
     if (document.visibilityState !== "visible") return;
