@@ -46,3 +46,20 @@ test("Android updater migrates its default feed to the release-only repository",
   assert.match(updateUrl, /LEGACY_UPDATE_URL\.equals\(saved\)/);
   assert.match(updateUrl, /remove\("updateUrl"\)\.putLong\("lastCheck", 0\)/);
 });
+
+test("Android notification opt-in routes blocked notification access to system settings", () => {
+  const notificationFlow = mainActivity.slice(
+    mainActivity.indexOf("private boolean notificationsEnabled()"),
+    mainActivity.indexOf("private void enablePushNotifications()"),
+  );
+  const resumeFlow = mainActivity.slice(
+    mainActivity.indexOf("@Override protected void onResume()"),
+    mainActivity.indexOf("@Override protected void onPause()"),
+  );
+
+  assert.match(notificationFlow, /manager\.areNotificationsEnabled\(\)/);
+  assert.match(notificationFlow, /notificationPermissionRequested/);
+  assert.match(notificationFlow, /shouldShowRequestPermissionRationale/);
+  assert.match(notificationFlow, /ACTION_APP_NOTIFICATION_SETTINGS/);
+  assert.match(resumeFlow, /notificationSettingsPending[\s\S]*enablePushNotifications\(\)/);
+});

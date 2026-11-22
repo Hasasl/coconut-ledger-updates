@@ -412,8 +412,10 @@ code, permission, icon, or update-link changes here too.
    - Key alias: `ledger`
    - Build variant: **release**, then **Create**
 
-   The app lands in `android/app/release/app-release.apk`.
-6. Run `python tools/make_release.py`. When it asks to use the new app from Android Studio, type `y`.
+   The app lands in `android/app/release/app-release.apk`. If you build with Gradle and release
+   signing configured, the signed APK lands in `android/app/build/outputs/apk/release/app-release.apk`.
+   An `app-release-unsigned.apk` cannot be used to update installed copies.
+6. Run `python tools/make_release.py`. When it asks to use the newer signed APK, type `y`.
 7. Commit and push in GitHub Desktop. Phones show **Install**.
    On Android 8 and newer, the first install may ask you to allow Coconut Ledger to install apps.
    Approve it; the app resumes the installer when you return.

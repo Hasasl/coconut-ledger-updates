@@ -34,6 +34,8 @@ ROOT = Path(__file__).resolve().parent.parent
 APK = ROOT / "apk" / "CoconutLedger.apk"
 APK_INFO = ROOT / "apk" / "apk_info.json"
 STUDIO_APK = ROOT / "android" / "app" / "release" / "app-release.apk"
+GRADLE_APK = ROOT / "android" / "app" / "build" / "outputs" / "apk" / "release" / "app-release.apk"
+UNSIGNED_GRADLE_APK = ROOT / "android" / "app" / "build" / "outputs" / "apk" / "release" / "app-release-unsigned.apk"
 KEY = ROOT / "signing" / "ledger.keystore"
 PUB = ROOT / "published"
 MANIFEST = ROOT / "update.json"
@@ -47,6 +49,16 @@ def stop(msg):
 
 def sha256(data):
     return hashlib.sha256(data).hexdigest()
+
+
+def is_newer_different(candidate, current):
+    if not candidate.exists():
+        return False
+    if not current.exists():
+        return True
+    return candidate.stat().st_mtime > current.stat().st_mtime and (
+        sha256(candidate.read_bytes()) != sha256(current.read_bytes())
+    )
 
 
 def vtuple(v):
@@ -77,12 +89,23 @@ def main():
     page, ver, min_shell = build()
     page_bytes = page.encode("utf-8")
 
-    # A new Android app from Android Studio?
-    if STUDIO_APK.exists() and (not APK.exists() or STUDIO_APK.stat().st_mtime > APK.stat().st_mtime):
-        if sha256(STUDIO_APK.read_bytes()) != (sha256(APK.read_bytes()) if APK.exists() else ""):
-            ans = input("Android Studio made a newer app (android/app/release/app-release.apk). Use it? [y/N] ")
+    # Use the newest signed APK produced by Android Studio or Gradle.
+    candidates = sorted(
+        (candidate for candidate in (STUDIO_APK, GRADLE_APK) if candidate.exists()),
+        key=lambda candidate: candidate.stat().st_mtime,
+        reverse=True,
+    )
+    for candidate in candidates:
+        if is_newer_different(candidate, APK):
+            relative = candidate.relative_to(ROOT)
+            ans = input(f"A newer signed Android app was built at {relative}. Use it? [y/N] ")
             if ans.strip().lower().startswith("y"):
-                shutil.copyfile(STUDIO_APK, APK)
+                shutil.copyfile(candidate, APK)
+                break
+
+    if is_newer_different(UNSIGNED_GRADLE_APK, APK):
+        stop("Gradle built a newer unsigned APK at android/app/build/outputs/apk/release/app-release-unsigned.apk.\n"
+             "Build a signed release APK with the existing release keystore before publishing.")
     if not APK.exists() or not APK_INFO.exists():
         stop("apk/CoconutLedger.apk or apk/apk_info.json is missing.")
     apk_bytes = APK.read_bytes()

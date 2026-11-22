@@ -2,6 +2,8 @@ package com.estateledger.coconut;
 
 import android.app.Activity;
 import android.Manifest;
+import android.app.NotificationManager;
+import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
@@ -78,6 +80,7 @@ public class MainActivity extends Activity {
     private boolean firstLoad = true;
     private volatile boolean busy = false;
     private boolean stopped = false;
+    private boolean notificationSettingsPending = false;
 
     @Override protected void onCreate(Bundle state) {
         super.onCreate(state);
@@ -220,6 +223,11 @@ public class MainActivity extends Activity {
         super.onResume();
         goFullScreen();
         web.onResume();
+        if (notificationSettingsPending) {
+            notificationSettingsPending = false;
+            if (notificationsEnabled()) enablePushNotifications();
+            else sendNotificationPermission(false);
+        }
         if (!firstLoad) {
             autoCheck();
             web.evaluateJavascript("window.onAppResume&&window.onAppResume()", null);
@@ -229,16 +237,54 @@ public class MainActivity extends Activity {
     @Override protected void onPause() { web.onPause(); super.onPause(); }
 
     private boolean notificationsEnabled() {
-        return Build.VERSION.SDK_INT < 33
-                || checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        return manager != null && manager.areNotificationsEnabled()
+                && (Build.VERSION.SDK_INT < 33
+                || checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED);
     }
 
     private void requestNotifications() {
-        if (Build.VERSION.SDK_INT < 33 || notificationsEnabled()) {
-            enablePushNotifications();
+        if (Build.VERSION.SDK_INT >= 33
+                && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            boolean alreadyAsked = prefs.getBoolean("notificationPermissionRequested", false);
+            if (alreadyAsked && !shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+                openNotificationSettings();
+                return;
+            }
+            prefs.edit().putBoolean("notificationPermissionRequested", true).apply();
+            requestPermissions(new String[] { Manifest.permission.POST_NOTIFICATIONS }, REQ_NOTIFICATIONS);
             return;
         }
-        requestPermissions(new String[] { Manifest.permission.POST_NOTIFICATIONS }, REQ_NOTIFICATIONS);
+        if (!notificationsEnabled()) {
+            openNotificationSettings();
+            return;
+        }
+        enablePushNotifications();
+    }
+
+    private void openNotificationSettings() {
+        Intent settings = Build.VERSION.SDK_INT >= 26
+                ? new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                        .putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName())
+                : new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        Uri.fromParts("package", getPackageName(), null));
+        notificationSettingsPending = true;
+        try {
+            startActivity(settings);
+        } catch (ActivityNotFoundException e) {
+            notificationSettingsPending = false;
+            if (Build.VERSION.SDK_INT >= 26) {
+                try {
+                    startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.fromParts("package", getPackageName(), null)));
+                } catch (ActivityNotFoundException fallbackError) {
+                    notificationSettingsPending = false;
+                    sendNotificationPermission(false);
+                }
+            } else {
+                sendNotificationPermission(false);
+            }
+        }
     }
 
     private void enablePushNotifications() {
@@ -282,7 +328,18 @@ public class MainActivity extends Activity {
         if (requestCode != REQ_NOTIFICATIONS) return;
         boolean enabled = notificationsEnabled();
         if (enabled) enablePushNotifications();
-        else sendNotificationPermission(false);
+        else {
+            boolean canAskAgain = Build.VERSION.SDK_INT >= 33
+                    && shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS);
+            if (Build.VERSION.SDK_INT >= 33
+                    && prefs.getBoolean("notificationPermissionRequested", false)
+                    && !canAskAgain
+                    && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                openNotificationSettings();
+            } else {
+                sendNotificationPermission(false);
+            }
+        }
     }
 
     @Override protected void onDestroy() {
