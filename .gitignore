@@ -22,7 +22,6 @@ android/app/build/
 android/local.properties
 android/.idea/
 android/.kotlin/
-android/app/google-services.json
 gradle-wrapper.properties
 *.iml
 __pycache__/
