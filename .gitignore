@@ -5,6 +5,14 @@ signing/*
 *.jks
 keystore.properties
 
+# ---- Local credentials: never commit ----
+.env
+.env.*
+!.env.example
+*service-account*.json
+*serviceAccount*.json
+*firebase-adminsdk*.json
+
 # ---- Made by tools, rebuilt any time ----
 android/app/src/main/assets/
 android/app/release/
