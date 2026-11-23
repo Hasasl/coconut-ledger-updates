@@ -8,7 +8,10 @@
   "scripts": {
     "test": "node --test",
     "desktop:dev": "node tools/sync_desktop_version.cjs && python tools/build_page.py && electron .",
-    "desktop:installer": "node tools/sync_desktop_version.cjs && python tools/build_page.py && electron-builder --win nsis --x64"
+    "desktop:installer": "node tools/sync_desktop_version.cjs && python tools/build_page.py && electron-builder --win nsis --x64 --publish never && node tools/create_windows_update_metadata.cjs"
+  },
+  "dependencies": {
+    "electron-updater": "^6.6.2"
   },
   "devDependencies": {
     "electron": "45.4.1",
@@ -17,6 +20,14 @@
   "build": {
     "appId": "com.estateledger.coconut.desktop",
     "productName": "Coconut Ledger",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Hasasl",
+        "repo": "coconut-ledger-releases",
+        "releaseType": "release"
+      }
+    ],
     "directories": {
       "output": "dist\\windows"
     },

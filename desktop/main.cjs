@@ -1,11 +1,13 @@
 "use strict";
 
 const { app, BrowserWindow, dialog, protocol, shell } = require("electron");
+const { autoUpdater } = require("electron-updater");
 const fs = require("node:fs");
 const path = require("node:path");
 
 const APP_SCHEME = "coconut-ledger";
 const APP_URL = `${APP_SCHEME}://app/index.html`;
+const UPDATE_CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000;
 const CSP = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline'",
@@ -38,6 +40,95 @@ if (process.platform === "win32") app.setAppUserModelId("com.estateledger.coconu
 
 let mainWindow;
 let pagePath;
+let downloadPromptOpen = false;
+let installPromptOpen = false;
+let updateDownloadInProgress = false;
+
+function showUpdateDialog(options) {
+  if (!mainWindow || mainWindow.isDestroyed()) return Promise.resolve({ response: 1 });
+  return dialog.showMessageBox(mainWindow, options);
+}
+
+async function offerUpdateDownload(info) {
+  if (downloadPromptOpen || installPromptOpen || updateDownloadInProgress) return;
+  downloadPromptOpen = true;
+  try {
+    const { response } = await showUpdateDialog({
+      type: "info",
+      title: "Coconut Ledger update available",
+      message: `Version ${info.version} is available.`,
+      detail: "Would you like to download the update now?",
+      buttons: ["Download", "Later"],
+      defaultId: 0,
+      cancelId: 1,
+      noLink: true,
+    });
+    if (response === 0) {
+      downloadPromptOpen = false;
+      updateDownloadInProgress = true;
+      await autoUpdater.downloadUpdate();
+    }
+  } catch (error) {
+    updateDownloadInProgress = false;
+    console.error("Could not download the Coconut Ledger update:", error);
+  } finally {
+    downloadPromptOpen = false;
+  }
+}
+
+async function offerUpdateInstall(info) {
+  updateDownloadInProgress = false;
+  if (installPromptOpen) return;
+  installPromptOpen = true;
+  try {
+    const { response } = await showUpdateDialog({
+      type: "info",
+      title: "Coconut Ledger update downloaded",
+      message: `Version ${info.version} is ready to install.`,
+      detail: "Restart Coconut Ledger to finish installing the update.",
+      buttons: ["Restart and install", "Later"],
+      defaultId: 0,
+      cancelId: 1,
+      noLink: true,
+    });
+    if (response === 0) autoUpdater.quitAndInstall();
+  } catch (error) {
+    console.error("Could not prompt to install the Coconut Ledger update:", error);
+  } finally {
+    installPromptOpen = false;
+  }
+}
+
+function configureWindowsUpdates() {
+  if (process.platform !== "win32" || !app.isPackaged) return;
+
+  autoUpdater.autoDownload = false;
+  autoUpdater.autoInstallOnAppQuit = false;
+  autoUpdater.allowPrerelease = false;
+  autoUpdater.on("error", (error) => {
+    console.error("Coconut Ledger update check failed:", error);
+    if (updateDownloadInProgress) {
+      updateDownloadInProgress = false;
+      void showUpdateDialog({
+        type: "error",
+        title: "Coconut Ledger update failed",
+        message: "The update could not be downloaded or verified. Please try again later.",
+        buttons: ["OK"],
+      }).catch((dialogError) => console.error("Could not show the updater error:", dialogError));
+    }
+  });
+  autoUpdater.on("update-available", (info) => void offerUpdateDownload(info));
+  autoUpdater.on("update-downloaded", (info) => void offerUpdateInstall(info));
+
+  const checkForUpdates = () => {
+    if (updateDownloadInProgress || downloadPromptOpen || installPromptOpen) return;
+    autoUpdater.checkForUpdates().catch((error) => {
+      console.error("Could not check for Coconut Ledger updates:", error);
+    });
+  };
+  setTimeout(checkForUpdates, 10000);
+  setInterval(checkForUpdates, UPDATE_CHECK_INTERVAL_MS);
+}
 
 function isAppUrl(value) {
   try {
@@ -121,6 +212,7 @@ async function startApp() {
   });
 
   createWindow();
+  configureWindowsUpdates();
 }
 
 const hasSingleInstanceLock = app.requestSingleInstanceLock();

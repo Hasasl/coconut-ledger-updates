@@ -128,6 +128,8 @@ jobs:
             published/page.html
             published/CoconutLedger.apk
             dist/windows/CoconutLedger-Setup-${{ steps.release-version.outputs.version }}-x64.exe
+            dist/windows/CoconutLedger-Setup-${{ steps.release-version.outputs.version }}-x64.exe.blockmap
+            dist/windows/latest.yml
           if-no-files-found: error
           retention-days: 7
 
@@ -210,12 +212,16 @@ jobs:
           $version = '${{ needs.build.outputs.version }}'
           $tag = "v$version"
           $installer = "release-output\dist\windows\CoconutLedger-Setup-$version-x64.exe"
+          $blockmap = "$installer.blockmap"
+          $updaterMetadata = 'release-output\dist\windows\latest.yml'
           if (-not (Test-Path $installer)) { throw "Windows installer not found: $installer" }
+          if (-not (Test-Path $blockmap)) { throw "Windows update blockmap not found: $blockmap" }
+          if (-not (Test-Path $updaterMetadata)) { throw "Windows updater metadata not found: $updaterMetadata" }
           gh release view $tag --repo $env:RELEASE_REPOSITORY *> $null
           if ($LASTEXITCODE -eq 0) {
-            gh release upload $tag $installer --repo $env:RELEASE_REPOSITORY --clobber
+            gh release upload $tag $installer $blockmap $updaterMetadata --repo $env:RELEASE_REPOSITORY --clobber
           } else {
-            gh release create $tag $installer --repo $env:RELEASE_REPOSITORY --title "Coconut Ledger $version" --notes "Windows desktop installer for Coconut Ledger $version." --target main
+            gh release create $tag $installer $blockmap $updaterMetadata --repo $env:RELEASE_REPOSITORY --title "Coconut Ledger $version" --notes "Windows desktop installer and updater metadata for Coconut Ledger $version." --target main
           }
           if ($LASTEXITCODE -ne 0) { throw 'Could not publish the Windows installer.' }
 

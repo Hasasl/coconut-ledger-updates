@@ -216,9 +216,12 @@ after you run `make_release.py`.
    `dist\windows\`. The build reads the shared version from `apk/apk_info.json`.
 
 The desktop app keeps its local ledger data in the current Windows user's app data and can sync when
-online. Windows releases are manual: install the newer setup over the old version. The first installer
-is unsigned, so Windows may show a SmartScreen warning. Android-only notifications and APK update
-controls are not available in the desktop app.
+online. On Windows, it checks GitHub Releases at startup and every six hours, asks before downloading
+an available update, and asks again before restarting to install it. Releases must include the
+installer, `latest.yml`, and the matching `.blockmap` asset; the desktop installer command generates
+`latest.yml`. Existing installations need one manual install of an updater-enabled version before they
+can update themselves. The first installer is unsigned, so Windows may show a SmartScreen warning.
+Android-only notifications and APK update controls are not available in the desktop app.
 
 ---
 
