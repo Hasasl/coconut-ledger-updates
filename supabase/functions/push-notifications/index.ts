@@ -219,6 +219,7 @@ async function sendRelease(request: Request, body: Record<string, unknown>) {
       title: "Coconut Ledger update",
       body: `Version ${version} is available. Open the app to update.`,
       type: "release",
+      version,
     },
   });
   return jsonResponse(200, { sent: true });

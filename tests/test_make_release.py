@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from tools.make_release import is_newer_different, read_signing_password
+from tools.make_release import is_newer_different, parse_apk_metadata, read_signing_password
 
 
 class ReleasePasswordTests(unittest.TestCase):
@@ -33,6 +33,19 @@ class ReleaseArtifactTests(unittest.TestCase):
             candidate.write_bytes(b"older")
             os.utime(candidate, (50, 50))
             self.assertFalse(is_newer_different(candidate, current))
+
+    def test_reads_package_and_shared_version_from_aapt_metadata(self):
+        metadata = parse_apk_metadata(
+            "package: name='com.estateledger.coconut' versionCode='16' versionName='1.10.0' platformBuildVersionName='14'\n"
+        )
+        self.assertEqual(
+            metadata,
+            {"app": "com.estateledger.coconut", "versionCode": 16, "versionName": "1.10.0"},
+        )
+
+    def test_rejects_apk_metadata_without_package_version(self):
+        with self.assertRaisesRegex(ValueError, "could not read package metadata"):
+            parse_apk_metadata("not an APK")
 
 
 if __name__ == "__main__":

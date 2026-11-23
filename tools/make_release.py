@@ -24,6 +24,7 @@ import json
 import os
 import re
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -59,6 +60,68 @@ def is_newer_different(candidate, current):
     return candidate.stat().st_mtime > current.stat().st_mtime and (
         sha256(candidate.read_bytes()) != sha256(current.read_bytes())
     )
+
+
+def parse_apk_metadata(output):
+    match = re.search(
+        r"^package: name='([^']+)' versionCode='(\d+)' versionName='([^']*)'",
+        output,
+        re.MULTILINE,
+    )
+    if not match:
+        raise ValueError("Android SDK could not read package metadata from the APK.")
+    return {
+        "app": match.group(1),
+        "versionCode": int(match.group(2)),
+        "versionName": match.group(3),
+    }
+
+
+def find_aapt():
+    candidates = []
+    for command in ("aapt", "aapt.exe"):
+        found = shutil.which(command)
+        if found:
+            candidates.append(Path(found))
+    sdk_roots = [
+        os.environ.get("ANDROID_HOME"),
+        os.environ.get("ANDROID_SDK_ROOT"),
+        str(Path(os.environ["LOCALAPPDATA"]) / "Android" / "Sdk") if os.environ.get("LOCALAPPDATA") else None,
+        str(Path.home() / "Android" / "Sdk"),
+    ]
+    for sdk_root in sdk_roots:
+        if not sdk_root:
+            continue
+        build_tools = Path(sdk_root) / "build-tools"
+        if build_tools.is_dir():
+            versions = sorted(
+                (path for path in build_tools.iterdir() if path.is_dir()),
+                key=lambda path: vtuple(path.name),
+                reverse=True,
+            )
+            candidates.extend(
+                path / ("aapt.exe" if os.name == "nt" else "aapt")
+                for path in versions
+            )
+    return next((candidate for candidate in candidates if candidate.is_file()), None)
+
+
+def read_apk_metadata(apk_path):
+    aapt = find_aapt()
+    if aapt is None:
+        stop("Cannot find Android SDK aapt. Install Android build-tools or add aapt to PATH to verify the APK version.")
+    result = subprocess.run(
+        [str(aapt), "dump", "badging", str(apk_path)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode:
+        stop("Android SDK could not inspect the APK. Rebuild the signed release APK and try again.")
+    try:
+        return parse_apk_metadata(result.stdout)
+    except ValueError as error:
+        stop(str(error))
 
 
 def vtuple(v):
@@ -112,6 +175,15 @@ def main():
     info = json.loads(APK_INFO.read_text(encoding="utf-8"))
     if info.get("versionName") != ver:
         stop("The page and Android app must use the same versionName from apk/apk_info.json.")
+    apk_info = read_apk_metadata(APK)
+    if apk_info["app"] != PACKAGE:
+        stop(f"The APK package is {apk_info['app']}, expected {PACKAGE}.")
+    if apk_info["versionName"] != info["versionName"] or apk_info["versionCode"] != int(info["versionCode"]):
+        stop(
+            f"The signed APK is version {apk_info['versionName']} (code {apk_info['versionCode']}), "
+            f"but apk/apk_info.json is {info['versionName']} (code {info['versionCode']}). "
+            "Rebuild and sign the Android release APK, then try again."
+        )
 
     prev = None
     if MANIFEST.exists():

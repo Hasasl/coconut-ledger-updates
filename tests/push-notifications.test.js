@@ -66,6 +66,13 @@ test("Android handles data-only FCM messages and protects account notifications 
   assert.match(service, /extends FirebaseMessagingService/);
   assert.match(service, /onMessageReceived/);
   assert.match(service, /pushUserId/);
+  assert.match(handler, /type: "release",\s*version,/);
+  assert.match(service, /RELEASE_NOTIFICATION_TAG/);
+  assert.match(service, /releaseNotificationVersion/);
+  assert.match(service, /cmp\(installedVersion, version\) >= 0/);
+  assert.match(service, /getActiveNotifications\(\)/);
+  assert.match(mainActivity, /clearCompletedReleaseNotification\(\)/);
+  assert.match(mainActivity, /cmp\(installedVersion, releaseVersion\) >= 0/);
   assert.equal(
     firebaseConfig.client.some((client) =>
       client.client_info.android_client_info.package_name === "com.estateledger.coconut",

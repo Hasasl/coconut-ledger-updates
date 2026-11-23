@@ -102,7 +102,8 @@ Before using real estate data:
   notifications. The app asks for notification permission only after a person taps **Enable push
   notifications** in **Data > Harvest and backup reminders**. Release notices go to opted-in devices;
   estate notices go only to other active members' registered devices, and report alerts go only to
-  accounts with the server-managed `bug_report_admin` App Metadata claim.
+  accounts with the server-managed `bug_report_admin` App Metadata claim. A release alert is replaced
+  by a newer one and cleared when the installed Android version reaches its version.
 - Keep `android/app/google-services.json` in the Android project with the package
   `com.estateledger.coconut`. This Firebase client config is not a service-account credential. Do not
   put a Firebase service-account JSON/private key or a Supabase service-role key in the repository or
@@ -121,7 +122,7 @@ Before using real estate data:
 - In **GitHub > repository Settings > Secrets and variables > Actions**, add `SUPABASE_URL` and the
   same `PUSH_RELEASE_SECRET`. The workflow sends a release alert whenever `update.json` is pushed to
   `main`.
-- Build and publish the Android shell update (shared version 1.9.8 / version code 14) as well as the page.
+- Build and publish the Android shell update (shared version 1.10.0 / version code 16) as well as the page.
   The page's `MIN_SHELL` is 12 because older shells cannot receive FCM tokens. Install the new
   signed APK, enable notifications, sign in, and verify release, estate-change, and developer-report
   notifications on separate test devices. Delivery cannot be verified until the migration, Edge
@@ -415,7 +416,9 @@ code, permission, icon, or update-link changes here too.
    The app lands in `android/app/release/app-release.apk`. If you build with Gradle and release
    signing configured, the signed APK lands in `android/app/build/outputs/apk/release/app-release.apk`.
    An `app-release-unsigned.apk` cannot be used to update installed copies.
-6. Run `python tools/make_release.py`. When it asks to use the newer signed APK, type `y`.
+6. Run `python tools/make_release.py`. When it asks to use the newer signed APK, type `y`. The script
+   verifies that the APK's embedded package, version name, and version code match `apk/apk_info.json`.
+   If they do not match, rebuild and sign the APK after updating the shared version.
 7. Commit and push in GitHub Desktop. Phones show **Install**.
    On Android 8 and newer, the first install may ask you to allow Coconut Ledger to install apps.
    Approve it; the app resumes the installer when you return.

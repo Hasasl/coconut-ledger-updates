@@ -19,6 +19,7 @@ const mainActivity = fs.readFileSync(
   ),
   "utf8",
 );
+const app = fs.readFileSync(path.join(__dirname, "..", "web", "app.js"), "utf8");
 
 test("Android updater resumes installation after install-source permission is granted", () => {
   const installFlow = mainActivity.slice(
@@ -62,4 +63,15 @@ test("Android notification opt-in routes blocked notification access to system s
   assert.match(notificationFlow, /shouldShowRequestPermissionRationale/);
   assert.match(notificationFlow, /ACTION_APP_NOTIFICATION_SETTINGS/);
   assert.match(resumeFlow, /notificationSettingsPending[\s\S]*enablePushNotifications\(\)/);
+});
+
+test("update banner and status refresh when returning from the installer", () => {
+  assert.match(app, /data-update-banner/);
+  const resumeHandler = app.slice(
+    app.indexOf("window.onAppResume = () =>"),
+    app.indexOf('document.addEventListener("visibilitychange"'),
+  );
+  assert.match(resumeHandler, /readShell\(\)/);
+  assert.match(resumeHandler, /banner\.remove\(\)/);
+  assert.match(resumeHandler, /updateStatus\.innerHTML = updStatusHtml\(\)/);
 });

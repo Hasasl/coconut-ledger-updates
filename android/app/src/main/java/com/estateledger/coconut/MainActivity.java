@@ -87,6 +87,7 @@ public class MainActivity extends Activity {
         allowCutout();
         prefs = getSharedPreferences("ledger", MODE_PRIVATE);
         currentActivity = this;
+        clearCompletedReleaseNotification();
         bundledPage = readBundledVersion();
         FirebaseMessaging.getInstance().getToken().addOnSuccessListener(this, token -> updatePushToken(this, token));
         web = new WebView(this);
@@ -223,6 +224,7 @@ public class MainActivity extends Activity {
         super.onResume();
         goFullScreen();
         web.onResume();
+        clearCompletedReleaseNotification();
         if (notificationSettingsPending) {
             notificationSettingsPending = false;
             if (notificationsEnabled()) enablePushNotifications();
@@ -594,7 +596,21 @@ public class MainActivity extends Activity {
     }
 
     private String shellName() {
-        try { return getPackageManager().getPackageInfo(getPackageName(), 0).versionName; } catch (Exception e) { return ""; }
+        return getInstalledVersionName(this);
+    }
+
+    static String getInstalledVersionName(Context context) {
+        try { return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName; }
+        catch (Exception e) { return ""; }
+    }
+
+    private void clearCompletedReleaseNotification() {
+        String releaseVersion = prefs.getString("releaseNotificationVersion", "");
+        String installedVersion = shellName();
+        PushMessagingService.clearCompletedReleaseNotifications(this, installedVersion, releaseVersion);
+        if (!releaseVersion.isEmpty() && cmp(installedVersion, releaseVersion) >= 0) {
+            prefs.edit().remove("releaseNotificationVersion").apply();
+        }
     }
 
     /** Compares versions like 1.4.10 and 1.4.9 by number. An empty version is the lowest. */

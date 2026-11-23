@@ -3201,7 +3201,7 @@ const fdt = (ms) => {
 };
 const apkBanner = () =>
   UPD && SH.apkName
-    ? `<div class="banner"><p>${t("upd_banner", esc(SH.apkName))}</p><button class="btn small primary" data-upd="install">${t("upd_install")}</button></div>`
+    ? `<div class="banner" data-update-banner><p>${t("upd_banner", esc(SH.apkName))}</p><button class="btn small primary" data-upd="install">${t("upd_install")}</button></div>`
     : "";
 function updStatusHtml() {
   const s = UST || {},
@@ -5798,6 +5798,22 @@ function showPendingNote() {
   }
 }
 window.onAppResume = () => {
+  const previousApkName = SH.apkName;
+  readShell();
+  if (previousApkName !== SH.apkName) {
+    const banner = document.querySelector("[data-update-banner]");
+    if (banner) {
+      if (SH.apkName) {
+        const template = document.createElement("template");
+        template.innerHTML = apkBanner();
+        banner.replaceWith(template.content.firstElementChild);
+      } else {
+        banner.remove();
+      }
+    }
+    const updateStatus = $("#updSt");
+    if (updateStatus) updateStatus.innerHTML = updStatusHtml();
+  }
   if (pendingNote) {
     setTimeout(() => toast(pendingNote, pendingNoteDuration), 250);
     pendingNote = "";
